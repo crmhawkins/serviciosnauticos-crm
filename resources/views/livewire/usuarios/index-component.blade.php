@@ -37,7 +37,7 @@
                                     <tr>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->username }}</td>
-                                        <td>{{ $user->role }}</td>
+                                        <td>{{ $this->getRole($user->role) }}</td>
                                         <td>{{ $user->email }}</td>
 
 
@@ -72,5 +72,5 @@
 <!-- Responsive examples -->
 <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
-<script src="../assets/pages/datatables.init.js"></script> 
+<script src="../assets/pages/datatables.init.js"></script>
 @endsection
