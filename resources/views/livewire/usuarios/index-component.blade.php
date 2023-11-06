@@ -19,7 +19,8 @@
             <div class="card m-b-30">
                 <div class="card-body">
                     @if (count($usuarios) > 0)
-                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th scope="col">Nombre</th>
@@ -42,12 +43,14 @@
 
 
 
-                                        <td> <a href="usuarios-edit/{{ $user->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                                        <td> <a href="usuarios-edit/{{ $user->id }}"
+                                                class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     @endif
+                    <a href="usuarios-create" class="btn btn-lg btn-primary">Añadir usuario</a>
                 </div>
             </div>
         </div>
@@ -56,21 +59,21 @@
 
 
 @section('scripts')
-<script src="../assets/js/jquery.slimscroll.js"></script>
+    <script src="../assets/js/jquery.slimscroll.js"></script>
 
-<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
-<!-- Buttons examples -->
-<script src="../plugins/datatables/dataTables.buttons.min.js"></script>
-<script src="../plugins/datatables/buttons.bootstrap4.min.js"></script>
-<script src="../plugins/datatables/jszip.min.js"></script>
-<script src="../plugins/datatables/pdfmake.min.js"></script>
-<script src="../plugins/datatables/vfs_fonts.js"></script>
-<script src="../plugins/datatables/buttons.html5.min.js"></script>
-<script src="../plugins/datatables/buttons.print.min.js"></script>
-<script src="../plugins/datatables/buttons.colVis.min.js"></script>
-<!-- Responsive examples -->
-<script src="../plugins/datatables/dataTables.responsive.min.js"></script>
-<script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
-<script src="../assets/pages/datatables.init.js"></script>
+    <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- Buttons examples -->
+    <script src="../plugins/datatables/dataTables.buttons.min.js"></script>
+    <script src="../plugins/datatables/buttons.bootstrap4.min.js"></script>
+    <script src="../plugins/datatables/jszip.min.js"></script>
+    <script src="../plugins/datatables/pdfmake.min.js"></script>
+    <script src="../plugins/datatables/vfs_fonts.js"></script>
+    <script src="../plugins/datatables/buttons.html5.min.js"></script>
+    <script src="../plugins/datatables/buttons.print.min.js"></script>
+    <script src="../plugins/datatables/buttons.colVis.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
+    <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="../assets/pages/datatables.init.js"></script>
 @endsection

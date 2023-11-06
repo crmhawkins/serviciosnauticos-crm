@@ -26,8 +26,8 @@
                                 <div class="col-sm-6">
                                     <label for="name" class="col-sm-12 col-form-label">Nombre </label>
                                     <div class="col-sm-10">
-                                        <input type="text" wire:model.defer="name" class="form-control" name="name"
-                                            id="name" placeholder="José Carlos...">
+                                        <input type="text" wire:model.defer="name" class="form-control"
+                                            name="name" id="name" placeholder="José Carlos...">
                                         @error('name')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -37,8 +37,8 @@
                                 <div class="col-sm-6">
                                     <label for="surname" class="col-sm-12 col-form-label">Apellidos </label>
                                     <div class="col-sm-10">
-                                        <input type="text" wire:model.defer="surname" class="form-control" name="surname"
-                                            id="surname" placeholder="Pérez...">
+                                        <input type="text" wire:model.defer="surname" class="form-control"
+                                            name="surname" id="surname" placeholder="Pérez...">
                                         @error('surname')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -50,8 +50,8 @@
                                 <div class="col-sm-12">
                                     <label for="email" class="col-sm-12 col-form-label">Email </label>
                                     <div class="col-sm-11">
-                                        <input type="text" wire:model.defer="email" class="form-control" name="email"
-                                            id="email" placeholder="jose85@hotmail.com ...">
+                                        <input type="text" wire:model.defer="email" class="form-control"
+                                            name="email" id="email" placeholder="jose85@hotmail.com ...">
                                         @error('email')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -77,11 +77,14 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="role" class="col-sm-12 col-form-label">Rol</label>
-                                    <div class="col-sm-10" x-data="" x-init="$nextTick( () => { $('#select2-role').select2();
-                                    $('#select2-role').on('change', function(e) {
-                                        var data = $('#select2-role').select2('val');
-                                        @this.set('role', data);
-                                    }); });" wire:key="{{time()}}">
+                                    <div class="col-sm-10" x-data="" x-init="$nextTick(() => {
+                                        $('#select2-role').select2();
+                                        $('#select2-role').on('change', function(e) {
+                                            var data = $('#select2-role').select2('val');
+                                            @this.set('role', data);
+                                        });
+                                    });"
+                                        wire:key="{{ time() }}">
                                         <select id="select2-role" class="form-control js-example-responsive"
                                             wire:model.defer="role">
                                             @foreach ($roles as $rol)
@@ -131,21 +134,20 @@
                     </form>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Crear
-                                Usuario</button>
+            <div class="col-md-3">
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Acciones</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Crear
+                                    Usuario</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
 

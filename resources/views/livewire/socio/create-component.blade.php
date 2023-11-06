@@ -18,6 +18,7 @@
         th,
         td {
             border: 1px solid black !important;
+            padding: 5px 5px 5px 5px !important;
         }
     </style>
     <div class="row">
