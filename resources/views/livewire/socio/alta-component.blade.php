@@ -2,13 +2,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">EDITAR SOCIO {{ $numero_socio }}</span></h4>
+                <h4 class="page-title">VOLVER A DAR DE ALTA SOCIO {{ $numero_socio }}</span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Socio</a></li>
-                    <li class="breadcrumb-item active">Editar socio</li>
+                    <li class="breadcrumb-item active">Volver a dar de alta socio</li>
                 </ol>
             </div>
         </div> <!-- end row -->
@@ -39,13 +39,22 @@
                                     </tr>
                                     <tr>
                                         <th colspan="12">
-                                            @if ($ruta_foto)
-                                                <div class="mb-3 row d-flex justify-content-center">
-                                                    <div class="col text-center">
-                                                        <img src="{{ $ruta_foto->temporaryUrl() }}"
-                                                            style="max-width: 50% !important; height: auto;">
+                                            @if (isset($ruta_foto))
+                                                @if (!is_string($ruta_foto))
+                                                    <div class="mb-3 row d-flex justify-content-center">
+                                                        <div class="col text-center">
+                                                            <img src="{{ $ruta_foto->temporaryUrl() }}"
+                                                                style="max-width: 50% !important; height: auto;">
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="mb-3 row d-flex justify-content-center">
+                                                        <div class="col text-center">
+                                                            <img src="{{ asset('storage/photos/' . $ruta_foto) }}"
+                                                                style="max-width: 50% !important; height: auto;">
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             @endif
                                             <div class="mb-3 row d-flex align-items-center">
                                                 <div class="col-sm-12">
@@ -68,13 +77,22 @@
                                     </tr>
                                     <tr>
                                         <th colspan="12">
-                                            @if ($ruta_foto2)
-                                                <div class="mb-3 row d-flex justify-content-center">
-                                                    <div class="col">
-                                                        <img src="{{ $ruta_foto2->temporaryUrl() }}"
-                                                            style="max-width: 100% !important; height: auto; text-align: center">
+                                            @if (isset($ruta_foto2))
+                                                @if (!is_string($ruta_foto2))
+                                                    <div class="mb-3 row d-flex justify-content-center">
+                                                        <div class="col text-center">
+                                                            <img src="{{ $ruta_foto2->temporaryUrl() }}"
+                                                                style="max-width: 50% !important; height: auto;">
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="mb-3 row d-flex justify-content-center">
+                                                        <div class="col text-center">
+                                                            <img src="{{ asset('storage/photos/' . $ruta_foto2) }}"
+                                                                style="max-width: 50% !important; height: auto;">
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             @endif
                                             <div class="mb-3 row d-flex align-items-center">
                                                 <div class="col-sm-12">
@@ -91,21 +109,21 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td colspan="6" wire:click="cambiarSituacionBarco(0)"
+                                        <td colspan="6"
                                             @if ($situacion_barco == 0) style="background-color: #3b996d !important" @endif>
                                             <h6 style="text-align: center !important">Barco en atraque</h6>
                                         </td>
-                                        <td colspan="6" wire:click="cambiarSituacionBarco(1)"
+                                        <td colspan="6"
                                             @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
                                             <h6 style="text-align: center !important">Barco en varada</h6>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="6" wire:click="cambiarSituacionPersona(0)"
+                                        <td colspan="6"
                                             @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
                                             <h6 style="text-align: center !important">Socio</h6>
                                         </td>
-                                        <td colspan="6" wire:click="cambiarSituacionPersona(1)"
+                                        <td colspan="6"
                                             @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
                                             <h6 style="text-align: center !important">Transeúnte</h6>
                                         </td>
@@ -135,8 +153,8 @@
 
                                     <tr>
                                         <th colspan="4">Dirección:</th>
-                                        <td colspan="8"><input type="text" wire:model="direccion" class="form-control"
-                                                name="direccion" placeholder="Dirección"></td>
+                                        <td colspan="8"><input type="text" wire:model="direccion"
+                                                class="form-control" name="direccion" placeholder="Dirección"></td>
                                     </tr>
                                     <tr>
                                         <th colspan="10" class="text-center py-3">Teléfonos</th>
@@ -340,11 +358,11 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="6" wire:click="cambiarSituacionBarco(0)"
+                                        <td colspan="6"
                                             @if ($situacion_barco == 0) style="background-color: #3b996d !important" @endif>
                                             <h6 style="text-align: center !important">Barco en atraque</h6>
                                         </td>
-                                        <td colspan="6" wire:click="cambiarSituacionBarco(1)"
+                                        <td colspan="6"
                                             @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
                                             <h6 style="text-align: center !important">Barco en varada</h6>
                                         </td>
@@ -769,13 +787,8 @@
                                 <div class="modal-body">
                                     @foreach ($registros_entrada as $registroIndex => $registro)
                                         @if (isset($registro['estado']))
-                                            @if ($registro['estado'] == 1)
-                                                <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                    ({{ $registro['tiempoAtraque'] }} días de varada)</h6>
-                                            @else
                                             <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                ({{ $registro['tiempoAtraque'] }} días de atraque)</h6>
-                                            @endif
+                                                ({{ $registro['tiempoAtraque'] }} días de baja)</h6>
                                         @else
                                             @if ($registroIndex % 2 !== 0)
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
@@ -828,14 +841,14 @@
                             style="min-width: 25vw !important; align-self: center !important; margin-top: 10% !important;">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Dar de baja al socio/transeúnte</h5>
+                                    <h5 class="modal-title">Volver a dar de alta al socio/transeúnte</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
                                     <tr>
-                                        <th colspan="4">Fecha de baja:</th>
+                                        <th colspan="4">Fecha de alta:</th>
                                         <td colspan="8"><input type="date" wire:model="fecha_baja"
                                                 class="form-control" name="fecha_baja" placeholder="Fecha de baja">
                                         </td>
@@ -843,7 +856,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-primary w-100" data-dismiss="modal"
-                                        wire:click="alertaBaja">Dar de baja</button>
+                                        wire:click="alertaBaja">Dar de alta</button>
                                     <button type="button" class="btn btn-secondary w-100"
                                         data-dismiss="modal">Cerrar</button>
                                 </div>
@@ -879,40 +892,23 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h6>Opciones misceláneas</h6>
-                            <div class="row">
-                                <div class="col-12">
-                                    <button class="w-100 btn btn-success mb-2" id="btnRegistros" data-toggle="modal"
-                                        data-target="#modal-registros">Ver registros de entrada
-                                        y salida</button>
-                                    @if ($situacion_persona == 1)
-                                        <button class="w-100 btn btn-success mb-2" id="btnRegistros2" data-toggle="modal"
-                                            data-target="#modal-registros2">Ver registros de transeúnte</button>
-                                    @endif
-                                    @if ($puede_editar == true)
-                                        <button class="w-100 btn btn-danger mb-2" id="btnBaja" data-toggle="modal"
-                                            data-target="#modal-baja">Dar
-                                            de baja</button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 @endnotmobile
                 <div class="card m-b-30">
                     <div class="card-body">
-                        <h6>Opciones de guardado</h6>
+                        <h6>Opciones</h6>
                         <div class="row">
                             <div class="col-12">
                                 @if ($puede_editar == true)
-                                    <button class="w-100 btn btn-success mb-2"
-                                        wire:click.prevent="alertaGuardar">Guardar
-                                        datos de socio</button>
-                                    <button class="w-100 btn btn-danger mb-2"
-                                        wire:click.prevent="alertaEliminar">Eliminar
-                                        datos de socio</button>
+                                    <button class="w-100 btn btn-success mb-2" id="btnBaja" data-toggle="modal"
+                                        data-target="#modal-baja">Dar
+                                        de alta</button>
+                                @endif
+                                <button class="w-100 btn btn-info mb-2" id="btnRegistros" data-toggle="modal"
+                                    data-target="#modal-registros">Ver registros de entrada
+                                    y salida</button>
+                                @if ($situacion_persona == 1)
+                                    <button class="w-100 btn btn-info mb-2" id="btnRegistros2" data-toggle="modal"
+                                        data-target="#modal-registros2">Ver registros de transeúnte</button>
                                 @endif
                             </div>
                         </div>

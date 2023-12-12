@@ -1,5 +1,4 @@
 <div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -25,223 +24,518 @@
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <table class="table table-bordered dt-responsive nowrap" style="table-layout: fixed !important; width: 100% !important;">
-                        <thead>
-                            <tr>
-                                <th colspan="12">
-                                    <h4 style="text-align: center !important">Datos del socio/transeúnte</h4>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th colspan="12" rowspan="4">
-                                    <h5>Subir foto del barco</h5>
-                                    @if ($ruta_foto)
-                                        <div class="mb-3 row d-flex justify-content-center">
-                                            <div class="col">
-                                                <img src="{{ $ruta_foto->temporaryUrl() }}"
-                                                    style="max-width: 50% !important; text-align: center">
+                    @mobile
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="table-layout: fixed !important; width: 100% !important;">
+                            <thead>
+                                <tr>
+                                    <th colspan="12">
+                                        <h4 style="text-align: center !important">Datos del socio/transeúnte</h4>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="12">
+                                        <h5 class="text-center" style="vertical-align: top !important;">Subir foto del barco
+                                        </h5>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="12">
+                                        @if ($ruta_foto)
+                                            <div class="mb-3 row d-flex justify-content-center">
+                                                <div class="col text-center">
+                                                    <img src="{{ $ruta_foto->temporaryUrl() }}"
+                                                        style="max-width: 50% !important; height: auto;">
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <div class="mb-3 row d-flex align-items-center">
+                                            <div class="col-sm-12">
+                                                <input type="file" class="form-control" wire:model="ruta_foto"
+                                                    name="ruta_foto" id="ruta_foto" placeholder="Imagen del producto...">
+                                                @error('nombre')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
-                                    @endif
-                                    <div class="mb-3 row d-flex align-items-center">
-                                        <div class="col-sm-12">
-                                            <input type="file" class="form-control" wire:model="ruta_foto"
-                                                name="ruta_foto" id="ruta_foto" placeholder="Imagen del producto...">
-                                            @error('nombre')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="12">
+                                        <h5 class="text-center" style="vertical-align: top !important;">Subir foto del socio
+                                        </h5>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="12">
+                                        @if ($ruta_foto2)
+                                            <div class="mb-3 row d-flex justify-content-center">
+                                                <div class="col">
+                                                    <img src="{{ $ruta_foto2->temporaryUrl() }}"
+                                                        style="max-width: 100% !important; height: auto; text-align: center">
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <div class="mb-3 row d-flex align-items-center">
+                                            <div class="col-sm-12">
+                                                <input type="file" class="form-control" wire:model="ruta_foto2"
+                                                    name="ruta_foto2" id="ruta_foto2" placeholder="Imagen del producto...">
+                                                @error('nombre')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
                                         </div>
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tr>
-                            <td colspan="6" wire:click="cambiarSituacionBarco(0)"
-                                @if ($situacion_barco == 0) style="background-color: #a2b7cf !important" @endif>
-                                <h6 style="text-align: center !important">Barco en atraque</h6>
-                            </td>
-                            <td colspan="6" wire:click="cambiarSituacionBarco(1)"
-                                @if ($situacion_barco == 1) style="background-color: #a2b7cf !important" @endif>
-                                <h6 style="text-align: center !important">Barco en varada</h6>
-                            </td>
-                        </tr>
-                        @mobile
-                        <tr>
-                            <td colspan="6" wire:click="cambiarSituacionPersona(0)"
-                                @if ($situacion_persona == 0) style="background-color: #a2b7cf !important" @endif>
-                                <h6 style="text-align: center !important">Socio</h6>
-                            </td>
-                            <td colspan="6" wire:click="cambiarSituacionPersona(1)"
-                                @if ($situacion_persona == 1) style="background-color: #a2b7cf !important" @endif>
-                                <h6 style="text-align: center !important">Transeúnte</h6>
-                            </td>
-                        </tr>
-                        @endmobile
-                        @mobile
-                        <tr>
-                            <th colspan="4">Nombre:</th>
-                            <td colspan="8"><input type="text" wire:model="nombre_socio" class="form-control"
-                                    name="nombre_socio" placeholder="Nombre"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Nº de socio</th>
-                            <td colspan="8"><input type="number" wire:model="numero_socio" class="form-control"
-                                    name="numero_socio" placeholder="Número de socio">
-                            </td>
-                        </tr>
-                        @elsemobile
-                        <tr>
-                            <th colspan="3">Nombre:</th>
-                            <td colspan="3"><input type="text" wire:model="nombre_socio" class="form-control"
-                                    name="nombre_socio" placeholder="Nombre"></td>
-                            <th colspan="3">Nº de socio</th>
-                            <td colspan="3"><input type="number" wire:model="numero_socio" class="form-control"
-                                    name="numero_socio" placeholder="Número de socio">
-                            </td>
-                        </tr>
-                        @endmobile
-                        <tr>
-                            <th colspan="4">DNI:</th>
-                            <td colspan="8"><input type="text" wire:model="dni" class="form-control"
-                                    name="dni" placeholder="DNI"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Dirección:</th>
-                            <td colspan="8"><input type="text" wire:model="direccion" class="form-control"
-                                    name="direccion" placeholder="Dirección"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Teléfono 1:</th>
-                            <td colspan="8"><input type="text" wire:model="telefono_1" class="form-control"
-                                    name="telefono_1" placeholder="Teléfono 1"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Teléfono 2:</th>
-                            <td colspan="8"><input type="text" wire:model="telefono_2" class="form-control"
-                                    name="telefono_2" placeholder="Teléfono 2"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Teléfono 3:</th>
-                            <td colspan="8"><input type="text" wire:model="telefono_3" class="form-control"
-                                    name="telefono_3" placeholder="Teléfono 3"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Email:</th>
-                            <td colspan="8"><input type="text" wire:model="email" class="form-control"
-                                    name="email" placeholder="Email"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Pantalán T Atraque:</th>
-                            <td colspan="8"><input type="text" wire:model="pantalan_t_atraque"
-                                    class="form-control" name="pantalan_t_atraque" placeholder="Pantalán T Atraque">
-                            </td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Nombre del barco:</th>
-                            <td colspan="8"><input type="text" wire:model="nombre_barco" class="form-control"
-                                    name="nombre_barco" placeholder="Nombre del barco"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Matrícula:</th>
-                            <td colspan="8"><input type="text" wire:model="matricula" class="form-control"
-                                    name="matricula" placeholder="Matrícula"></td>
-                        </tr>
-                        @mobile
-                        <tr>
-                            <th colspan="4">Eslora:</th>
-                            <td colspan="8"><input type="text" wire:model="eslora" class="form-control"
-                                    name="eslora" placeholder="Eslora"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Manga:</th>
-                            <td colspan="8"><input type="text" wire:model="manga" class="form-control"
-                                    name="manga" placeholder="Manga"></td>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Calado:</th>
-                            <td colspan="8"><input type="text" wire:model="calado" class="form-control"
-                                    name="calado" placeholder="Calado"></td>
-                        </tr>
-                        @elsemobile
-                        <tr>
-                            <th colspan="2">Eslora:</th>
-                            <td colspan="2"><input type="text" wire:model="eslora" class="form-control"
-                                    name="eslora" placeholder="Eslora"></td>
-                            <th colspan="2">Manga:</th>
-                            <td colspan="2"><input type="text" wire:model="manga" class="form-control"
-                                    name="manga" placeholder="Manga"></td>
-                            <th colspan="2">Calado:</th>
-                            <td colspan="2"><input type="text" wire:model="calado" class="form-control"
-                                    name="calado" placeholder="Calado"></td>
-                        </tr>
-                        @endmobile()
-                        <tr>
-                            <th colspan="4">Nº de llave:</th>
-                            <td colspan="8"><input type="text" wire:model="numero_llave" class="form-control"
-                                    name="numero_llave" placeholder="Nº de llave"></td>
-                        </tr>
-                        @mobile
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" wire:click="cambiarSituacionBarco(0)"
+                                        @if ($situacion_barco == 0) style="background-color: #3b996d !important" @endif>
+                                        <h6 style="text-align: center !important">Barco en atraque</h6>
+                                    </td>
+                                    <td colspan="6" wire:click="cambiarSituacionBarco(1)"
+                                        @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
+                                        <h6 style="text-align: center !important">Barco en varada</h6>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" wire:click="cambiarSituacionPersona(0)"
+                                        @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
+                                        <h6 style="text-align: center !important">Socio</h6>
+                                    </td>
+                                    <td colspan="6" wire:click="cambiarSituacionPersona(1)"
+                                        @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                        <h6 style="text-align: center !important">Transeúnte</h6>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Fecha de entrada:</th>
+                                    <td colspan="8"><input type="text" wire:model="fecha_entrada" class="form-control"
+                                            name="fecha_entrada" placeholder="Fecha de entrada"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Nombre:</th>
+                                    <td colspan="8"><input type="text" wire:model="nombre_socio" class="form-control"
+                                            name="nombre_socio" placeholder="Nombre"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Nº de socio</th>
+                                    <td colspan="8"><input type="number" wire:model="numero_socio" class="form-control"
+                                            name="numero_socio" placeholder="Número de socio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">PIN de socio</th>
+                                    <td colspan="8"><input type="number" wire:model="pin_socio" class="form-control"
+                                            name="numero_socio" placeholder="Número de socio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">DNI:</th>
+                                    <td colspan="8"><input type="text" wire:model="dni" class="form-control"
+                                            name="dni" placeholder="DNI"></td>
+                                </tr>
+
+                                <tr>
+                                    <th colspan="4">Dirección:</th>
+                                    <td colspan="8"><input type="text" wire:model="direccion" class="form-control"
+                                            name="direccion" placeholder="Dirección"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="10" class="text-center py-3">Teléfonos</th>
+                                    <th colspan="2" class="text-center py-3"><button type="button"
+                                            class="btn btn-primary" wire:click="addTelefono">+</button></th>
+                                </tr>
+                                @foreach ($telefonos as $telefonoIndex => $telefono)
+                                    <tr>
+                                        <th colspan="3">Tlf. {{ $telefonoIndex + 1 }}:</th>
+                                        <td colspan="7"><input type="text"
+                                                wire:model="telefonos.{{ $telefonoIndex }}.telefono" class="form-control"
+                                                name="telefonos[{{ $telefonoIndex }}][telefono]"
+                                                placeholder="Teléfono {{ $telefonoIndex + 1 }}"></td>
+                                        <td colspan="2" class="text-center"><button type="button"
+                                                class="btn btn-danger"
+                                                wire:click="deleteTelefono({{ $telefonoIndex }})">X</button></td>
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <th colspan="4">Email:</th>
+                                    <td colspan="8"><input type="text" wire:model="email" class="form-control"
+                                            name="email" placeholder="Email"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Pantalán y Atraque:</th>
+                                    <td colspan="8"><input type="text" wire:model="pantalan_t_atraque"
+                                            class="form-control" name="pantalan_t_atraque"
+                                            placeholder="Pantalán y Atraque">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" wire:click="cambiarSituacionPersona(0)"
+                                        @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
+                                        <h6 style="text-align: center !important">Fijo</h6>
+                                    </td>
+                                    <td colspan="6" wire:click="cambiarSituacionPersona(1)"
+                                        @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                        <h6 style="text-align: center !important">Temporal</h6>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Nombre del barco:</th>
+                                    <td colspan="8"><input type="text" wire:model="nombre_barco"
+                                            class="form-control" name="nombre_barco" placeholder="Nombre del barco">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Matrícula:</th>
+                                    <td colspan="8"><input type="text" wire:model="matricula" class="form-control"
+                                            name="matricula" placeholder="Matrícula"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Eslora:</th>
+                                    <td colspan="8"><input type="text" wire:model="eslora" class="form-control"
+                                            name="eslora" placeholder="Eslora"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Manga:</th>
+                                    <td colspan="8"><input type="text" wire:model="manga" class="form-control"
+                                            name="manga" placeholder="Manga"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Calado:</th>
+                                    <td colspan="8"><input type="text" wire:model="calado" class="form-control"
+                                            name="calado" placeholder="Calado"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="10" class="text-center py-3">Números de llave</th>
+                                    <th colspan="2" class="text-center py-3"><button type="button"
+                                            class="btn btn-primary" wire:click="addNumeroLlave">+</button></th>
+                                </tr>
+                                @foreach ($numeros_llave as $llaveIndex => $numero_llave)
+                                    <tr>
+                                        <th colspan="3">Llave {{ $llaveIndex + 1 }}:</th>
+                                        <td colspan="7"><input type="text"
+                                                wire:model="numeros_llave.{{ $llaveIndex }}.llaveIndex"
+                                                class="form-control"
+                                                name="numeros_llave[{{ $llaveIndex }}][llaveIndex]"
+                                                placeholder="Nº de llave {{ $llaveIndex + 1 }}"></td>
+                                        <td colspan="2" class="text-center"><button type="button"
+                                                class="btn btn-danger"
+                                                wire:click="deleteNumeroLlave({{ $telefonoIndex }})">X</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <th colspan="4">Seguro barco:</th>
+                                    <td colspan="8"><input type="text" wire:model="seguro_barco"
+                                            class="form-control" name="seguro_barco" placeholder="Seguro barco"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Póliza:</th>
+                                    <td colspan="8"><input type="text" wire:model="poliza" class="form-control"
+                                            name="poliza" placeholder="Póliza"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">Vencimiento:</th>
+                                    <td colspan="8"><input type="date" wire:model="vencimiento"
+                                            class="form-control" name="vencimiento" placeholder="Vencimiento"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4">ITB:</th>
+                                    <td colspan="8"><input type="date" wire:model="itb" class="form-control"
+                                            name="itb" placeholder="ITB"></td>
+                                </tr>
+                        </table>
+                    @elsemobile
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="table-layout: fixed !important; width: 100% !important;">
+                            <thead>
+                                <tr>
+                                    <th colspan="12">
+                                        <h4 style="text-align: center !important">Datos del socio/transeúnte</h4>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="8">
+                                        <h5 class="text-center" style="vertical-align: top !important;">Subir foto del
+                                            barco
+                                        </h5>
+                                    </th>
+                                    <th colspan="3">
+                                        <h5 class="text-center" style="vertical-align: top !important;">Subir foto del
+                                            socio
+                                        </h5>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="8" rowspan="4">
+                                        @if ($ruta_foto)
+                                            <div class="mb-3 row d-flex justify-content-center">
+                                                <div class="col text-center">
+                                                    <img src="{{ $ruta_foto->temporaryUrl() }}"
+                                                        style="max-width: 50% !important; height: auto;">
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <div class="mb-3 row d-flex align-items-center">
+                                            <div class="col-sm-12">
+                                                <input type="file" class="form-control" wire:model="ruta_foto"
+                                                    name="ruta_foto" id="ruta_foto" placeholder="Imagen del producto...">
+                                                @error('nombre')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th colspan="4" rowspan="4">
+                                        @if ($ruta_foto2)
+                                            <div class="mb-3 row d-flex justify-content-center">
+                                                <div class="col">
+                                                    <img src="{{ $ruta_foto2->temporaryUrl() }}"
+                                                        style="max-width: 100% !important; height: auto; text-align: center">
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <div class="mb-3 row d-flex align-items-center">
+                                            <div class="col-sm-12">
+                                                <input type="file" class="form-control" wire:model="ruta_foto2"
+                                                    name="ruta_foto2" id="ruta_foto2"
+                                                    placeholder="Imagen del producto...">
+                                                @error('nombre')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" wire:click="cambiarSituacionBarco(0)"
+                                        @if ($situacion_barco == 0) style="background-color: #3b996d !important" @endif>
+                                        <h6 style="text-align: center !important">Barco en atraque</h6>
+                                    </td>
+                                    <td colspan="6" wire:click="cambiarSituacionBarco(1)"
+                                        @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
+                                        <h6 style="text-align: center !important">Barco en varada</h6>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Fecha de entrada:</th>
+                                    <td colspan="9"><input type="date" wire:model="fecha_entrada" class="form-control"
+                                            name="fecha_entrada" placeholder="Fecha de entrada"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Nombre:</th>
+                                    <td colspan="3"><input type="text" wire:model="nombre_socio"
+                                            class="form-control" name="nombre_socio" placeholder="Nombre"></td>
+                                    <th colspan="3">Nº de socio</th>
+                                    <td colspan="3"><input type="number" wire:model="numero_socio"
+                                            class="form-control" name="numero_socio" placeholder="Número de socio">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">PIN de socio</th>
+                                    <td colspan="3"><input type="number" wire:model="pin_socio" class="form-control"
+                                            name="pin_socio" placeholder="PIN de socio">
+                                    </td>
+                                    <th colspan="3">DNI:</th>
+                                    <td colspan="3"><input type="text" wire:model="dni" class="form-control"
+                                            name="dni" placeholder="DNI"></td>
+                                </tr>
+
+                                <tr>
+                                    <th colspan="3">Dirección:</th>
+                                    <td colspan="9"><input type="text" wire:model="direccion" class="form-control"
+                                            name="direccion" placeholder="Dirección"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="10" class="text-center py-3">Teléfonos</th>
+                                    <th colspan="2" class="text-center py-3">Añadir/Eliminar</th>
+                                </tr>
+                                @foreach ($telefonos as $telefonoIndex => $telefono)
+                                    <tr>
+                                        <th colspan="3">Teléfono {{ $telefonoIndex + 1 }}:</th>
+                                        <td colspan="7"><input type="text"
+                                                wire:model="telefonos.{{ $telefonoIndex }}.telefono" class="form-control"
+                                                name="telefonos[{{ $telefonoIndex }}][telefono]"
+                                                placeholder="Teléfono {{ $telefonoIndex + 1 }}"></td>
+                                        @if ($telefonoIndex == 0)
+                                            <td colspan="1" class="text-center"><button type="button"
+                                                    class="btn btn-danger"
+                                                    wire:click="deleteTelefono({{ $telefonoIndex }})">X</button></td>
+                                            <td colspan="1" class="text-center"><button type="button"
+                                                    class="btn btn-primary" wire:click="addTelefono">+</button></td>
+                                        @else
+                                            <td colspan="2" class="text-center"><button type="button"
+                                                    class="btn btn-danger"
+                                                    wire:click="deleteTelefono({{ $telefonoIndex }})">X</button></td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <th colspan="3">Email:</th>
+                                    <td colspan="9"><input type="text" wire:model="email" class="form-control"
+                                            name="email" placeholder="Email"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Pantalán y Atraque:</th>
+                                    <td colspan="9"><input type="text" wire:model="pantalan_t_atraque"
+                                            class="form-control" name="pantalan_t_atraque"
+                                            placeholder="Pantalán y Atraque">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Nombre del barco:</th>
+                                    <td colspan="9"><input type="text" wire:model="nombre_barco"
+                                            class="form-control" name="nombre_barco" placeholder="Nombre del barco">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Matrícula:</th>
+                                    <td colspan="9"><input type="text" wire:model="matricula" class="form-control"
+                                            name="matricula" placeholder="Matrícula"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Eslora:</th>
+                                    <td colspan="3"><input type="text" wire:model="eslora" class="form-control"
+                                            name="eslora" placeholder="Eslora"></td>
+                                    <th colspan="3">Manga:</th>
+                                    <td colspan="3"><input type="text" wire:model="manga" class="form-control"
+                                            name="manga" placeholder="Manga"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Calado:</th>
+                                    <td colspan="3"><input type="text" wire:model="calado" class="form-control"
+                                            name="calado" placeholder="Calado"></td>
+                                    <th colspan="3">Puntal:</th>
+                                    <td colspan="3"><input type="text" wire:model="puntal" class="form-control"
+                                            name="puntal" placeholder="Puntal"></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="10" class="text-center py-3">Números de llave</th>
+                                    <th colspan="2" class="text-center py-3">Añadir/Eliminar</th>
+                                </tr>
+                                @foreach ($numeros_llave as $llaveIndex => $numero_llave)
+                                    <tr>
+                                        <th colspan="3">Nº de llave {{ $llaveIndex + 1 }}:</th>
+                                        <td colspan="7"><input type="text"
+                                                wire:model="numeros_llave.{{ $llaveIndex }}.llaveIndex"
+                                                class="form-control"
+                                                name="numeros_llave[{{ $llaveIndex }}][llaveIndex]"
+                                                placeholder="Nº de llave {{ $llaveIndex + 1 }}"></td>
+                                        @if ($llaveIndex == 0)
+                                            <td colspan="1" class="text-center"><button type="button"
+                                                    class="btn btn-danger"
+                                                    wire:click="deleteNumeroLlave({{ $telefonoIndex }})">X</button>
+                                            </td>
+                                            <td colspan="1" class="text-center"><button type="button"
+                                                    class="btn btn-primary" wire:click="addNumeroLlave">+</button>
+                                            </td>
+                                        @else
+                                            <td colspan="2" class="text-center"><button type="button"
+                                                    class="btn btn-danger"
+                                                    wire:click="deleteNumeroLlave({{ $telefonoIndex }})">X</button>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <th colspan="3">Seguro barco:</th>
+                                    <td colspan="3"><input type="text" wire:model="seguro_barco"
+                                            class="form-control" name="seguro_barco" placeholder="Seguro barco"></td>
+                                    <th colspan="3">Póliza:</th>
+                                    <td colspan="3"><input type="text" wire:model="poliza" class="form-control"
+                                            name="poliza" placeholder="Póliza"></td>
+
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Vencimiento:</th>
+                                    <td colspan="3"><input type="date" wire:model="vencimiento"
+                                            class="form-control" name="vencimiento" placeholder="Vencimiento"></td>
+                                    <th colspan="3">ITB:</th>
+                                    <td colspan="3"><input type="date" wire:model="itb" class="form-control"
+                                            name="itb" placeholder="ITB"></td>
+                                </tr>
+                        </table>
+                    @endmobile
+
+                    @if ($situacion_persona == 1)
+                        <table class="table table-bordered dt-responsive nowrap"
+                            style="table-layout: fixed !important; width: 100% !important;">
+                            <thead>
+                                <tr>
+                                    <th colspan="12">
+                                        <h4 style="text-align: center !important">Datos específicos de transeúnte
+                                        </h4>
+                                    </th>
+                                </tr>
+                            </thead>
                             <tr>
-                                <th colspan="4">Seguro barco:</th>
-                                <td colspan="8"><input type="text" wire:model="seguro_barco" class="form-control"
-                                        name="seguro_barco" placeholder="Seguro barco"></td>
+                                <th colspan="3">Fecha de entrada:</th>
+                                <td colspan="9"><input type="date" wire:model="fecha_entrada_transeunte"
+                                        class="form-control" name="fecha_entrada_transeunte" placeholder="Nombre del barco">
+                                </td>
                             </tr>
                             <tr>
-                                <th colspan="4">Póliza:</th>
-                                <td colspan="8"><input type="text" wire:model="poliza" class="form-control"
-                                        name="poliza" placeholder="Póliza"></td>
+                                <th colspan="10" class="text-center py-3">Tripulantes</th>
+                                <th colspan="2" class="text-center"><button type="button"
+                                        class="btn btn-primary" wire:click="addTripulante">+</button></th>
                             </tr>
                             <tr>
-                                <th colspan="4">Vencimiento:</th>
-                                <td colspan="8"><input type="text" wire:model="vencimiento" class="form-control"
-                                        name="vencimiento" placeholder="Vencimiento"></td>
+                                <th colspan="5" class="text-center py-3">Nombre</th>
+                                <th colspan="5" class="text-center py-3">DNI</th>
+                                <th colspan="2" class="text-center py-3">Eliminar</th>
                             </tr>
-                        @elsemobile
-                            <tr>
-                                <th colspan="2">Seguro barco:</th>
-                                <td colspan="2"><input type="text" wire:model="seguro_barco" class="form-control"
-                                        name="seguro_barco" placeholder="Seguro barco"></td>
-                                <th colspan="2">Póliza:</th>
-                                <td colspan="2"><input type="text" wire:model="poliza" class="form-control"
-                                        name="poliza" placeholder="Póliza"></td>
-                                <th colspan="2">Vencimiento:</th>
-                                <td colspan="2"><input type="text" wire:model="vencimiento" class="form-control"
-                                        name="vencimiento" placeholder="Vencimiento"></td>
-                            </tr>
-                        @endmobile
-                        <tr>
-                            <th colspan="4">ITB:</th>
-                            <td colspan="8"><input type="text" wire:model="itb" class="form-control"
-                                    name="itb" placeholder="ITB"></td>
-                        </tr>
-                    </table>
+                            @foreach ($tripulantes as $tripulanteIndex => $tripulante)
+                                <tr>
+                                    <td colspan="5"><input type="text"
+                                            wire:model="tripulantes.{{ $tripulanteIndex }}.nombre"
+                                            class="form-control" name="tripulantes[{{ $tripulanteIndex }}][nombre]"
+                                            placeholder="Nombre del tripulante {{ $tripulanteIndex + 1 }}"></td>
+                                    <td colspan="5"><input type="text"
+                                            wire:model="tripulantes.{{ $tripulanteIndex }}.dni" class="form-control"
+                                            name="tripulantes[{{ $tripulanteIndex }}][dni]"
+                                            placeholder="DNI del tripulante {{ $tripulanteIndex + 1 }}"></td>
+                                    <td colspan="2" class="text-center"><button type="button"
+                                            class="btn btn-danger"
+                                            wire:click="deleteTripulante({{ $tripulanteIndex }})">X</button></td>
+                                </tr>
+                            @endforeach
+
+                        </table>
+                    @endif
                 </div>
             </div>
 
         </div>
         <div class="col-md-3 justify-content-center">
             @notmobile
-            <div class="position-fixed">
-                <div class="card m-b-30">
-                    <div class="card-body">
-                        <h5>Situación de persona</h5>
-                        <div class="row">
-                            <div class="col-12">
-                                <table class="table table-bordered dt-responsive nowrap">
-                                    <tr>
-                                        <td wire:click="cambiarSituacionPersona(0)"
-                                        @if ($situacion_persona == 0) style="background-color: #a2b7cf !important" @endif>
-                                        <h6 style="text-align: center !important">Socio</h6></td>
-                                    </tr>
-                                    <tr>
-                                        <td wire:click="cambiarSituacionPersona(1)"
-                                        @if ($situacion_persona == 1) style="background-color: #a2b7cf !important" @endif>
-                                        <h6 style="text-align: center !important">Transeúnte</h6></td>                                    </tr>
-                                </table>
+                <div class="position-fixed">
+                    <div class="card m-b-30">
+                        <div class="card-body">
+                            <h5>Situación de persona</h5>
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-bordered dt-responsive nowrap">
+                                        <tr>
+                                            <td wire:click="cambiarSituacionPersona(0)"
+                                                @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
+                                                <h6 style="text-align: center !important">Socio</h6>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td wire:click="cambiarSituacionPersona(1)"
+                                                @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                                <h6 style="text-align: center !important">Transeúnte</h6>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 @endnotmobile
                 <div class="card m-b-30">
                     <div class="card-body">
@@ -255,7 +549,7 @@
                     </div>
                 </div>
                 @notmobile
-            </div>
+                </div>
             @endnotmobile
         </div>
         <style>

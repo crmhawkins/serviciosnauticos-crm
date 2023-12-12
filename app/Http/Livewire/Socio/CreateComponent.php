@@ -6,21 +6,29 @@ use App\Models\Socio;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Models\Telefonos;
+use App\Models\NumerosLlave;
+use App\Models\RegistrosEntrada;
+use App\Models\RegistrosEntradaTranseunte;
+use App\Models\TranseunteTripulantes;
 
 class CreateComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
     public $club_id = 1;
-    public $situacion_persona = 1;
-    public $situacion_barco = 1;
+    public $situacion_persona = 0;
+    public $situacion_barco = 0;
     public $numero_socio;
     public $nombre_socio;
     public $dni;
     public $direccion;
-    public $telefono_1;
-    public $telefono_2;
-    public $telefono_3;
+    public $telefonos = [];
+    public $numeros_llave = [];
+    public $tripulantes = [];
+    public $registros_transeunte = [];
+    public $registros_entrada = [];
+    public $registros_barco = [];
     public $email;
     public $pantalan_t_atraque;
     public $nombre_barco;
@@ -28,12 +36,25 @@ class CreateComponent extends Component
     public $eslora;
     public $manga;
     public $calado;
-    public $numero_llave;
     public $seguro_barco;
     public $poliza;
     public $vencimiento;
     public $itb;
     public $ruta_foto;
+    public $ruta_foto2;
+    public $alta_baja = 0; //Alta = 0, Baja = 1
+    public $pin_socio;
+    public $fecha_entrada;
+    public $fecha_entrada_transeunte;
+    public $puntal;
+    public $atraque_fijo;
+
+    public function mount()
+    {
+        $this->telefonos[] = ['telefono' => ''];
+        $this->numeros_llave[] = ['numero_llave' => ''];
+        $this->pin_socio = rand(0, 999999);
+    }
     public function render()
     {
         return view('livewire.socio.create-component');
@@ -51,9 +72,6 @@ class CreateComponent extends Component
                 'nombre_socio' => 'required',
                 'dni' => 'required',
                 'direccion' => 'required',
-                'telefono_1' => 'required',
-                'telefono_2' => 'required',
-                'telefono_3' => 'required',
                 'email' => 'required',
                 'pantalan_t_atraque' => 'required',
                 'nombre_barco' => 'required',
@@ -61,12 +79,15 @@ class CreateComponent extends Component
                 'eslora' => 'required',
                 'manga' => 'required',
                 'calado' => 'required',
-                'numero_llave' => 'required',
                 'seguro_barco' => 'required',
                 'poliza' => 'required',
                 'vencimiento' => 'required',
                 'itb' => 'required',
                 'ruta_foto' => 'required',
+                'ruta_foto2' => 'required',
+                'pin_socio' => 'required',
+                'alta_baja' => 'required',
+                'atraque_fijo' => 'required',
 
             ],
             // Mensajes de error
@@ -78,9 +99,6 @@ class CreateComponent extends Component
                 'nombre_socio.required' => 'required',
                 'dni.required' => 'required',
                 'direccion.required' => 'required',
-                'telefono_1.required' => 'required',
-                'telefono_2.required' => 'required',
-                'telefono_3.required' => 'required',
                 'email.required'  => 'required',
                 'pantalan_t_atraque.required' => 'required',
                 'nombre_barco.required' => 'required',
@@ -88,12 +106,16 @@ class CreateComponent extends Component
                 'eslora.required' => 'required',
                 'manga.required' => 'required',
                 'calado.required' => 'required',
-                'numero_llave.required' => 'required',
                 'seguro_barco.required' => 'required',
                 'poliza.required' => 'required',
                 'vencimiento.required' => 'required',
                 'itb.required' => 'required',
                 'ruta_foto.required' => 'required',
+                'ruta_foto2.required' => 'required',
+                'pin_socio.required' => 'required',
+                'alta_baja.required' => 'required',
+                'atraque_fijo.required' => 'required',
+
             ]
         );
         $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
@@ -101,11 +123,32 @@ class CreateComponent extends Component
         $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
 
         $validatedData['ruta_foto'] = $name;
+
+        $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+
+        $this->ruta_foto2->storePubliclyAs('public', 'photos/' . $name);
+
+        $validatedData['ruta_foto2'] = $name;
         // Guardar datos validados
-        $usuariosSave = Socio::create($validatedData);
+        $socioSave = Socio::create($validatedData);
+        RegistrosEntrada::create(['socio_id' => $socioSave->id, 'fecha_entrada' => $this->fecha_entrada, 'estado' => 0]);
+
+        foreach ($this->telefonos as $telefonoIndex => $telefono) {
+            $nuevo_telefono = Telefonos::create(['socio_id' => $socioSave->id, 'telefono' => $telefono['telefono']]);
+        }
+        foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
+            $nuevo_num_llave = NumerosLlave::create(['socio_id' => $socioSave->id, 'num_llave' => $numero_llave['numero_llave']]);
+        }
+        if($this->situacion_persona == 1){
+            foreach ($this->tripulantes as $tripulanteIndex => $tripulante) {
+                $nuevo_tripulante = TranseunteTripulantes::create(['socio_id' => $socioSave->id, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+            }
+            RegistrosEntradaTranseunte::create(['socio_id' => $socioSave->id, 'fecha_entrada' => $this->fecha_entrada, 'estado' => 0]);
+        }
+
 
         // Alertas de guardado exitoso
-        if ($usuariosSave) {
+        if ($socioSave) {
             $this->alert('success', '¡Socio registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -133,6 +176,56 @@ class CreateComponent extends Component
         $this->situacion_persona = $situacion;
     }
 
+    public function checkAtraque()
+    {
+        $socio = Socio::where('pantalan_t_atraque', 'LIKE', '%' . $this->pantalan_t_atraque . '%')->where('situacion_barco', 1)->first();
+        if($socio != null){
+
+        }
+    }
+
+    public function addTripulante()
+    {
+        $this->tripulantes[] = ['nombre' => '', 'dni' => ''];
+    }
+
+    public function deleteTripulante($id)
+    {
+        if (count($this->tripulantes) <= 0) {
+            $this->alert('warning', 'Añade otro tripulante para eliminar el seleccionado.');
+        } else {
+            unset($this->tripulantes[$id]);
+            $this->tripulantes = array_values($this->tripulantes);
+        }
+    }
+    public function addTelefono()
+    {
+        $this->telefonos[] = ['telefono' => ''];
+    }
+
+    public function deleteTelefono($id)
+    {
+        if (count($this->telefonos) <= 1) {
+            $this->alert('warning', 'Añade otro teléfono para eliminar el seleccionado.');
+        } else {
+            unset($this->telefonos[$id]);
+            $this->telefonos = array_values($this->telefonos);
+        }
+    }
+
+    public function addNumeroLlave()
+    {
+        $this->numeros_llave[] = ['numero_llave' => ''];
+    }
+    public function deleteNumeroLlave($id)
+    {
+        if (count($this->numeros_llave) <= 1) {
+            $this->alert('warning', 'Añade otro nº de llave para eliminar el seleccionado.');
+        } else {
+            unset($this->numeros_llave[$id]);
+            $this->numeros_llave = array_values($this->numeros_llave);
+        }
+    }
     public function alertaGuardar()
     {
         $this->alert('warning', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
@@ -159,7 +252,6 @@ class CreateComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('socio.index');
+        return redirect()->route('socios.index');
     }
-
 }

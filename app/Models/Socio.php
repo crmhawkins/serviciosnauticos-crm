@@ -19,9 +19,6 @@ class Socio extends Model
         'nombre_socio',
         'dni',
         'direccion',
-        'telefono_1',
-        'telefono_2',
-        'telefono_3',
         'email',
         'pantalan_t_atraque',
         'nombre_barco',
@@ -29,12 +26,16 @@ class Socio extends Model
         'eslora',
         'manga',
         'calado',
-        'numero_llave',
+        'puntal',
         'seguro_barco',
         'poliza',
         'vencimiento',
         'itb',
         'ruta_foto',
+        'ruta_foto2',
+        'pin_socio',
+        'alta_baja',
+        'atraque_fijo',
     ];
 
     /**
@@ -54,5 +55,25 @@ class Socio extends Model
     public function notas(): HasMany
     {
         return $this->hasMany(Nota::class, 'socio_id');
+    }
+    public function telefonos(): HasMany
+    {
+        return $this->hasMany(Telefonos::class, 'socio_id');
+    }
+    public function numeros_llave(): HasMany
+    {
+        return $this->hasMany(NumerosLlave::class, 'socio_id');
+    }
+    public function tripulantes(): HasMany
+    {
+        return $this->hasMany(TranseunteTripulantes::class, 'socio_id');
+    }
+    public function registros_entrada(): HasMany
+    {
+        return $this->hasMany(RegistrosEntrada::class, 'socio_id');
+    }
+    public function registros_entradas_transeuntes(): HasMany
+    {
+        return $this->hasMany(RegistrosEntradaTranseunte::class, 'socio_id');
     }
 }

@@ -114,6 +114,7 @@
     <script src="../../assets/js/metismenu.min.js"></script>
     <script src="../../assets/js/jquery.slimscroll.js"></script>
     <script src="../../assets/js/waves.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
 
     <!--Morris Chart-->
     {{-- <script src="../plugins/morris/morris.min.js"></script> --}}

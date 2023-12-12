@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class SocioController extends Controller
+class ClubController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $response = '';
         // $user = Auth::user();
 
-        return view('socio.index', compact('response'));
+        return view('club.index', compact('response'));
     }
 
     /**
@@ -21,7 +26,7 @@ class SocioController extends Controller
      */
     public function create()
     {
-        return view('socio.create');
+        return view('club.create');
 
     }
 
@@ -55,12 +60,7 @@ class SocioController extends Controller
      */
     public function edit($id)
     {
-        return view('socio.edit', compact('id'));
-
-    }
-    public function alta($id)
-    {
-        return view('socio.alta', compact('id'));
+        return view('club.edit', compact('id'));
 
     }
 
@@ -85,4 +85,5 @@ class SocioController extends Controller
     public function destroy($id)
     {
         //
-    }}
+    }
+}

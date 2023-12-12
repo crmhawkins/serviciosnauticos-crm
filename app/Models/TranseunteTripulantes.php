@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Club extends Model
+class TranseunteTripulantes extends Model
 {
     use HasFactory;
-    protected $table = "clubs";
+
+    protected $table = "transeuntes_tripulantes";
 
     protected $fillable = [
+        'socio_id',
         'nombre',
-        'club_logo',
-        'email'
+        'dni',
     ];
 
     /**
@@ -21,8 +22,8 @@ class Club extends Model
      *
      * @var array
      */
+
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
 }
-

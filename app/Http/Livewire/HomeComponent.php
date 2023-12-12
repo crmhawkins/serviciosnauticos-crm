@@ -24,6 +24,7 @@ class HomeComponent extends Component
 
     public function seleccionarClub($id){
         session()->put('clubSeleccionado', $id);
+        session()->put('clubName', Club::find($id)->nombre);
         return redirect()->route('socios.index');
     }
 }

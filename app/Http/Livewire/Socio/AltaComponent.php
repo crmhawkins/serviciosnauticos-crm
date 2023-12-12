@@ -18,7 +18,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
 
-class EditComponent extends Component
+class AltaComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
@@ -71,7 +71,7 @@ class EditComponent extends Component
         $this->notas = Nota::where('socio_id', $this->identificador)->get();
         $this->situacion_barco_old = $socio->situacion_barco;
         $this->situacion_persona = $socio->situacion_persona;
-        $this->situacion_barco = $socio->situacion_barco;
+        $this->situacion_barco = 0;
         $this->numero_socio = $socio->numero_socio;
         $this->nombre_socio = $socio->nombre_socio;
         $this->dni = $socio->dni;
@@ -120,27 +120,15 @@ class EditComponent extends Component
                     ];
                 }
             } else {
-                if ($index % 2 !== 0) {
-                    $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
+                $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
 
-                    $this->registros_entrada[] = [
-                        'fecha_1' => $registro->fecha_entrada,
-                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de varada',
-                        'tiempoAtraque' => $tiempoAtraque,
-                        'estado' => 1,
-                    ];
-                    $tiempoVarada = null;
-                } else {
-                    $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
-
-                    $this->registros_entrada[] = [
-                        'fecha_1' => $registro->fecha_entrada,
-                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de atraque',
-                        'tiempoAtraque' => $tiempoAtraque,
-                        'estado' => 2,
-                    ];
-                    $tiempoVarada = null;
-                }
+                $this->registros_entrada[] = [
+                    'fecha_1' => $registro->fecha_entrada,
+                    'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de alta',
+                    'tiempoAtraque' => $tiempoAtraque,
+                    'estado' => 2,
+                ];
+                $tiempoVarada = null;
             }
         }
 
@@ -183,7 +171,7 @@ class EditComponent extends Component
     }
     public function render()
     {
-        return view('livewire.socio.edit-component');
+        return view('livewire.socio.alta-component');
     }
 
     public function puedeEditar()
@@ -195,222 +183,10 @@ class EditComponent extends Component
             $this->puede_notas = true;
         }
     }
-    public function update()
+
+    public function updateAlta()
     {
-
-        if ($this->situacion_barco_old != $this->situacion_barco) {
-            if ($this->situacion_barco == 0) {
-                if ($this->fecha_entrada != null) {
-                    $ultima_salida = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first()->fecha_salida;
-                    if ($ultima_salida != null) {
-                        $fecha_anterior = new DateTime($ultima_salida);
-                        $fecha_actual = new DateTime($this->fecha_entrada);
-                        if ($fecha_actual > $fecha_anterior) {
-                            RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_entrada,  'estado' => 0]);
-                        } else {
-                            return $this->alert('error', '¡La fecha de entrada indicada es anterior al último registro!');
-                        }
-                    } else {
-                        $socio = Socio::find($this->identificador);
-                        RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first()->update(['fecha_salida' => $socio->updated_at, 'estado' => 1]);
-                        $fecha_anterior = new DateTime($socio->created_at);
-                        $fecha_actual = new DateTime($this->fecha_entrada);
-                        if ($fecha_actual > $fecha_anterior) {
-                            RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_entrada, 'estado' => 0]);
-                        } else {
-                            return $this->alert('error', '¡La fecha de entrada indicada es anterior al último registro!');
-                        }
-                    }
-                } else {
-                    return $this->alert('error', '¡Indica la fecha de entrada del barco!');
-                }
-            } else if ($this->situacion_barco == 1) {
-                if ($this->fecha_entrada != null) {
-                    $ultimo_registro = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
-                    $ultima_entrada = $ultimo_registro->fecha_entrada;
-                    $ultima_salida = $ultimo_registro->fecha_salida;
-                    if ($ultima_entrada != null && $ultima_salida == null) {
-                        $fecha_anterior = new DateTime($ultima_entrada);
-                        $fecha_actual = new DateTime($this->fecha_entrada);
-                        if ($fecha_actual > $fecha_anterior) {
-                            $ultimo_registro->update(['fecha_salida' => $this->fecha_entrada, 'estado' => 1]);
-                        }
-                    }
-                } else {
-                    return $this->alert('error', '¡Indica la fecha de entrada del barco!');
-                }
-            }
-        }
-
-        $camposFaltantes = [];
-
-        $camposRequeridos = [
-            'club_id',
-            'situacion_persona',
-            'situacion_barco',
-            'numero_socio',
-            'nombre_socio',
-            'dni',
-            'direccion',
-            'email',
-            'pantalan_t_atraque',
-            'nombre_barco',
-            'matricula',
-            'eslora',
-            'manga',
-            'calado',
-            'seguro_barco',
-            'poliza',
-            'vencimiento',
-            'itb',
-            'ruta_foto',
-            'ruta_foto2',
-        ];
-        $nombresDescriptivos = [
-            'club_id' => 'ID del Club',
-            'situacion_persona' => 'Situación de persona',
-            'situacion_barco' => 'Situación de barco',
-            'numero_socio' => 'Nº de socio',
-            'nombre_socio' => 'Nombre de socio',
-            'dni' => 'DNI',
-            'direccion' => 'Dirección',
-            'email' => 'Email',
-            'pantalan_t_atraque' => 'Pantalán y Atraque',
-            'nombre_barco' => 'Nombre del barco',
-            'matricula' => 'Matrícula',
-            'eslora' => 'Eslora',
-            'manga' => 'Manga',
-            'calado' => 'Calado',
-            'seguro_barco' => 'Seguro del barco',
-            'poliza' => 'Póliza',
-            'vencimiento' => 'Vencimiento',
-            'itb' => 'ITB',
-            'ruta_foto' => 'Imagen del barco',
-            'ruta_foto2' => 'Imagen del socio',
-        ];
-        foreach ($camposRequeridos as $campo) {
-            if ($this->{$campo} === null) {
-                $camposFaltantes[] = $nombresDescriptivos[$campo] ?? $campo;
-            }
-        }
-
-        if (!empty($camposFaltantes)) {
-            $mensajeError = "Los siguientes campos son obligatorios y están faltantes: " . implode(', ', $camposFaltantes);
-            $this->alert('error', $mensajeError, [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => false,
-            ]);
-            return;
-        }
-
-        $validatedData = $this->validate(
-            [
-                'club_id' => 'required',
-                'situacion_persona' => 'required',
-                'situacion_barco' => 'required',
-                'numero_socio' => 'required',
-                'nombre_socio' => 'required',
-                'dni' => 'required',
-                'direccion' => 'required',
-                'email' => 'required',
-                'pantalan_t_atraque' => 'required',
-                'nombre_barco' => 'required',
-                'matricula' => 'required',
-                'eslora' => 'required',
-                'manga' => 'required',
-                'calado' => 'required',
-                'puntal' => 'nullable',
-                'seguro_barco' => 'required',
-                'poliza' => 'required',
-                'vencimiento' => 'required',
-                'itb' => 'required',
-                'ruta_foto' => 'required',
-
-            ],
-            // Mensajes de error
-            [
-                'club_id.required' => 'required',
-                'situacion_persona.required' => 'required',
-                'situacion_barco.required' => 'required',
-                'numero_socio.required' => 'required',
-                'nombre_socio.required' => 'required',
-                'dni.required' => 'required',
-                'direccion.required' => 'required',
-                'email.required'  => 'required',
-                'pantalan_t_atraque.required' => 'required',
-                'matricula.required' => 'required',
-                'eslora.required' => 'required',
-                'manga.required' => 'required',
-                'calado.required' => 'required',
-                'seguro_barco.required' => 'required',
-                'poliza.required' => 'required',
-                'vencimiento.required' => 'required',
-                'itb.required' => 'required',
-                'ruta_foto.required' => 'required',
-            ]
-        );
-
-        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto) == false) {
-            $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
-
-            $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
-
-            $validatedData['ruta_foto'] = $name;
-        }
-        $socio = Socio::find($this->identificador);
-        $socioSave = $socio->update($validatedData);
-        foreach ($this->telefonos as $telefonoIndex => $telefono) {
-            if (!isset($telefono['id'])) {
-                $nuevo_telefono = Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
-            }
-        }
-        foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
-            if (!isset($numero_llave['id'])) {
-                $nuevo_num_llave = NumerosLlave::create(['socio_id' => $this->identificador, 'num_llave' => $numero_llave['numero_llave']]);
-            }
-        }
-        foreach ($this->telefonos_borrar as $telefonoIndex => $telefono) {
-            if (isset($telefono['id'])) {
-                $telefono_eliminar = Telefonos::find($telefono['id'])->delete();
-            }
-        }
-        foreach ($this->numeros_llave_borrar as $llaveIndex => $numero_llave) {
-            if (isset($numero_llave['id'])) {
-                $nuevo_num_llave = NumerosLlave::find($numero_llave['id'])->delete();
-            }
-        }
-        foreach ($this->tripulantes_borrar as $tripulanteIndex => $tripulante) {
-            if (isset($tripulante['id'])) {
-                $nuevo_tripulante = NumerosLlave::find($numero_llave['id'])->delete();
-            }
-        }
-        // Alertas de guardado exitoso
-        if ($socioSave) {
-            $this->alert('success', '¡Socio actualizado correctamente!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => false,
-            ]);
-        } else {
-            $this->alert('error', '¡No se ha podido guardar la información del socio!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-            ]);
-        }
-    }
-
-    public function updateBaja()
-    {
-        $this->alta_baja = 1;
+        $this->alta_baja = 0;
 
         $camposFaltantes = [];
 
@@ -528,12 +304,19 @@ class EditComponent extends Component
             ]
         );
 
-        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto) == false) {
+        if (!is_string($this->ruta_foto)) {
             $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
 
             $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
 
             $validatedData['ruta_foto'] = $name;
+        }
+        if (!is_string($this->ruta_foto2)) {
+            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+
+            $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
+
+            $validatedData['ruta_foto2'] = $name;
         }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
@@ -564,47 +347,8 @@ class EditComponent extends Component
         }
         $this->validate(['fecha_baja' => 'required']);
 
-        if ($this->situacion_barco == 0) {
-            if ($this->fecha_baja != null) {
-                $ultima_salida = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first()->fecha_salida;
-                if ($ultima_salida != null) {
-                    $fecha_anterior = new DateTime($ultima_salida);
-                    $fecha_actual = new DateTime($this->fecha_baja);
-                    if ($fecha_actual > $fecha_anterior) {
-                        RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_baja, 'fecha_salida' => $this->fecha_baja,  'estado' => 0]);
-                    } else {
-                        return $this->alert('error', '¡La fecha de entrada indicada es anterior al último registro!');
-                    }
-                } else {
-                    $socio = Socio::find($this->identificador);
-                    RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first()->update(['fecha_salida' => $this->fecha_baja, 'estado' => 2]);
-                    $fecha_anterior = new DateTime($socio->created_at);
-                    $fecha_actual = new DateTime($this->fecha_baja);
-                    if ($fecha_actual > $fecha_anterior) {
-                        RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_baja, 'fecha_salida' => $this->fecha_baja, 'estado' => 2]);
-                    } else {
-                        return $this->alert('error', '¡La fecha de entrada indicada es anterior al último registro!');
-                    }
-                }
-            } else {
-                return $this->alert('error', '¡Indica la fecha de entrada del barco!');
-            }
-        } else if ($this->situacion_barco == 1) {
-            if ($this->fecha_entrada != null) {
-                $ultimo_registro = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
-                $ultima_entrada = $ultimo_registro->fecha_entrada;
-                $ultima_salida = $ultimo_registro->fecha_salida;
-                if ($ultima_entrada != null && $ultima_salida == null) {
-                    $fecha_anterior = new DateTime($ultima_entrada);
-                    $fecha_actual = new DateTime($this->fecha_baja);
-                    if ($fecha_actual > $fecha_anterior) {
-                        $ultimo_registro->update(['fecha_salida' => $this->fecha_baja, 'estado' => 2]);
-                    }
-                }
-            } else {
-                return $this->alert('error', '¡Indica la fecha de entrada del barco!');
-            }
-        }
+        RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_baja, 'fecha_salida' => $this->fecha_baja,  'estado' => 0]);
+
 
 
         if ($this->situacion_persona == 1) {
@@ -754,11 +498,11 @@ class EditComponent extends Component
 
     public function alertaBaja()
     {
-        $this->alert('warning', '¿Estás seguro de dar a este socio o transeúnte de baja?.', [
+        $this->alert('warning', '¿Estás seguro de dar a este socio o transeúnte de alta?', [
             'position' => 'center',
             'toast' => false,
             'showConfirmButton' => true,
-            'onConfirmed' => 'updateBaja',
+            'onConfirmed' => 'updateAlta',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
@@ -846,7 +590,7 @@ class EditComponent extends Component
             'alertaEliminar',
             'alertaNota',
             'alertaBaja',
-            'updateBaja',
+            'updateAlta',
             'guardarNota',
             'guardarNotaEdit',
             'destroy',

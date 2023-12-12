@@ -10,29 +10,7 @@
                     <li>
                         <h5 style="text-align: center; color: #fff !important">
                             @if (session()->has('clubSeleccionado'))
-                                @switch(session('clubSeleccionado'))
-                                    @case(1)
-                                        CLUB DEPORTIVO NÁUTICO SALADILLO
-                                    @break
-
-                                    @case(2)
-                                        ROSA DE LOS VIENTOS
-                                    @break
-
-                                    @case(3)
-                                        SOCIEDAD DEL PARGO
-                                    @break
-
-                                    @case(4)
-                                        SOCIEDAD DEL MERO
-                                    @break
-
-                                    @case(5)
-                                        REAL CLUB NÁUTICO ALGECIRAS
-                                    @break
-
-                                    @default
-                                @endswitch
+                                {{ strtoupper(session('clubName')) }}
                             @else
                                 SELECCIONA UN CLUB
                             @endif
@@ -49,6 +27,10 @@
                     <a href="/admin/socios" class="waves-effect"><i class="fas fa-ship"></i><span> Socios </span></a>
                 </li>
                 @if ($user->role == 1)
+                    <li>
+                        <a href="/admin/club" class="waves-effect"><i class="fas fa-users"></i><span> Club
+                            </span></a>
+                    </li>
                     <li>
                         <a href="/admin/usuarios" class="waves-effect"><i class="fas fa-user"></i><span> Usuarios
                             </span></a>
@@ -69,7 +51,9 @@
 
 
                 <style>
-                    .enlarged .side-menu h5 {display: none;}
+                    .enlarged .side-menu h5 {
+                        display: none;
+                    }
                 </style>
 
 

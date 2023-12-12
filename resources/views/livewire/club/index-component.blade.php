@@ -33,53 +33,34 @@
     <div class="row">
         <div class="col-12">
             <div class="card m-b-30">
-                <div class="card-body row">
-                    <div class="col-md-12 mb-3" wire:ignore.self>
-                        <div x-init="$nextTick(() => {
-                            $('#vista').select2();
-                            $('#vista').on('change', function(e) {
-                                var data = $('#vista').select2('val');
-                                @this.set('vista', data);
-                                @this.emit('cambiarVista');
-                                console.log(data);
-                            });
-                        });" wire:key='{{ time() . 'juanito' }}'>
-                            <label for="vista">Listado a seleccionar</label>
-                            <select wire:model="vista" id="vista" class="form-control w-100 MB">
-                                <option value="1">Socios y transeúntes en alta</option>
-                                <option value="2">Socios y transeúntes en atraque</option>
-                                <option value="3">Socios y transeúntes en varada</option>
-                                <option value="4">Socios en baja</option>
-                                <option value="5">Transeúntes en baja</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    @switch($vista)
-                        @case(1)
-                            @livewire('socio.tabla-component', ['vista' => $vista]);
-                        @break
-
-                        @case(2)
-                            @livewire('socio.tabla-component', ['vista' => $vista]);
-                        @break
-
-                        @case(3)
-                            @livewire('socio.tabla-component', ['vista' => $vista]);
-                        @break
-
-                        @case(4)
-                            @livewire('socio.tabla-component', ['vista' => $vista]);
-                        @break
-
-                        @case(5)
-                            @livewire('socio.tabla-component', ['vista' => $vista]);
-                        @break
-
-                        @default
-                    @endswitch ($vista)
-
-                    <a href="socios-create" class="btn btn-lg btn-primary">Añadir socio al club</a>
+                <div class="card-body">
+                    @if (count($clubes) > 0)
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Logo</th>
+                                    <th scope="col">Nombre del club</th>
+                                    <th scope="col">Email del club</th>
+                                    <th scope="col">Editar club</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($clubes as $club)
+                                    <tr>
+                                        <td width="10%"><img src="{{ asset('storage/assets/images/' . $club->club_logo) }}" width="90%"></td>
+                                        <td width="40%"><h4>{{ $club->nombre }}</h4></td>
+                                        <td width="40%">{{ $club->email }}</td>
+                                        <td width="10%"> <a href="club-edit/{{ $club->id }}"
+                                                class="btn btn-primary">Ver/Editar</a> </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <h6 class="text-center">No se encuentran socios disponibles</h6>
+                    @endif
+                    <a href="socios-create" class="btn btn-lg btn-primary">Añadir nuevo club</a>
 
                 </div>
             </div>
@@ -158,4 +139,5 @@
     <!-- Responsive examples -->
     <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
     <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="../assets/pages/datatables.init.js"></script>
 @endsection
