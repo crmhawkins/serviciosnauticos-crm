@@ -48,7 +48,7 @@
                             <tbody>
                                 @foreach ($clubes as $club)
                                     <tr>
-                                        <td width="10%"><img src="{{ asset('storage/assets/images/' . $club->club_logo) }}" width="90%"></td>
+                                        <td width="10%"><img src="{{ asset('assets/images/' . $club->club_logo) }}" width="90%"></td>
                                         <td width="40%"><h4>{{ $club->nombre }}</h4></td>
                                         <td width="40%">{{ $club->email }}</td>
                                         <td width="10%"> <a href="club-edit/{{ $club->id }}"

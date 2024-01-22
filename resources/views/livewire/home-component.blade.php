@@ -15,7 +15,7 @@
                         <button type="button" class="btn"
                             wire:click.prevent="seleccionarClub('{{ $club->id }}')">
                             <h3 style="text-align: center !important">{{ $club->nombre }}</h3>
-                            <img src='{{ asset('storage/assets/images/' . $club->club_logo) }}' width="50%">
+                            <img src='{{ asset('assets/images/' . $club->club_logo) }}' width="50%">
                         </button>
                     </div>
                 </div>

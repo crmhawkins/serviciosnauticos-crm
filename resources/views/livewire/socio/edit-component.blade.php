@@ -212,13 +212,13 @@
                                         <tr>
                                             <th colspan="3">Llave {{ $llaveIndex + 1 }}:</th>
                                             <td colspan="7"><input type="text"
-                                                    wire:model="numeros_llave.{{ $llaveIndex }}.llaveIndex"
+                                                    wire:model="numeros_llave.{{ $llaveIndex }}.numero_llave"
                                                     class="form-control"
-                                                    name="numeros_llave[{{ $llaveIndex }}][llaveIndex]"
+                                                    name="numeros_llave[{{ $llaveIndex }}][numero_llave]"
                                                     placeholder="Nº de llave {{ $llaveIndex + 1 }}"></td>
                                             <td colspan="2" class="text-center"><button type="button"
                                                     class="btn btn-danger"
-                                                    wire:click="deleteNumeroLlave({{ $telefonoIndex }})">X</button>
+                                                    wire:click="deleteNumeroLlave({{ $llaveIndex }})">X</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -456,9 +456,9 @@
                                         <tr>
                                             <th colspan="3">Nº de llave {{ $llaveIndex + 1 }}:</th>
                                             <td colspan="7"><input type="text"
-                                                    wire:model="numeros_llave.{{ $llaveIndex }}.llaveIndex"
+                                                    wire:model="numeros_llave.{{ $llaveIndex }}.numero_llave"
                                                     class="form-control"
-                                                    name="numeros_llave[{{ $llaveIndex }}][llaveIndex]"
+                                                    name="numeros_llave[{{ $llaveIndex }}][numero_llave]"
                                                     placeholder="Nº de llave {{ $llaveIndex + 1 }}"></td>
                                             <td colspan="2" class="text-center"><button type="button"
                                                     class="btn btn-danger"

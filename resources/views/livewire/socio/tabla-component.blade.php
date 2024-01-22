@@ -43,7 +43,13 @@
                                 <td>{{ $socio->matricula }}</td>
                                 <td>{{ $socio->nombre_barco }}</td>
                                 <td>{{ $socio->nombre_socio }}</td>
-                                <td>{{ $socio->telefono_1 }}</td>
+                                <td>
+                                    @if($socio->telefonos->first())
+                                    {{ $socio->telefonos->first()->telefono }}
+                                    @else
+                                    Sin telefono definido
+                                    @endif
+                                </td>
                                 <td>
                                     @if ($socio->situacion_persona == 0)
                                         Socio

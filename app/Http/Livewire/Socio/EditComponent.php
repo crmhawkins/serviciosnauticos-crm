@@ -85,8 +85,8 @@ class EditComponent extends Component
             $this->telefonos[] = ['telefono' => ''];
         }
         if ($socio->numeros_llave()->count() > 0) {
-            foreach ($socio->numeros_llave as $numero_llave) {
-                $this->numeros_llave[] = ['id' => $numero_llave->id, 'numero_llave' => $numero_llave->numero_llave];
+           foreach ($socio->numeros_llave as $numero_llave) {
+                $this->numeros_llave[] = ['id' => $numero_llave->id, 'numero_llave' => $numero_llave->num_llave];
             }
         } else {
             $this->numeros_llave[] = ['numero_llave' => ''];
@@ -361,6 +361,13 @@ class EditComponent extends Component
 
             $validatedData['ruta_foto'] = $name;
         }
+        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto2) == false) {
+            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+
+            $this->ruta_foto2->storePubliclyAs('public', 'photos/' . $name);
+
+            $validatedData['ruta_foto2'] = $name;
+        }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
@@ -534,6 +541,13 @@ class EditComponent extends Component
             $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
 
             $validatedData['ruta_foto'] = $name;
+        }
+        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto2) == false) {
+            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+
+            $this->ruta_foto2->storePubliclyAs('public', 'photos/' . $name);
+
+            $validatedData['ruta_foto2'] = $name;
         }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
