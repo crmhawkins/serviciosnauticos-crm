@@ -54,7 +54,7 @@
                                     </div>
                                 @else
                                 <div class="col-sm-10">
-                                    <img src="{{ asset('storage/assets/images/' . $ruta_foto) }}"
+                                    <img src="{{ asset('assets/images/' . $ruta_foto) }}"
                                         style="max-width: 50% !important; text-align: center">
                                 </div>
                                 @endif

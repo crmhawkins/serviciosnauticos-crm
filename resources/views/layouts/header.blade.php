@@ -10,13 +10,13 @@
                 @if (session()->has('clubSeleccionado'))
                     <span class="logo-light">
                         <img class="img-fluid p-4"
-                            src="{{ asset('storage/assets/images/logo_club' . session('clubSeleccionado') . '.png') }}"
+                            src="{{ asset('assets/images/logo_club' . session('clubSeleccionado') . '.png') }}"
                             alt="Logo La Fabrica">
                         {{-- <i class="mdi mdi-camera-control"></i> La Fabrica --}}
                     </span>
                     <span class="logo-sm">
                         <img class="img-fluid p-1"
-                            src="{{ asset('storage/assets/images/logo_club' . session('clubSeleccionado') . '.png') }}"
+                            src="{{ asset('assets/images/logo_club' . session('clubSeleccionado') . '.png') }}"
                             alt="Logo La Fabrica">
                     </span>
                 @else
@@ -39,13 +39,13 @@
                 @if (session()->has('clubSeleccionado'))
                     <span class="logo-light">
                         <img class="img-fluid p-4"
-                            src="{{ asset('storage/assets/images/logo_club' . session('clubSeleccionado') . '.png') }}" width="85%"
+                            src="{{ asset('assets/images/logo_club' . session('clubSeleccionado') . '.png') }}" width="85%"
                             alt="Logo La Fabrica">
                         {{-- <i class="mdi mdi-camera-control"></i> La Fabrica --}}
                     </span>
                     <span class="logo-sm">
                         <img class="img-fluid p-1"
-                            src="{{ asset('storage/assets/images/logo_club' . session('clubSeleccionado') . '.png') }}" width="85%"
+                            src="{{ asset('assets/images/logo_club' . session('clubSeleccionado') . '.png') }}" width="85%"
                             alt="Logo La Fabrica">
                     </span>
                 @else

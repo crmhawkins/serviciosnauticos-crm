@@ -60,7 +60,7 @@
                     @else
                         <h6 class="text-center">No se encuentran socios disponibles</h6>
                     @endif
-                    <a href="socios-create" class="btn btn-lg btn-primary">Añadir nuevo club</a>
+                    <a href="club-create" class="btn btn-lg btn-primary">Añadir nuevo club</a>
 
                 </div>
             </div>
