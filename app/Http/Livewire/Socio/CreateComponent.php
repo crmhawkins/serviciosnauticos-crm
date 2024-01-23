@@ -120,13 +120,13 @@ class CreateComponent extends Component
         );
         $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
 
-        $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
+        $this->ruta_foto->storePubliclyAs('storage/photos/', $name);
 
         $validatedData['ruta_foto'] = $name;
 
         $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-        $this->ruta_foto2->storePubliclyAs('public', 'photos/' . $name);
+        $this->ruta_foto2->storePubliclyAs('storage/photos/', $name);
 
         $validatedData['ruta_foto2'] = $name;
         // Guardar datos validados

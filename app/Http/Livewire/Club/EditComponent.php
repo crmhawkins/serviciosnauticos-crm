@@ -37,7 +37,7 @@ class EditComponent extends Component
 
             $name = 'logo_club' . $this->identificador . '.png';
 
-            $this->ruta_foto->storePubliclyAs('public', 'assets/images/' . $name);
+            $this->ruta_foto->storePubliclyAs('assets','images/' . $name);
 
             $this->club_logo = $name;
         }

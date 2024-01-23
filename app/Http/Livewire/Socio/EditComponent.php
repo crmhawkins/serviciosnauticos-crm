@@ -354,17 +354,17 @@ class EditComponent extends Component
             ]
         );
 
-        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto) == false) {
+        if (Storage::disk('public')->exists('storage/photos/' . $this->ruta_foto) == false) {
             $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
 
-            $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
+            $this->ruta_foto->storePubliclyAs('storage/photos/',  $name);
 
             $validatedData['ruta_foto'] = $name;
         }
-        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto2) == false) {
+        if (Storage::disk('public')->exists('storage/photos/' . $this->ruta_foto2) == false) {
             $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-            $this->ruta_foto2->storePubliclyAs('public', 'photos/' . $name);
+            $this->ruta_foto2->storePubliclyAs('storage/photos/', $name);
 
             $validatedData['ruta_foto2'] = $name;
         }

@@ -44,7 +44,7 @@ class CreateComponent extends Component
 
         $name = 'logo_club' . $clubSave->id . '.png';
 
-        $this->ruta_foto->storePubliclyAs('public', 'assets/images/' . $name);
+        $this->ruta_foto->storePubliclyAs('assets','images/' . $name);
 
         $clubSave->update(['club_logo' => $name]);
 
