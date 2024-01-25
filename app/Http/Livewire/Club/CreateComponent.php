@@ -28,7 +28,7 @@ class CreateComponent extends Component
             [
                 'club_logo' => 'required',
                 'nombre' => 'required',
-                'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+                'email' => ['nullable', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
 
             ],
             // Mensajes de error
