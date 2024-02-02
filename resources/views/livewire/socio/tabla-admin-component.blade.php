@@ -64,7 +64,26 @@
                                 <td>{{ $socio->matricula }}</td>
                                 @endnotmobile
                                 @mobile
-                                <th scope="col">{{ $socio->pantalan_t_atraque }} - {{ $socio->matricula }}</th>
+                                <th scope="col">
+                                    @switch($socio->club_id)
+                                    @case(1)
+                                        SL
+                                        @break
+                                    @case(2)
+                                        RS
+                                        @break
+                                    @case(3)
+                                        PR
+                                        @break
+                                    @case(4)
+                                        MR
+                                        @break
+                                    @case(5)
+                                        RL
+                                        @break
+                                    @default
+                                @endswitch
+                                - {{ $socio->pantalan_t_atraque }} - {{ $socio->matricula }}</th>
                                 @endmobile
                                 <td>{{ $socio->nombre_barco }}</td>
                                 <td>{{ $socio->nombre_socio }}</td>

@@ -32,20 +32,27 @@
                                 <thead>
                                     <tr>
                                         <th colspan="12">
-                                            <h5 class="text-center" style="vertical-align: top !important;">Subir foto del
-                                                barco
-                                            </h5>
+                                            <h5 class="text-center" style="vertical-align: top !important;">Subir foto del barco</h5>
                                         </th>
                                     </tr>
                                     <tr>
                                         <th colspan="12">
-                                            @if ($ruta_foto)
-                                                <div class="mb-3 row d-flex justify-content-center">
-                                                    <div class="col text-center">
-                                                        <img src="{{ $ruta_foto->temporaryUrl() }}"
-                                                            style="max-width: 50% !important; height: auto;">
+                                            @if (isset($ruta_foto))
+                                                @if (!is_string($ruta_foto))
+                                                    <div class="mb-3 row d-flex justify-content-center">
+                                                        <div class="col text-center">
+                                                            <img src="{{ $ruta_foto->temporaryUrl() }}"
+                                                                style="max-width: 50% !important; height: auto;">
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="mb-3 row d-flex justify-content-center">
+                                                        <div class="col text-center">
+                                                            <img src="{{ asset('assets/images/' . $ruta_foto) }}"
+                                                                style="max-width: 50% !important; height: auto;">
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             @endif
                                             <div class="mb-3 row d-flex align-items-center">
                                                 <div class="col-sm-12">
@@ -68,13 +75,22 @@
                                     </tr>
                                     <tr>
                                         <th colspan="12">
-                                            @if ($ruta_foto2)
+                                            @if (isset($ruta_foto2))
+                                            @if (!is_string($ruta_foto2))
                                                 <div class="mb-3 row d-flex justify-content-center">
-                                                    <div class="col">
+                                                    <div class="col text-center">
                                                         <img src="{{ $ruta_foto2->temporaryUrl() }}"
-                                                            style="max-width: 100% !important; height: auto; text-align: center">
+                                                            style="max-width: 50% !important; height: auto;">
                                                     </div>
                                                 </div>
+                                            @else
+                                                <div class="mb-3 row d-flex justify-content-center">
+                                                    <div class="col text-center">
+                                                        <img src="{{ asset('assets/images/' . $ruta_foto2) }}"
+                                                            style="max-width: 50% !important; height: auto;">
+                                                    </div>
+                                                </div>
+                                            @endif
                                             @endif
                                             <div class="mb-3 row d-flex align-items-center">
                                                 <div class="col-sm-12">
@@ -97,7 +113,7 @@
                                         </td>
                                         <td colspan="6" wire:click="cambiarSituacionBarco(1)"
                                             @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
-                                            <h6 style="text-align: center !important">Barco en varada</h6>
+                                            <h6 style="text-align: center !important">Barco en varada/Fuera</h6>
                                         </td>
                                     </tr>
                                     <tr>
@@ -272,7 +288,7 @@
                                                 @else
                                                     <div class="mb-3 row d-flex justify-content-center">
                                                         <div class="col text-center">
-                                                            <img src="{{ asset('storage/photos/' . $ruta_foto) }}"
+                                                            <img src="{{ asset('assets/images/' . $ruta_foto) }}"
                                                                 style="max-width: 50% !important; height: auto;">
                                                         </div>
                                                     </div>
@@ -301,7 +317,7 @@
                                                 @else
                                                     <div class="mb-3 row d-flex justify-content-center">
                                                         <div class="col text-center">
-                                                            <img src="{{ asset('storage/photos/' . $ruta_foto2) }}"
+                                                            <img src="{{ asset('assets/images/' . $ruta_foto2) }}"
                                                                 style="max-width: 50% !important; height: auto;">
                                                         </div>
                                                     </div>
@@ -346,7 +362,7 @@
                                         </td>
                                         <td colspan="6" wire:click="cambiarSituacionBarco(1)"
                                             @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
-                                            <h6 style="text-align: center !important">Barco en varada</h6>
+                                            <h6 style="text-align: center !important">Barco en varada/Fuera</h6>
                                         </td>
                                     </tr>
                                     @if ($situacion_barco != $situacion_barco_old)
@@ -538,7 +554,7 @@
                                             <div class="mb-3 row d-flex justify-content-center">
                                                 <div class="col text-center">
                                                     @if (is_string($ruta_foto))
-                                                        <img src="{{ asset('storage/photos/' . $ruta_foto) }}"
+                                                        <img src="{{ asset('assets/images/' . $ruta_foto) }}"
                                                             style="max-height: 30vh !important; text-align: center">
                                                     @else
                                                         <img src="{{ $ruta_foto->temporaryUrl() }}"
@@ -563,15 +579,46 @@
                                     &nbsp;</td>
                             </tr>
                             <tr>
-                                <td colspan="6"
+                                <td colspan="6" wire:click="cambiarSituacionBarco(0)"
                                     @if ($situacion_barco == 0) style="background-color: #3b996d !important" @endif>
                                     <h6 style="text-align: center !important">Barco en atraque</h6>
                                 </td>
-                                <td colspan="6"
+                                <td colspan="6" wire:click="cambiarSituacionBarco(1)"
                                     @if ($situacion_barco == 1) style="background-color: #dc3545 !important" @endif>
-                                    <h6 style="text-align: center !important">Barco en varada</h6>
+                                    <h6 style="text-align: center !important">Barco en varada/Fuera</h6>
                                 </td>
                             </tr>
+                            @if ($situacion_barco != $situacion_barco_old)
+                            @if ($situacion_barco == 0)
+                                <tr>
+                                    <th colspan="4">Fecha de entrada:</th>
+                                    <td colspan="8"><input type="date" wire:model="fecha_entrada"
+                                            class="form-control" name="fecha_entrada"
+                                            placeholder="Fecha de entrada"></td>
+                                </tr>
+                            @elseif($situacion_barco == 1)
+                                @if (is_null($this->ultimo_registroverif))
+                                <tr>
+                                    <th colspan="2">Fecha de entrada:</th>
+                                    <td colspan="4"><input type="date" wire:model="fecha_entrada_barco"
+                                            class="form-control" name="fecha_entrada"
+                                            placeholder="Fecha de entrada"></td>
+                                    <th colspan="2">Fecha de salida:</th>
+                                    <td colspan="4"><input type="date" wire:model="fecha_entrada"
+                                            class="form-control" name="fecha_entrada"
+                                            placeholder="Fecha de salida"></td>
+                                </tr>
+
+                                @else
+                                <tr>
+                                    <th colspan="4">Fecha de salida:</th>
+                                    <td colspan="8"><input type="date" wire:model="fecha_entrada"
+                                            class="form-control" name="fecha_entrada"
+                                            placeholder="Fecha de salida"></td>
+                                </tr>
+                                @endif
+                            @endif
+                        @endif
                             @mobile
                                 <tr>
                                     <td colspan="6"
@@ -615,14 +662,14 @@
                                 </tr>
                             @endmobile
 
-                            <tr>
+                            {{-- <tr>
                                 <th colspan="4">DNI:</th>
                                 <td colspan="8">{{ $dni }}</td>
                             </tr>
                             <tr>
                                 <th colspan="4">Dirección:</th>
                                 <td colspan="8">{{ $direccion }}</td>
-                            </tr>
+                            </tr> --}}
                             @foreach ($telefonos as $telefonoIndex => $telefono)
                                 <tr>
                                     <th colspan="4">Teléfono {{ $telefonoIndex + 1 }}:</th>
@@ -664,15 +711,19 @@
                                             <th>Fecha</th>
                                             <th>Descripción</th>
                                             <th>Usuario</th>
-                                            <th>Editar</th>
                                         </tr>
                                         @foreach ($notas as $nota)
-                                            <li>{{ date_format(date_create($nota->fecha), 'd/m/Y') }}:
-                                                {{ $nota->descripcion }}</li>
+                                        <tr>
+                                        <td> {{ date_format(date_create($nota->fecha), 'd/m/Y') }}</td>
+                                        <td> {{ $nota->descripcion }}</td>
+                                        <td> {{ $this->getNombre($nota->user_id)}}</td>
+                                        </tr>
                                         @endforeach
+
+
                                     </table>
                                     @if ($puede_notas == true)
-                                        <button type="button" class="btn btn-primary w-100" data-toggle="modal"
+                                        <button type="button" class="btn btn-primary w-100 mt-2" data-toggle="modal"
                                             style="align-self: end !important;"
                                             data-target="#modal-create">Añadir</button>
                                     @endif
@@ -771,7 +822,7 @@
                                         @if (isset($registro['estado']))
                                             @if ($registro['estado'] == 1)
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                    ({{ $registro['tiempoAtraque'] }} días de varada)</h6>
+                                                    ({{ $registro['tiempoAtraque'] }} días en varada/fuera)</h6>
                                             @else
                                             <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
                                                 ({{ $registro['tiempoAtraque'] }} días de atraque)</h6>
@@ -779,7 +830,7 @@
                                         @else
                                             @if ($registroIndex % 2 !== 0)
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                    ({{ $registro['tiempoVarada'] }} días en varada)</h6>
+                                                    ({{ $registro['tiempoVarada'] }} días en varada/fuera)</h6>
                                             @else
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
                                                     ({{ $registro['tiempoAtraque'] }} días en atraque)</h6>
@@ -808,7 +859,7 @@
                                     @foreach ($registros_entrada_transeunte as $registroIndex => $registro)
                                         @if ($registroIndex % 2 !== 0)
                                             <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                ({{ $registro['tiempoVarada'] }} días en varada)
+                                                ({{ $registro['tiempoVarada'] }} días en varada/fuera)
                                             </h6>
                                         @else
                                             <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
@@ -881,7 +932,7 @@
                     </div>
                     <div class="card mb-2">
                         <div class="card-body">
-                            <h6>Opciones misceláneas</h6>
+                            <h6>Acciones</h6>
                             <div class="row">
                                 <div class="col-12">
                                     <button class="w-100 btn btn-success mb-2" id="btnRegistros" data-toggle="modal"
@@ -893,8 +944,7 @@
                                     @endif
                                     @if ($puede_editar == true)
                                         <button class="w-100 btn btn-danger mb-2" id="btnBaja" data-toggle="modal"
-                                            data-target="#modal-baja">Dar
-                                            de baja</button>
+                                            data-target="#modal-baja">Dar de baja</button>
                                     @endif
                                 </div>
                             </div>
@@ -906,10 +956,10 @@
                         <h6>Opciones de guardado</h6>
                         <div class="row">
                             <div class="col-12">
-                                @if ($puede_editar == true)
-                                    <button class="w-100 btn btn-success mb-2"
+                                <button class="w-100 btn btn-success mb-2"
                                         wire:click.prevent="alertaGuardar">Guardar
                                         datos de socio</button>
+                                @if ($puede_editar == true)
                                     <button class="w-100 btn btn-danger mb-2"
                                         wire:click.prevent="alertaEliminar">Eliminar
                                         datos de socio</button>

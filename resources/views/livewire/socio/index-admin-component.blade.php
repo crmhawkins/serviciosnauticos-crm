@@ -69,23 +69,23 @@
 
                     @switch($vista)
                         @case(1)
-                            @livewire('socio.tabla-component', ['vista' => $vista])
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
 
                         @case(2)
-                            @livewire('socio.tabla-component', ['vista' => $vista])
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
 
                         @case(3)
-                            @livewire('socio.tabla-component', ['vista' => $vista])
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
 
                         @case(4)
-                            @livewire('socio.tabla-component', ['vista' => $vista])
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
 
                         @case(5)
-                            @livewire('socio.tabla-component', ['vista' => $vista])
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
 
                         @default

@@ -24,7 +24,7 @@
 
                             <div class="form-group row">
                                 <div class="col-sm-6">
-                                    <label for="name" class="col-sm-12 col-form-label">Nombre </label>
+                                    <label for="name" class="col-sm-12 col-form-label">Alias  </label>
                                     <div class="col-sm-10">
                                         <input type="text" wire:model.defer="name" class="form-control"
                                             name="name" id="name" placeholder="José Carlos...">
@@ -35,7 +35,7 @@
                                 </div>
 
                                 <div class="col-sm-6">
-                                    <label for="surname" class="col-sm-12 col-form-label">Apellidos </label>
+                                    <label for="surname" class="col-sm-12 col-form-label">Nombre Completo </label>
                                     <div class="col-sm-10">
                                         <input type="text" wire:model.defer="surname" class="form-control"
                                             name="surname" id="surname" placeholder="Pérez...">

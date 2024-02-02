@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\Club;
 use App\Models\UserClub;
+use App\Models\User;
 
 class HomeComponent extends Component
 {
@@ -26,5 +27,19 @@ class HomeComponent extends Component
         session()->put('clubSeleccionado', $id);
         session()->put('clubName', Club::find($id)->nombre);
         return redirect()->route('socios.index');
+    }
+    public function aceptarProteccion()
+    {
+        $userid = Auth::user()->id;
+        $user= User::find($userid);
+        $user->proteccion = true;
+        $user->save();
+        $this->redirectRoute('home');
+    }
+
+    public function rechazarProteccion()
+    {
+        Auth::logout();
+        return redirect()->route('login');
     }
 }

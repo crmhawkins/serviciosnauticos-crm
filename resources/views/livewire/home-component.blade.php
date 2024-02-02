@@ -22,4 +22,28 @@
             </div>
         @endforeach
     </div>
+@if (is_null(Auth::user()->proteccion))
+    <div class="modal" id="proteccionDatosModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ley de Protección de Datos</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Texto sobre la ley de protección de datos...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" wire:click="aceptarProteccion">Aceptar</button>
+                    <button type="button" class="btn btn-secondary" wire:click="rechazarProteccion">Rechazar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('livewire:load', function() {
+            $('#proteccionDatosModal').modal('show');
+        });
+    </script>
+@endif
 </div>

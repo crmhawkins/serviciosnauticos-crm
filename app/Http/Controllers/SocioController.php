@@ -13,7 +13,13 @@ class SocioController extends Controller
 
         return view('socio.index', compact('response'));
     }
+    public function indexadmin()
+    {
+        $response = '';
+        // $user = Auth::user();
 
+        return view('socio.indexadmin', compact('response'));
+    }
     /**
      * Show the form for creating a new resource.
      *

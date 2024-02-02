@@ -35,6 +35,10 @@
                         <a href="/admin/usuarios" class="waves-effect"><i class="fas fa-user"></i><span> Usuarios
                             </span></a>
                     </li>
+                    <li>
+                        <a href="/admin/socios-todos" class="waves-effect"><i class="fas fa-users"></i><span> Todos los Socios
+                            </span></a>
+                    </li>
                 @endif
 
 

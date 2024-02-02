@@ -23,7 +23,7 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Alias</th>
                                     <th scope="col">Username</th>
                                     <th scope="col">Rol</th>
                                     <th scope="col">Email</th>

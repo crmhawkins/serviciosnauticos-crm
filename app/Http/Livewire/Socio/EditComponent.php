@@ -23,7 +23,7 @@ class EditComponent extends Component
     use LivewireAlert;
     use WithFileUploads;
     public $identificador;
-    public $club_id = 1;
+    public $club_id;
     public $situacion_persona;
     public $situacion_barco_old;
     public $situacion_barco;
@@ -55,6 +55,7 @@ class EditComponent extends Component
     public $puntal;
     public $fecha_nota;
     public $fecha_entrada;
+    public $fecha_entrada_barco;
     public $fecha_baja;
 
     public $texto_nota;
@@ -64,9 +65,13 @@ class EditComponent extends Component
     public $registros_entrada_transeunte = [];
     public $puede_editar = false;
     public $puede_notas = false;
+    public $ultimo_registroverif;
+
 
     public function mount()
     {
+        $this->ultimo_registroverif = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
+        $this->club_id=session()->get('clubSeleccionado');
         $socio = Socio::find($this->identificador);
         $this->notas = Nota::where('socio_id', $this->identificador)->get();
         $this->situacion_barco_old = $socio->situacion_barco;
@@ -191,9 +196,17 @@ class EditComponent extends Component
         if (Auth::user()->role == 1 || Auth::user()->role == 2) {
             $this->puede_editar = true;
         }
-        if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3) {
+        if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3 || Auth::user()->role == 4) {
             $this->puede_notas = true;
         }
+    }
+
+    public function getNombre($id)
+    {
+        $usuario = User::find($id);
+
+        return $usuario->name;
+
     }
     public function update()
     {
@@ -227,13 +240,18 @@ class EditComponent extends Component
             } else if ($this->situacion_barco == 1) {
                 if ($this->fecha_entrada != null) {
                     $ultimo_registro = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
-                    $ultima_entrada = $ultimo_registro->fecha_entrada;
-                    $ultima_salida = $ultimo_registro->fecha_salida;
-                    if ($ultima_entrada != null && $ultima_salida == null) {
-                        $fecha_anterior = new DateTime($ultima_entrada);
-                        $fecha_actual = new DateTime($this->fecha_entrada);
-                        if ($fecha_actual > $fecha_anterior) {
-                            $ultimo_registro->update(['fecha_salida' => $this->fecha_entrada, 'estado' => 1]);
+                    if(is_null($ultimo_registro)){
+                        $ultima_entrada = $this->fecha_entrada_barco;
+                        RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_entrada_barco ,'fecha_salida' => $this->fecha_entrada , 'estado' => 1]);
+                    }else{
+                        $ultima_entrada = $ultimo_registro->fecha_entrada;
+                        $ultima_salida = $ultimo_registro->fecha_salida;
+                        if ($ultima_entrada != null && $ultima_salida == null) {
+                            $fecha_anterior = new DateTime($ultima_entrada);
+                            $fecha_actual = new DateTime($this->fecha_entrada);
+                            if ($fecha_actual > $fecha_anterior) {
+                                $ultimo_registro->update(['fecha_salida' => $this->fecha_entrada, 'estado' => 1]);
+                            }
                         }
                     }
                 } else {
@@ -248,50 +266,24 @@ class EditComponent extends Component
             'club_id',
             'situacion_persona',
             'situacion_barco',
-            'numero_socio',
             'nombre_socio',
-            'dni',
-            'direccion',
-            'email',
-            'pantalan_t_atraque',
-            'nombre_barco',
-            'matricula',
-            'eslora',
-            'manga',
-            'calado',
-            'seguro_barco',
-            'poliza',
-            'vencimiento',
-            'itb',
-            'ruta_foto',
-            'ruta_foto2',
+
         ];
         $nombresDescriptivos = [
             'club_id' => 'ID del Club',
             'situacion_persona' => 'Situación de persona',
             'situacion_barco' => 'Situación de barco',
-            'numero_socio' => 'Nº de socio',
             'nombre_socio' => 'Nombre de socio',
-            'dni' => 'DNI',
-            'direccion' => 'Dirección',
-            'email' => 'Email',
-            'pantalan_t_atraque' => 'Pantalán y Atraque',
-            'nombre_barco' => 'Nombre del barco',
-            'matricula' => 'Matrícula',
-            'eslora' => 'Eslora',
-            'manga' => 'Manga',
-            'calado' => 'Calado',
-            'seguro_barco' => 'Seguro del barco',
-            'poliza' => 'Póliza',
-            'vencimiento' => 'Vencimiento',
-            'itb' => 'ITB',
-            'ruta_foto' => 'Imagen del barco',
-            'ruta_foto2' => 'Imagen del socio',
+
         ];
         foreach ($camposRequeridos as $campo) {
             if ($this->{$campo} === null) {
                 $camposFaltantes[] = $nombresDescriptivos[$campo] ?? $campo;
             }
+        }
+
+        if (empty($this->telefonos[0]['telefono'])) {
+            $camposFaltantes[] ='telefono';
         }
 
         if (!empty($camposFaltantes)) {
@@ -312,23 +304,24 @@ class EditComponent extends Component
                 'club_id' => 'required',
                 'situacion_persona' => 'required',
                 'situacion_barco' => 'required',
-                'numero_socio' => 'required',
+                'numero_socio' => 'nullable',
                 'nombre_socio' => 'required',
-                'dni' => 'required',
-                'direccion' => 'required',
-                'email' => 'required',
-                'pantalan_t_atraque' => 'required',
-                'nombre_barco' => 'required',
-                'matricula' => 'required',
-                'eslora' => 'required',
-                'manga' => 'required',
-                'calado' => 'required',
+                'dni' => 'nullable',
+                'direccion' => 'nullable',
+                'email' => 'nullable',
+                'pantalan_t_atraque' => 'nullable',
+                'nombre_barco' => 'nullable',
+                'matricula' => 'nullable',
+                'eslora' => 'nullable',
+                'manga' => 'nullable',
+                'calado' => 'nullable',
                 'puntal' => 'nullable',
-                'seguro_barco' => 'required',
-                'poliza' => 'required',
-                'vencimiento' => 'required',
-                'itb' => 'required',
-                'ruta_foto' => 'required',
+                'seguro_barco' => 'nullable',
+                'poliza' => 'nullable',
+                'vencimiento' => 'nullable',
+                'itb' => 'nullable',
+                'ruta_foto' => 'nullable',
+                'ruta_foto2' => 'nullable',
 
             ],
             // Mensajes de error
@@ -354,17 +347,18 @@ class EditComponent extends Component
             ]
         );
 
-        if (Storage::disk('public')->exists('storage/photos/' . $this->ruta_foto) == false) {
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false && !is_string($this->ruta_foto) ) {
+
             $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
 
-            $this->ruta_foto->storePubliclyAs('storage/photos/',  $name);
+            $this->ruta_foto->storePubliclyAs('assets/images/',  $name);
 
             $validatedData['ruta_foto'] = $name;
         }
-        if (Storage::disk('public')->exists('storage/photos/' . $this->ruta_foto2) == false) {
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false && !is_string($this->ruta_foto2)) {
             $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-            $this->ruta_foto2->storePubliclyAs('storage/photos/', $name);
+            $this->ruta_foto2->storePubliclyAs('assets/images/', $name);
 
             $validatedData['ruta_foto2'] = $name;
         }
@@ -425,23 +419,8 @@ class EditComponent extends Component
             'club_id',
             'situacion_persona',
             'situacion_barco',
-            'numero_socio',
             'nombre_socio',
-            'dni',
-            'direccion',
-            'email',
-            'pantalan_t_atraque',
-            'nombre_barco',
-            'matricula',
-            'eslora',
-            'manga',
-            'calado',
-            'seguro_barco',
-            'poliza',
-            'vencimiento',
-            'itb',
-            'ruta_foto',
-            'ruta_foto2'
+
         ];
         $nombresDescriptivos = [
             'club_id' => 'ID del Club',
@@ -471,6 +450,10 @@ class EditComponent extends Component
             }
         }
 
+        if (empty($this->telefonos[0]['telefono'])) {
+            $camposFaltantes[] ='telefono';
+        }
+
         if (!empty($camposFaltantes)) {
             $mensajeError = "Los siguientes campos son obligatorios y están faltantes: " . implode(', ', $camposFaltantes);
             $this->alert('error', $mensajeError, [
@@ -489,24 +472,24 @@ class EditComponent extends Component
                 'club_id' => 'required',
                 'situacion_persona' => 'required',
                 'situacion_barco' => 'required',
-                'numero_socio' => 'required',
+                'numero_socio' => 'nullable',
                 'nombre_socio' => 'required',
-                'dni' => 'required',
-                'direccion' => 'required',
-                'email' => 'required',
-                'pantalan_t_atraque' => 'required',
-                'nombre_barco' => 'required',
-                'matricula' => 'required',
-                'eslora' => 'required',
-                'manga' => 'required',
-                'calado' => 'required',
+                'dni' => 'nullable',
+                'direccion' => 'nullable',
+                'email' => 'nullable',
+                'pantalan_t_atraque' => 'nullable',
+                'nombre_barco' => 'nullable',
+                'matricula' => 'nullable',
+                'eslora' => 'nullable',
+                'manga' => 'nullable',
+                'calado' => 'nullable',
                 'puntal' => 'nullable',
-                'seguro_barco' => 'required',
-                'poliza' => 'required',
-                'vencimiento' => 'required',
-                'itb' => 'required',
-                'ruta_foto' => 'required',
-                'ruta_foto2' => 'required',
+                'seguro_barco' => 'nullable',
+                'poliza' => 'nullable',
+                'vencimiento' => 'nullable',
+                'itb' => 'nullable',
+                'ruta_foto' => 'nullable',
+                'ruta_foto2' => 'nullable',
                 'alta_baja' => 'required',
 
             ],
@@ -535,17 +518,17 @@ class EditComponent extends Component
             ]
         );
 
-        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto) == false) {
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false) {
             $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
 
-            $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
+            $this->ruta_foto->storePubliclyAs('assets/images/',  $name);
 
             $validatedData['ruta_foto'] = $name;
         }
-        if (Storage::disk('public')->exists('photos/' . $this->ruta_foto2) == false) {
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false) {
             $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-            $this->ruta_foto2->storePubliclyAs('public', 'photos/' . $name);
+            $this->ruta_foto2->storePubliclyAs('assets/images/', $name);
 
             $validatedData['ruta_foto2'] = $name;
         }
@@ -606,13 +589,18 @@ class EditComponent extends Component
         } else if ($this->situacion_barco == 1) {
             if ($this->fecha_entrada != null) {
                 $ultimo_registro = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
-                $ultima_entrada = $ultimo_registro->fecha_entrada;
-                $ultima_salida = $ultimo_registro->fecha_salida;
-                if ($ultima_entrada != null && $ultima_salida == null) {
-                    $fecha_anterior = new DateTime($ultima_entrada);
-                    $fecha_actual = new DateTime($this->fecha_baja);
-                    if ($fecha_actual > $fecha_anterior) {
-                        $ultimo_registro->update(['fecha_salida' => $this->fecha_baja, 'estado' => 2]);
+                if(is_null($ultimo_registro)){
+                    $ultima_entrada = $this->fecha_entrada_barco;
+                    RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_entrada_barco ,'fecha_salida' => $this->fecha_entrada , 'estado' => 1]);
+                }else{
+                    $ultima_entrada = $ultimo_registro->fecha_entrada;
+                    $ultima_salida = $ultimo_registro->fecha_salida;
+                    if ($ultima_entrada != null && $ultima_salida == null) {
+                        $fecha_anterior = new DateTime($ultima_entrada);
+                        $fecha_actual = new DateTime($this->fecha_entrada);
+                        if ($fecha_actual > $fecha_anterior) {
+                            $ultimo_registro->update(['fecha_salida' => $this->fecha_entrada, 'estado' => 1]);
+                        }
                     }
                 }
             } else {
@@ -890,11 +878,11 @@ class EditComponent extends Component
     }
     public function confirmDelete()
     {
-        $socios = Socio::find($this->identificador)->delete();
-        $telefonos = Telefonos::where('socio_id', $this->identificador)->delete();
-        $num_llaves = NumerosLlave::where('socio_id', $this->identificador)->delete();
-        $tripulantes = TranseunteTripulantes::where('socio_id', $this->identificador)->delete();
-        $socios->delete();
+        Socio::find($this->identificador)->delete();
+        Telefonos::where('socio_id', $this->identificador)->delete();
+        NumerosLlave::where('socio_id', $this->identificador)->delete();
+        TranseunteTripulantes::where('socio_id', $this->identificador)->delete();
         return redirect()->route('socios.index');
     }
+
 }

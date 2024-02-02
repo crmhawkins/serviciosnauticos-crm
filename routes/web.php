@@ -83,6 +83,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
 
     Route::get('socios', [SocioController::class, 'index'])->name('socios.index');
+    Route::get('socios-todos', [SocioController::class, 'indexadmin'])->name('socios.indexadmin');
     Route::get('socios-create', [SocioController::class, 'create'])->name('socios.create');
     Route::get('socios-alta/{id}', [SocioController::class, 'alta'])->name('socios.alta');
     Route::get('socios-edit/{id}', [SocioController::class, 'edit'])->name('socios.edit');

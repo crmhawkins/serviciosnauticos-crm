@@ -9,6 +9,8 @@ use App\Models\UserClub;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 class EditComponent extends Component
 {
@@ -49,6 +51,7 @@ class EditComponent extends Component
         return view('livewire.usuarios.edit-component');
     }
 
+
     // Al hacer update en el formulario
     public function update()
     {
@@ -56,6 +59,8 @@ class EditComponent extends Component
 
         if($this->password == null){
             $this->password = $usuarios->password;
+        }else{
+            $this->password = Hash::make($this->password);
         }
         // Validación de datos
         $validatedData = $this->validate(

@@ -48,6 +48,11 @@
                                                         style="max-width: 50% !important; height: auto;">
                                                 </div>
                                             </div>
+                                        @else
+                                            <div class="col-sm-10">
+                                                <img src="{{ asset('assets/images/' . $ruta_foto) }}"
+                                                    style="max-width: 50% !important; text-align: center">
+                                            </div>
                                         @endif
                                         <div class="mb-3 row d-flex align-items-center">
                                             <div class="col-sm-12">
@@ -72,8 +77,13 @@
                                             <div class="mb-3 row d-flex justify-content-center">
                                                 <div class="col">
                                                     <img src="{{ $ruta_foto2->temporaryUrl() }}"
-                                                        style="max-width: 100% !important; height: auto; text-align: center">
+                                                        style="max-width: 50% !important; height: auto; text-align: center">
                                                 </div>
+                                            </div>
+                                        @else
+                                            <div class="col-sm-10">
+                                                <img src="{{ asset('assets/images/' . $ruta_foto2) }}"
+                                                    style="max-width: 50% !important; text-align: center">
                                             </div>
                                         @endif
                                         <div class="mb-3 row d-flex align-items-center">

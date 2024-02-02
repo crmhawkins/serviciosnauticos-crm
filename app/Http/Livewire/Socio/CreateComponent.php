@@ -16,7 +16,7 @@ class CreateComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
-    public $club_id = 1;
+    public $club_id;
     public $situacion_persona = 0;
     public $situacion_barco = 0;
     public $numero_socio;
@@ -47,13 +47,16 @@ class CreateComponent extends Component
     public $fecha_entrada;
     public $fecha_entrada_transeunte;
     public $puntal;
-    public $atraque_fijo;
+    public $atraque_fijo= 0;
 
     public function mount()
     {
+        $this->club_id= session()->get('clubSeleccionado');
         $this->telefonos[] = ['telefono' => ''];
         $this->numeros_llave[] = ['numero_llave' => ''];
         $this->pin_socio = rand(0, 999999);
+        $this->fecha_entrada = date('Y-m-d');;
+
     }
     public function render()
     {
@@ -68,26 +71,26 @@ class CreateComponent extends Component
                 'club_id' => 'required',
                 'situacion_persona' => 'required',
                 'situacion_barco' => 'required',
-                'numero_socio' => 'required',
+                'numero_socio' => 'nullable',
                 'nombre_socio' => 'required',
-                'dni' => 'required',
-                'direccion' => 'required',
-                'email' => 'required',
-                'pantalan_t_atraque' => 'required',
-                'nombre_barco' => 'required',
-                'matricula' => 'required',
-                'eslora' => 'required',
-                'manga' => 'required',
+                'dni' => 'nullable',
+                'direccion' => 'nullable',
+                'email' => 'nullable',
+                'pantalan_t_atraque' => 'nullable',
+                'nombre_barco' => 'nullable',
+                'matricula' => 'nullable',
+                'eslora' => 'nullable',
+                'manga' => 'nullable',
                 'calado' => 'nullable',
-                'seguro_barco' => 'required',
-                'poliza' => 'required',
-                'vencimiento' => 'required',
-                'itb' => 'required',
+                'seguro_barco' => 'nullable',
+                'poliza' => 'nullable',
+                'vencimiento' => 'nullable',
+                'itb' => 'nullable',
                 'ruta_foto' => 'nullable',
                 'ruta_foto2' => 'nullable',
-                'pin_socio' => 'required',
+                'pin_socio' => 'nullable',
                 'alta_baja' => 'required',
-                'atraque_fijo' => 'required',
+                'atraque_fijo' => 'nullable',
 
             ],
             // Mensajes de error
@@ -118,17 +121,20 @@ class CreateComponent extends Component
 
             ]
         );
+        if($this->ruta_foto){
         $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
 
-        $this->ruta_foto->storePubliclyAs('storage/photos/', $name);
+        $this->ruta_foto->storePubliclyAs('assets/images/',  $name);
 
         $validatedData['ruta_foto'] = $name;
-
+        }
+        if($this->ruta_foto2){
         $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-        $this->ruta_foto2->storePubliclyAs('storage/photos/', $name);
+        $this->ruta_foto2->storePubliclyAs('assets/images/', $name);
 
         $validatedData['ruta_foto2'] = $name;
+        }
         // Guardar datos validados
         $socioSave = Socio::create($validatedData);
         RegistrosEntrada::create(['socio_id' => $socioSave->id, 'fecha_entrada' => $this->fecha_entrada, 'estado' => 0]);
