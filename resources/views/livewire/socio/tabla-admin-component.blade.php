@@ -83,7 +83,7 @@
                                         @break
                                     @default
                                 @endswitch
-                                - {{ $socio->pantalan_t_atraque }} - {{ $socio->matricula }}</th>
+                                -{{ $socio->pantalan_t_atraque }}-{{ $socio->matricula }}</th>
                                 @endmobile
                                 <td>{{ $socio->nombre_barco }}</td>
                                 <td>{{ $socio->nombre_socio }}</td>
@@ -99,8 +99,23 @@
                                         Transeúnte
                                     @endif
                                 </td>
+                                @mobile
                                 <td> @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}" class="btn btn-primary">Ver/Editar</a> @else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a> @endif
+                                    @if(!empty($socio->telefonos->first()->telefono))<br> <a href="tel:{{ $socio->telefonos->first()->telefono }}" class="btn btn-info mt-2">Llamar</a> <br>@endif
+
+                                    @if( $socio->telefonos()->where('telefono', 'like', '6%')->first())
+                                    <a href="https://wa.me/{{ $socio->telefonos()->where('telefono', 'like', '6%')->first()->telefono }}" class="btn btn-success mt-2">Whatsapp</a> <br>
+                                    @endif
+                                    @if( $socio->telefonos()->where('telefono', 'like', '7%')->first())
+                                    <a href="https://wa.me/{{ $socio->telefonos()->where('telefono', 'like', '7%')->first()->telefono }}" class="btn btn-success mt-2">Whatsapp</a><br>
+                                    @endif
                                 </td>
+                                @elsemobile
+                                <td>
+                                    @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}" class="btn btn-primary">Ver/Editar</a> @else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a> @endif
+
+                                </td>
+                                @endmobile
                             </tr>
                         @endforeach
                     </tbody>
