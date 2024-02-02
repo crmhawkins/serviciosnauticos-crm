@@ -39,7 +39,7 @@
     <div class="row p-0">
         <div class="col-12 p-0">
             <div class="card m-b-30 p-0">
-                <div class="card-body row">
+                <div class="card-body row p-0 m-0">
     @elsemobile
     <div class="row">
         <div class="col-12">
