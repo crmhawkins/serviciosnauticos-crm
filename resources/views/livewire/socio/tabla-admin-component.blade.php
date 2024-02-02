@@ -37,7 +37,7 @@
                         <tr>
                             <th scope="col">Foto</th>
                             @mobile
-                            <th scope="col">Pant y Matrí</th>
+                            <th scope="col">Pant y Matrícula</th>
                             @elsemobile
                             <th scope="col">Pantalán y Atraque</th>
                             <th scope="col">Matrícula</th>
