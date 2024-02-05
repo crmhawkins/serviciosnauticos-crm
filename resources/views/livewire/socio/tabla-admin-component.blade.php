@@ -1,4 +1,9 @@
 <div>
+    <style>
+        ul.pagination {
+            justify-content: space-evenly;
+        }
+    </style>
     @if (count($socios) > 0)
         @mobile
         <div class="col-md-12 p-0">
@@ -18,7 +23,7 @@
                     "infoEmpty": "No hay registros disponibles" ,
                     "infoFiltered": "(filtrado de _MAX_ total registros)" ,
                     "search": "Buscar:" ,
-                    "paginate": { "first": "Primero" , "last": "Ultimo" , "next": "Siguiente" , "previous": "Anterior"},
+                    "paginate": { "first": "Primero" , "last": "Ultimo" , "next": ">" , "previous": "<"},
                     "zeroRecords" : "No se encontraron registros coincidentes",
                 },
                 order: [[1, "desc" ]],
