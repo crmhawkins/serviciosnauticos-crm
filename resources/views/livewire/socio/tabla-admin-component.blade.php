@@ -35,10 +35,10 @@
                 @endmobile
                     <thead>
                         <tr>
-                            <th scope="col">Foto</th>
                             @mobile
                             <th scope="col">Pant y Matrícula</th>
                             @elsemobile
+                            <th scope="col">Foto</th>
                             <th scope="col">Pantalán y Atraque</th>
                             <th scope="col">Matrícula</th>
                             @endmobile
@@ -52,19 +52,22 @@
                     <tbody>
                         @foreach ($socios as $socio)
                             <tr>
+                                @notmobile
                                 <td>
                                     @if($socio->ruta_foto)
                                     <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}"
                                     style="max-width: 50px !important; text-align: center">
                                     @endif
-
                                 </td>
-                                @notmobile
                                 <td>{{ $socio->pantalan_t_atraque }}</td>
                                 <td>{{ $socio->matricula }}</td>
                                 @endnotmobile
                                 @mobile
                                 <th scope="col">
+                                    @if($socio->ruta_foto)
+                                    <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}"
+                                    style="max-width: 50px !important; text-align: center">
+                                    @endif
                                     @switch($socio->club_id)
                                     @case(1)
                                         SL
@@ -105,8 +108,7 @@
 
                                     @if( $socio->telefonos()->where('telefono', 'like', '6%')->first())
                                     <a href="https://wa.me/{{ $socio->telefonos()->where('telefono', 'like', '6%')->first()->telefono }}" class="btn btn-success mt-2">Whatsapp</a> <br>
-                                    @endif
-                                    @if( $socio->telefonos()->where('telefono', 'like', '7%')->first())
+                                    @elseif( $socio->telefonos()->where('telefono', 'like', '7%')->first())
                                     <a href="https://wa.me/{{ $socio->telefonos()->where('telefono', 'like', '7%')->first()->telefono }}" class="btn btn-success mt-2">Whatsapp</a><br>
                                     @endif
                                 </td>
