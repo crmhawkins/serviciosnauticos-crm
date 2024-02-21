@@ -122,7 +122,7 @@
                                             <h6 style="text-align: center !important">Socio</h6>
                                         </td>
                                         <td colspan="6" wire:click="cambiarSituacionPersona(1)"
-                                            @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                            @if ($situacion_persona == 1) style="background-color: #dc3545 !important" @endif>
                                             <h6 style="text-align: center !important">Transeúnte</h6>
                                         </td>
                                     </tr>
@@ -189,7 +189,7 @@
                                             <h6 style="text-align: center !important">Fijo</h6>
                                         </td>
                                         <td colspan="6" wire:click="cambiarSituacionPersona(1)"
-                                            @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                            @if ($situacion_persona == 1) style="background-color: #dc3545!important" @endif>
                                             <h6 style="text-align: center !important">Temporal</h6>
                                         </td>
                                     </tr>
@@ -640,7 +640,7 @@
                                         <h6 style="text-align: center !important">Socio</h6>
                                     </td>
                                     <td colspan="6"
-                                        @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                        @if ($situacion_persona == 1) style="background-color: #dc3545 !important" @endif>
                                         <h6 style="text-align: center !important">Transeúnte</h6>
                                     </td>
                                 </tr>
@@ -928,14 +928,14 @@
                                 <div class="col-12">
                                     <table class="table table-bordered dt-responsive nowrap">
                                         <tr>
-                                            <td
+                                            <td colspan="6" wire:click="cambiarSituacionPersona(0)"
                                                 @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
                                                 <h6 style="text-align: center !important">Socio</h6>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td
-                                                @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                            <td colspan="6" wire:click="cambiarSituacionPersona(1)"
+                                                @if ($situacion_persona == 1) style="background-color: #dc3545 !important" @endif>
                                                 <h6 style="text-align: center !important">Transeúnte</h6>
                                             </td>
                                         </tr>
