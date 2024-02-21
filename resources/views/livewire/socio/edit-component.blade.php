@@ -183,7 +183,7 @@
                                                 placeholder="Pantalán y Atraque">
                                         </td>
                                     </tr>
-                                    <tr>
+                                    {{-- <tr>
                                         <td colspan="6" wire:click="cambiarSituacionPersona(0)"
                                             @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
                                             <h6 style="text-align: center !important">Fijo</h6>
@@ -192,7 +192,7 @@
                                             @if ($situacion_persona == 1) style="background-color: #dc3545!important" @endif>
                                             <h6 style="text-align: center !important">Temporal</h6>
                                         </td>
-                                    </tr>
+                                    </tr> --}}
                                     <tr>
                                         <th colspan="4">Nombre del barco:</th>
                                         <td colspan="8"><input type="text" wire:model="nombre_barco"
