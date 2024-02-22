@@ -131,6 +131,8 @@
                                                 <td colspan="4"><input type="date" wire:model="fecha_entrada_barco"
                                                         class="form-control" name="fecha_entrada"
                                                         placeholder="Fecha de entrada"></td>
+                                            </tr>
+                                            <tr>
                                                 <th colspan="2">Fecha de salida:</th>
                                                 <td colspan="4"><input type="date" wire:model="fecha_entrada"
                                                         class="form-control" name="fecha_entrada"
