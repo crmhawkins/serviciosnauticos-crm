@@ -116,6 +116,37 @@
                                             <h6 style="text-align: center !important">Barco en varada/Fuera</h6>
                                         </td>
                                     </tr>
+                                    @if ($situacion_barco != $situacion_barco_old)
+                                        @if ($situacion_barco == 0)
+                                            <tr>
+                                                <th colspan="4">Fecha de entrada:</th>
+                                                <td colspan="8"><input type="date" wire:model="fecha_entrada"
+                                                        class="form-control" name="fecha_entrada"
+                                                        placeholder="Fecha de entrada"></td>
+                                            </tr>
+                                        @elseif($situacion_barco == 1)
+                                            @if (is_null($this->ultimo_registroverif))
+                                            <tr>
+                                                <th colspan="2">Fecha de ultima entrada:</th>
+                                                <td colspan="4"><input type="date" wire:model="fecha_entrada_barco"
+                                                        class="form-control" name="fecha_entrada"
+                                                        placeholder="Fecha de entrada"></td>
+                                                <th colspan="2">Fecha de salida:</th>
+                                                <td colspan="4"><input type="date" wire:model="fecha_entrada"
+                                                        class="form-control" name="fecha_entrada"
+                                                        placeholder="Fecha de salida"></td>
+                                            </tr>
+
+                                            @else
+                                            <tr>
+                                                <th colspan="4">Fecha de salida:</th>
+                                                <td colspan="8"><input type="date" wire:model="fecha_entrada"
+                                                        class="form-control" name="fecha_entrada"
+                                                        placeholder="Fecha de salida"></td>
+                                            </tr>
+                                            @endif
+                                        @endif
+                                    @endif
                                     <tr>
                                         <td colspan="6" wire:click="cambiarSituacionPersona(0)"
                                             @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
