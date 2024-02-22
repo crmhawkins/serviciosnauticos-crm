@@ -26,7 +26,7 @@
                     "paginate": { "first": "Primero" , "last": "Ultimo" , "next": ">" , "previous": "<"},
                     "zeroRecords" : "No se encontraron registros coincidentes",
                 },
-                order: [[1, "desc" ]],
+                order: [[0, "desc" ]],
             });
 
         table.buttons().container().appendTo("#datatable-buttons_wrapper.col-md-12:eq(0)");
