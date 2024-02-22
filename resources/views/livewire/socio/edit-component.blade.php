@@ -127,14 +127,14 @@
                                         @elseif($situacion_barco == 1)
                                             @if (is_null($this->ultimo_registroverif))
                                             <tr>
-                                                <th colspan="2">Fecha de ultima entrada:</th>
-                                                <td colspan="4"><input type="date" wire:model="fecha_entrada_barco"
+                                                <th colspan="4">Fecha de ultima entrada:</th>
+                                                <td colspan="8"><input type="date" wire:model="fecha_entrada_barco"
                                                         class="form-control" name="fecha_entrada"
                                                         placeholder="Fecha de entrada"></td>
                                             </tr>
                                             <tr>
-                                                <th colspan="2">Fecha de salida:</th>
-                                                <td colspan="4"><input type="date" wire:model="fecha_entrada"
+                                                <th colspan="4">Fecha de salida:</th>
+                                                <td colspan="8"><input type="date" wire:model="fecha_entrada"
                                                         class="form-control" name="fecha_entrada"
                                                         placeholder="Fecha de salida"></td>
                                             </tr>
