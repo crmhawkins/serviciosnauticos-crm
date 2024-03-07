@@ -219,6 +219,8 @@ class EditComponent extends Component
     {
         if (isset($this->ultimo_registroverif)){
             $this->ultimo_registroverif->update(['fecha_entrada' => $this->entrada , 'estado' => 0]);
+        }elseif(isset($this->entrada)){
+            RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_entrada,  'estado' => 0]);
         }
         if ($this->situacion_barco_old != $this->situacion_barco) {
             if ($this->situacion_barco == 0) {
