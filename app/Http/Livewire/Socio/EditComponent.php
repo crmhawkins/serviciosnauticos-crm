@@ -77,7 +77,8 @@ class EditComponent extends Component
     public function mount()
     {
         $this->ultimo_registroverif = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
-        $this->entrada = $this->ultimo_registroverif->fecha_entrada ?? 0;
+        if(isset($this->ultimo_registroverif)){
+        $this->entrada = $this->ultimo_registroverif->fecha_entrada;}
         $this->club_id=session()->get('clubSeleccionado');
         $socio = Socio::find($this->identificador);
         $this->notas = Nota::where('socio_id', $this->identificador)->get();
