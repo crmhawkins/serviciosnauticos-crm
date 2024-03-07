@@ -115,8 +115,12 @@
                                         <h6 style="text-align: center !important">Socio</h6>
                                     </td>
                                     <td colspan="6" wire:click="cambiarSituacionPersona(1)"
-                                        @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                        @if ($situacion_persona == 1) style="background-color: #dc3545 !important" @endif>
                                         <h6 style="text-align: center !important">Transeúnte</h6>
+                                    </td>
+                                    <td wire:click="cambiarSituacionPersona(2)"
+                                        @if ($situacion_persona == 2) style="background-color: #dcb035 !important" @endif>
+                                        <h6 style="text-align: center !important">Socio/Transeúnte</h6>
                                     </td>
                                 </tr>
                                 <tr>
@@ -187,8 +191,12 @@
                                         <h6 style="text-align: center !important">Fijo</h6>
                                     </td>
                                     <td colspan="6" wire:click="cambiarSituacionPersona(1)"
-                                        @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                        @if ($situacion_persona == 1) style="background-color: #dc3545 !important" @endif>
                                         <h6 style="text-align: center !important">Temporal</h6>
+                                    </td>
+                                    <td wire:click="cambiarSituacionPersona(2)"
+                                        @if ($situacion_persona == 2) style="background-color: #dcb035 !important" @endif>
+                                        <h6 style="text-align: center !important">Socio/Transeúnte</h6>
                                     </td>
                                 </tr>
                                 <tr>
@@ -471,7 +479,7 @@
                         </table>
                     @endmobile
 
-                    @if ($situacion_persona == 1)
+                    @if ($situacion_persona == 1 || $situacion_persona == 2 )
                         <table class="table table-bordered dt-responsive nowrap"
                             style="table-layout: fixed !important; width: 100% !important;">
                             <thead>
@@ -537,8 +545,14 @@
                                         </tr>
                                         <tr>
                                             <td wire:click="cambiarSituacionPersona(1)"
-                                                @if ($situacion_persona == 1) style="background-color: #3b996d !important" @endif>
+                                                @if ($situacion_persona == 1) style="background-color: #dc3545 !important" @endif>
                                                 <h6 style="text-align: center !important">Transeúnte</h6>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td wire:click="cambiarSituacionPersona(2)"
+                                                @if ($situacion_persona == 2) style="background-color: #dcb035 !important" @endif>
+                                                <h6 style="text-align: center !important">Socio/Transeúnte</h6>
                                             </td>
                                         </tr>
                                     </table>

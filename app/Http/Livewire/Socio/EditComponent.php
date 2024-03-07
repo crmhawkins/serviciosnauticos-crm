@@ -16,6 +16,8 @@ use App\Models\RegistrosEntradaTranseunte;
 use App\Models\TranseunteTripulantes;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+
 use DateTime;
 
 class EditComponent extends Component
@@ -63,14 +65,19 @@ class EditComponent extends Component
     public $pin_socio;
     public $registros_entrada = [];
     public $registros_entrada_transeunte = [];
+    public $registros_entrada_transeunte_borrar = [];
     public $puede_editar = false;
     public $puede_notas = false;
     public $ultimo_registroverif;
+    public $entrada;
+
+
 
 
     public function mount()
     {
         $this->ultimo_registroverif = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
+        $this->entrada = $this->ultimo_registroverif->fecha_entrada ?? 0;
         $this->club_id=session()->get('clubSeleccionado');
         $socio = Socio::find($this->identificador);
         $this->notas = Nota::where('socio_id', $this->identificador)->get();
@@ -97,7 +104,14 @@ class EditComponent extends Component
             $this->numeros_llave[] = ['numero_llave' => ''];
         }
 
-        if ($this->situacion_persona == 1) {
+        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            if ($socio->tripulantes()->count() > 0) {
+                foreach ($socio->tripulantes as $tripulante) {
+                    $this->tripulantes[] = ['id' => $tripulante->id, 'nombre' => $tripulante->nombre, 'dni' => $tripulante->dni];
+                }
+            }
+        }
+        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
             if ($socio->tripulantes()->count() > 0) {
                 foreach ($socio->tripulantes as $tripulante) {
                     $this->tripulantes[] = ['id' => $tripulante->id, 'nombre' => $tripulante->nombre, 'dni' => $tripulante->dni];
@@ -112,7 +126,7 @@ class EditComponent extends Component
 
                 $this->registros_entrada[] = [
                     'fecha_1' => $registro->fecha_entrada,
-                    'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de atraque',
+                    'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
                     'tiempoAtraque' => $tiempoAtraque
                 ];
                 $tiempoVarada = null;
@@ -140,7 +154,7 @@ class EditComponent extends Component
 
                     $this->registros_entrada[] = [
                         'fecha_1' => $registro->fecha_entrada,
-                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de atraque',
+                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
                         'tiempoAtraque' => $tiempoAtraque,
                         'estado' => 2,
                     ];
@@ -149,24 +163,17 @@ class EditComponent extends Component
             }
         }
 
-        $registros2 = RegistrosEntradaTranseunte::where('socio_id', $this->identificador)->get();
-
-        foreach ($registros2 as $index => $registro) {
-            $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
-
-            $this->registros_entrada_transeunte[] = [
-                'fecha_1' => $registro->fecha_entrada,
-                'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
-                'tiempoAtraque' => $tiempoAtraque
-            ];
-            $tiempoVarada = null;
-            if (isset($registros2[$index + 1])) {
-                $tiempoVarada = Carbon::parse($registros2[$index + 1]->fecha_entrada)->diffInDays(Carbon::parse($registro->fecha_salida));
-                $this->registros_entrada_transeunte[] = [
-                    'fecha_1' => $registro->fecha_salida,
-                    'fecha_2' => $registros2[$index + 1]->fecha_entrada,
-                    'tiempoVarada' => $tiempoVarada
-                ];
+        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            if ($socio->registros_entradas_transeuntes()->count() > 0) {
+                foreach ($socio->registros_entradas_transeuntes as $registro) {
+                    $this->registros_entrada_transeunte[] = [
+                        'id' => $registro->id,
+                        'fecha_entrada' => $registro->fecha_entrada,
+                        'fecha_salida' => $registro->fecha_salida,
+                        'precio' => $registro->precio,
+                        'total' => $registro->total,
+                        ];
+                }
             }
         }
         $this->email = $socio->email;
@@ -193,7 +200,7 @@ class EditComponent extends Component
 
     public function puedeEditar()
     {
-        if (Auth::user()->role == 1 || Auth::user()->role == 2) {
+        if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3) {
             $this->puede_editar = true;
         }
         if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3 || Auth::user()->role == 4) {
@@ -210,7 +217,9 @@ class EditComponent extends Component
     }
     public function update()
     {
-
+        if (isset($this->ultimo_registroverif)){
+            $this->ultimo_registroverif->update(['fecha_entrada' => $this->entrada , 'estado' => 0]);
+        }
         if ($this->situacion_barco_old != $this->situacion_barco) {
             if ($this->situacion_barco == 0) {
                 if ($this->fecha_entrada != null) {
@@ -347,21 +356,71 @@ class EditComponent extends Component
             ]
         );
 
-        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false && !is_string($this->ruta_foto) ) {
 
-            $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false && isset($this->ruta_foto) && is_object($this->ruta_foto)) {
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto->path();
+        list($width, $height) = getimagesize($sourcePath);
+        $ratio = $height / $width;
+        $targetHeight = $targetWidth * $ratio;
 
-            $this->ruta_foto->storePubliclyAs('assets/images/',  $name);
+        // Crear una imagen en blanco con las dimensiones objetivo
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-            $validatedData['ruta_foto'] = $name;
+        // Cargar la imagen original
+        $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+        // Redimensionar la imagen original en la imagen objetivo
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+        $tempPath = sys_get_temp_dir() . '/' . $name;
+        imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+        // Mover la imagen al almacenamiento
+        Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+        // Limpiar
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        unlink($tempPath);
+
+        $validatedData['ruta_foto'] = $name;
         }
-        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false && !is_string($this->ruta_foto2)) {
-            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-            $this->ruta_foto2->storePubliclyAs('assets/images/', $name);
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false && isset($this->ruta_foto2) && is_object($this->ruta_foto2)) {
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto2->path();
+        list($width, $height) = getimagesize($sourcePath);
+        $ratio = $height / $width;
+        $targetHeight = $targetWidth * $ratio;
 
-            $validatedData['ruta_foto2'] = $name;
+        // Crear una imagen en blanco con las dimensiones objetivo
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        // Cargar la imagen original
+        $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+        // Redimensionar la imagen original en la imagen objetivo
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+        $tempPath = sys_get_temp_dir() . '/' . $name;
+        imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+        // Mover la imagen al almacenamiento
+        Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+        // Limpiar
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        unlink($tempPath);
+
+        $validatedData['ruta_foto2'] = $name;
         }
+
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
@@ -370,8 +429,49 @@ class EditComponent extends Component
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
-            if (!isset($numero_llave['id'])) {
-                $nuevo_num_llave = NumerosLlave::create(['socio_id' => $this->identificador, 'num_llave' => $numero_llave['numero_llave']]);
+            if (isset($numero_llave['id'])) {
+                    NumerosLlave::find($numero_llave['id'])->update(['num_llave' => $numero_llave['numero_llave']]);
+                }else{
+                    NumerosLlave::create(['socio_id' => $this->identificador, 'num_llave' => $numero_llave['numero_llave']]);
+                }
+
+        }
+        if($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            foreach ($this->tripulantes as $tripulanteIndex => $tripulante) {
+                if (isset($tripulante['id'])) {
+                TranseunteTripulantes::find($tripulante['id'])->update(['nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                }else{
+                TranseunteTripulantes::create(['socio_id' => $this->identificador, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                }
+            }
+        }
+
+        if($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            foreach ($this->registros_entrada_transeunte as $registroindexIndex => $registro) {
+                if (isset($registro['id'])) {
+                    RegistrosEntradaTranseunte::find($registro['id'])->update([
+                        'fecha_entrada' => $registro['fecha_entrada'],
+                        'fecha_salida' => $registro['fecha_salida'],
+                        'precio' => $registro['precio'],
+                        'total' => $registro['total'],
+
+
+                    ]);
+                }else{
+                    RegistrosEntradaTranseunte::create([
+                        'socio_id' => $this->identificador,
+                        'fecha_entrada' => $registro['fecha_entrada'],
+                        'fecha_salida' => $registro['fecha_salida'],
+                        'precio' => $registro['precio'],
+                        'total' => $registro['total'],
+
+                    ]);
+                }
+            }
+        }
+        foreach ($this->registros_entrada_transeunte_borrar as $registroindex => $registro) {
+            if (isset($registro['id'])) {
+             RegistrosEntradaTranseunte::find($registro['id'])->delete();
             }
         }
         foreach ($this->telefonos_borrar as $telefonoIndex => $telefono) {
@@ -386,7 +486,7 @@ class EditComponent extends Component
         }
         foreach ($this->tripulantes_borrar as $tripulanteIndex => $tripulante) {
             if (isset($tripulante['id'])) {
-                $nuevo_tripulante = NumerosLlave::find($numero_llave['id'])->delete();
+                $nuevo_tripulante = TranseunteTripulantes::find($tripulante['id'])->delete();
             }
         }
         // Alertas de guardado exitoso
@@ -419,7 +519,6 @@ class EditComponent extends Component
             'club_id',
             'situacion_persona',
             'situacion_barco',
-            'nombre_socio',
 
         ];
         $nombresDescriptivos = [
@@ -473,7 +572,7 @@ class EditComponent extends Component
                 'situacion_persona' => 'required',
                 'situacion_barco' => 'required',
                 'numero_socio' => 'nullable',
-                'nombre_socio' => 'required',
+                'nombre_socio' => 'nullable',
                 'dni' => 'nullable',
                 'direccion' => 'nullable',
                 'email' => 'nullable',
@@ -518,19 +617,67 @@ class EditComponent extends Component
             ]
         );
 
-        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false) {
-            $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false && isset($this->ruta_foto) && is_object($this->ruta_foto)) {
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto->getPathname();
+        list($width, $height) = getimagesize($sourcePath);
+        $ratio = $height / $width;
+        $targetHeight = $targetWidth * $ratio;
 
-            $this->ruta_foto->storePubliclyAs('assets/images/',  $name);
+        // Crear una imagen en blanco con las dimensiones objetivo
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-            $validatedData['ruta_foto'] = $name;
+        // Cargar la imagen original
+        $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+        // Redimensionar la imagen original en la imagen objetivo
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+        $tempPath = sys_get_temp_dir() . '/' . $name;
+        imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+        // Mover la imagen al almacenamiento
+        Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+        // Limpiar
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        unlink($tempPath);
+
+        $validatedData['ruta_foto'] = $name;
         }
-        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false) {
-            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false && isset($this->ruta_foto2) && is_object($this->ruta_foto2)) {
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto2->getPathname();
+        list($width, $height) = getimagesize($sourcePath);
+        $ratio = $height / $width;
+        $targetHeight = $targetWidth * $ratio;
 
-            $this->ruta_foto2->storePubliclyAs('assets/images/', $name);
+        // Crear una imagen en blanco con las dimensiones objetivo
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-            $validatedData['ruta_foto2'] = $name;
+        // Cargar la imagen original
+        $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+        // Redimensionar la imagen original en la imagen objetivo
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+        $tempPath = sys_get_temp_dir() . '/' . $name;
+        imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+        // Mover la imagen al almacenamiento
+        Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+        // Limpiar
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        unlink($tempPath);
+
+        $validatedData['ruta_foto2'] = $name;
         }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
@@ -540,8 +687,48 @@ class EditComponent extends Component
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
-            if (!isset($numero_llave['id'])) {
-                $nuevo_num_llave = NumerosLlave::create(['socio_id' => $this->identificador, 'num_llave' => $numero_llave['numero_llave']]);
+            if (isset($numero_llave['id'])) {
+                    NumerosLlave::find($numero_llave['id'])->update(['num_llave' => $numero_llave['numero_llave']]);
+                }else{
+                    NumerosLlave::create(['socio_id' => $this->identificador, 'num_llave' => $numero_llave['numero_llave']]);
+                }
+
+        }
+        if($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            foreach ($this->tripulantes as $tripulanteIndex => $tripulante) {
+                if (isset($tripulante['id'])) {
+                TranseunteTripulantes::find($tripulante['id'])->update(['nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                }else{
+                TranseunteTripulantes::create(['socio_id' => $this->identificador, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                }
+            }
+        }
+        if($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            foreach ($this->registros_entrada_transeunte as $registroindexIndex => $registro) {
+                if (isset($registro['id'])) {
+                    RegistrosEntradaTranseunte::find($registro['id'])->update([
+                        'fecha_entrada' => $registro['fecha_entrada'],
+                        'fecha_salida' => $registro['fecha_salida'],
+                        'precio' => $registro['precio'],
+                        'total' => $registro['total'],
+
+
+                    ]);
+                }else{
+                    RegistrosEntradaTranseunte::create([
+                        'socio_id' => $this->identificador,
+                        'fecha_entrada' => $registro['fecha_entrada'],
+                        'fecha_salida' => $registro['fecha_salida'],
+                        'precio' => $registro['precio'],
+                        'total' => $registro['total'],
+
+                    ]);
+                }
+            }
+        }
+        foreach ($this->registros_entrada_transeunte_borrar as $registroindex => $registro) {
+            if (isset($registro['id'])) {
+             RegistrosEntradaTranseunte::find($registro['id'])->delete();
             }
         }
         foreach ($this->telefonos_borrar as $telefonoIndex => $telefono) {
@@ -556,7 +743,7 @@ class EditComponent extends Component
         }
         foreach ($this->tripulantes_borrar as $tripulanteIndex => $tripulante) {
             if (isset($tripulante['id'])) {
-                $nuevo_tripulante = NumerosLlave::find($numero_llave['id'])->delete();
+               TranseunteTripulantes::find($tripulante['id'])->delete();
             }
         }
         $this->validate(['fecha_baja' => 'required']);
@@ -609,10 +796,6 @@ class EditComponent extends Component
         }
 
 
-        if ($this->situacion_persona == 1) {
-            $ultimo_registro = RegistrosEntradaTranseunte::where('socio_id', $this->identificador)->latest()->first();
-            $ultimo_registro->update(['fecha_salida' => $this->fecha_baja]);
-        }
 
         // Alertas de guardado exitoso
         if ($socioSave) {
@@ -640,6 +823,30 @@ class EditComponent extends Component
     public function cambiarSituacionPersona($situacion)
     {
         $this->situacion_persona = $situacion;
+    }
+    public function addTripulante()
+    {
+        $this->tripulantes[] = ['nombre' => '', 'dni' => ''];
+    }
+    public function addEntrada()
+    {
+        $this->registros_entrada_transeunte[] = [
+            'fecha_entrada' => '',
+            'fecha_salida' => '',
+            'precio' => '',
+            'total' => '',
+        ];
+    }
+    public function deleteEntrada($id)
+    {
+        if (isset($this->registros_entrada_transeunte[$id]['id'])) {
+                $this->registros_entrada_transeunte_borrar[] = $this->registros_entrada_transeunte[$id];
+                unset($this->registros_entrada_transeunte[$id]);
+                $this->registros_entrada_transeunte = array_values($this->registros_entrada_transeunte);
+        } else {
+                unset($this->registros_entrada_transeunte[$id]);
+                $this->registros_entrada_transeunte = array_values($this->registros_entrada_transeunte);
+        }
     }
 
     public function addTelefono()
@@ -696,19 +903,35 @@ class EditComponent extends Component
     public function deleteTripulante($id)
     {
         if (isset($this->tripulantes[$id]['id'])) {
-            if (count($this->numeros_llave) <= 1) {
-                $this->tripulantes_borrar[] = $this->tripulantes[$id];
-            } else {
                 $this->tripulantes_borrar[] = $this->tripulantes[$id];
                 unset($this->tripulantes[$id]);
                 $this->tripulantes = array_values($this->tripulantes);
-            }
         } else {
-            if (count($this->tripulantes) <= 1) {
-                $this->alert('warning', 'Añade otro nº de llave para eliminar el seleccionado.');
-            } else {
                 unset($this->tripulantes[$id]);
                 $this->tripulantes = array_values($this->tripulantes);
+        }
+    }
+
+    public function updated($propertyName)
+    {
+        // Verifica si la actualización es para 'registros_entrada_transeunte'
+        if (Str::startsWith($propertyName, 'registros_entrada_transeunte.')) {
+            // Extrae el índice y el campo basado en el nombre de la propiedad
+            list($field, $index, $subField) = explode('.', $propertyName);
+
+            if (in_array($subField, ['fecha_entrada', 'fecha_salida', 'precio'])) {
+                $entrada = $this->registros_entrada_transeunte[$index]['fecha_entrada'] ?? null;
+                $salida = $this->registros_entrada_transeunte[$index]['fecha_salida'] ?? null;
+                $precio = $this->registros_entrada_transeunte[$index]['precio'] ?? 0;
+
+                if ($entrada && $salida && $precio) {
+                    $fechaEntrada = Carbon::createFromFormat('Y-m-d', $entrada);
+                    $fechaSalida = Carbon::createFromFormat('Y-m-d', $salida);
+                    $diferenciaDias = $fechaSalida->diffInDays($fechaEntrada);
+
+                    // Actualiza el total en el registro específico
+                    $this->registros_entrada_transeunte[$index]['total'] = $diferenciaDias * $precio;
+                }
             }
         }
     }

@@ -10,28 +10,18 @@
         @elsemobile
         <div class="col-md-12">
         @endmobile
-            <div class="p-0" x-data=''
-                x-init='$nextTick(() => {
-            var table = $("#datatable-buttons").DataTable({
-                lengthChange: false,
-                dom: "Bfrtip",
-                buttons: [
-                    "copy", "csv", "excel", "pdf",
-                ],
-                "language": { "lengthMenu": "Mostrando _MENU_ registros por página",
-                    "zeroRecords" : "Nothing found - sorry", "info" : "Mostrando página _PAGE_ of _PAGES_" ,
-                    "infoEmpty": "No hay registros disponibles" ,
-                    "infoFiltered": "(filtrado de _MAX_ total registros)" ,
-                    "search": "Buscar:" ,
-                    "paginate": { "first": "Primero" , "last": "Ultimo" , "next": ">" , "previous": "<"},
-                    "zeroRecords" : "No se encontraron registros coincidentes",
-                },
-                order: [[0, "asc" ]],
-            });
-
-        table.buttons().container().appendTo("#datatable-buttons_wrapper.col-md-12:eq(0)");
-
-        });'>   @mobile
+            <div class="p-0">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="pageSize" class="form-label">Barcos por página:</label>
+                        <select id="pageSize" class="form-select">
+                            <option value="35">35</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+                @mobile
                 <table id="datatable-buttons" class="table p-0 table-striped table-bordered dt-responsive nowrap"
                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 @elsemobile
@@ -61,7 +51,7 @@
                                 <td>
                                     @if($socio->ruta_foto)
                                     <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}"
-                                    style="max-width: 50px !important; text-align: center">
+                                    loading="lazy" style="max-width: 50px !important; text-align: center">
                                     @endif
                                 </td>
                                 <td>{{ $socio->pantalan_t_atraque }}</td>
@@ -71,7 +61,7 @@
                                 <th scope="col">
                                     @if($socio->ruta_foto)
                                     <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}"
-                                    style="max-width: 50px !important; text-align: center">
+                                    loading="lazy" style="max-width: 50px !important; text-align: center">
                                     @endif
                                     @switch($socio->club_id)
                                     @case(1)
@@ -108,14 +98,20 @@
                                     @endif
                                 </td>
                                 @mobile
-                                <td> @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}" class="btn btn-primary">Ver/Editar</a> @else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a> @endif
-                                    @if(!empty($socio->telefonos->first()->telefono))<br> <a href="tel:{{ $socio->telefonos->first()->telefono }}" class="btn btn-info mt-2">Llamar</a> <br>@endif
-
-                                    @if( $socio->telefonos()->where('telefono', 'like', '6%')->first())
-                                    <a href="https://wa.me/{{ $socio->telefonos()->where('telefono', 'like', '6%')->first()->telefono }}" class="btn btn-success mt-2">Whatsapp</a> <br>
-                                    @elseif( $socio->telefonos()->where('telefono', 'like', '7%')->first())
-                                    <a href="https://wa.me/{{ $socio->telefonos()->where('telefono', 'like', '7%')->first()->telefono }}" class="btn btn-success mt-2">Whatsapp</a><br>
-                                    @endif
+                                <td> @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}" class="btn btn-primary">Ver/Editar</a> <br>@else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a><br> @endif
+                                    @if($socio->telefonos->isNotEmpty())
+                                    @foreach($socio->telefonos as $telefono)
+                                        @if(!empty($telefono->telefono))
+                                            <a href="tel:{{ $telefono->telefono }}" class="btn btn-info mt-2">Llamar a {{ $telefono->telefono }}</a>
+                                            <br>
+                                        @endif
+                                    @endforeach
+                                @endif
+                                @foreach($socio->telefonos as $telefono)
+                                @if(Str::startsWith($telefono->telefono, ['6', '7']))
+                                    <a href="https://wa.me/{{ $telefono->telefono }}" class="btn btn-success mt-2">WhatsApp a {{ $telefono->telefono }}</a><br>
+                                @endif
+                            @endforeach
                                 </td>
                                 @elsemobile
                                 <td>
@@ -134,3 +130,37 @@
     @endif
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var table = $('#datatable-buttons').DataTable({
+        lengthChange: false,
+        dom: 'Bfrtip',
+        pageLength: 35,
+        buttons: ['copy', 'csv', 'excel', 'pdf'],
+        language: {
+            lengthMenu: 'Mostrando _MENU_ registros por página',
+            zeroRecords: 'No se encontraron registros coincidentes',
+            info: 'Mostrando página _PAGE_ de _PAGES_',
+            infoEmpty: 'No hay registros disponibles',
+            infoFiltered: '(filtrado de _MAX_ total registros)',
+            search: 'Buscar:',
+            paginate: {
+                first: 'Primero',
+                last: 'Ultimo',
+                next: '>',
+                previous: '<'
+            },
+        },
+        order: [[0, 'asc']],
+    });
+
+    table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+
+    // Escucha el cambio en el selector de cantidad de páginas
+    $('#pageSize').change(function () {
+        var selectedValue = $(this).val();
+        table.page.len(selectedValue).draw();
+    });
+});
+
+</script>

@@ -149,7 +149,7 @@ class CreateComponent extends Component
             foreach ($this->tripulantes as $tripulanteIndex => $tripulante) {
                 $nuevo_tripulante = TranseunteTripulantes::create(['socio_id' => $socioSave->id, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
             }
-            RegistrosEntradaTranseunte::create(['socio_id' => $socioSave->id, 'fecha_entrada' => $this->fecha_entrada, 'estado' => 0]);
+
         }
 
 

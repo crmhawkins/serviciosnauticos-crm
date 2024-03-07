@@ -23,7 +23,7 @@ class AltaComponent extends Component
     use LivewireAlert;
     use WithFileUploads;
     public $identificador;
-    public $club_id = 1;
+    public $club_id;
     public $situacion_persona;
     public $situacion_barco_old;
     public $situacion_barco;
@@ -67,6 +67,7 @@ class AltaComponent extends Component
 
     public function mount()
     {
+        $this->club_id= session()->get('clubSeleccionado');
         $socio = Socio::find($this->identificador);
         $this->notas = Nota::where('socio_id', $this->identificador)->get();
         $this->situacion_barco_old = $socio->situacion_barco;
@@ -176,10 +177,10 @@ class AltaComponent extends Component
 
     public function puedeEditar()
     {
-        if (Auth::user()->role == 1 || Auth::user()->role == 2) {
+        if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3) {
             $this->puede_editar = true;
         }
-        if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3) {
+        if (Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3 || Auth::user()->role == 4) {
             $this->puede_notas = true;
         }
     }

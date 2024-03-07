@@ -15,6 +15,8 @@ class RegistrosEntradaTranseunte extends Model
         'socio_id',
         'fecha_entrada',
         'fecha_salida',
+        'precio',
+        'total',
         'estado'
     ];
 
