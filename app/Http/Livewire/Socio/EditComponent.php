@@ -424,9 +424,9 @@ class EditComponent extends Component
         $socioSave = $socio->update($validatedData);
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
             if (isset($telefono['id'])) {
-                NumerosLlave::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
+                Telefonos::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
             }else{
-                NumerosLlave::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+                Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
@@ -684,9 +684,9 @@ class EditComponent extends Component
         $socioSave = $socio->update($validatedData);
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
             if (isset($telefono['id'])) {
-                NumerosLlave::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
+                Telefonos::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
             }else{
-                NumerosLlave::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+                Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
