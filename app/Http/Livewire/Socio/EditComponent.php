@@ -683,8 +683,10 @@ class EditComponent extends Component
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
-            if (!isset($telefono['id'])) {
-                $nuevo_telefono = Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+            if (isset($telefono['id'])) {
+                NumerosLlave::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
+            }else{
+                NumerosLlave::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
