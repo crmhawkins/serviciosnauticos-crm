@@ -17,6 +17,8 @@ use App\Models\TranseunteTripulantes;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 use DateTime;
 
@@ -112,13 +114,7 @@ class EditComponent extends Component
                 }
             }
         }
-        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
-            if ($socio->tripulantes()->count() > 0) {
-                foreach ($socio->tripulantes as $tripulante) {
-                    $this->tripulantes[] = ['id' => $tripulante->id, 'nombre' => $tripulante->nombre, 'dni' => $tripulante->dni];
-                }
-            }
-        }
+
         $registros = RegistrosEntrada::where('socio_id', $this->identificador)->get();
 
         foreach ($registros as $index => $registro) {
@@ -427,8 +423,10 @@ class EditComponent extends Component
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
-            if (!isset($telefono['id'])) {
-                $nuevo_telefono = Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+            if (isset($telefono['id'])) {
+                NumerosLlave::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
+            }else{
+                NumerosLlave::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
@@ -1078,7 +1076,9 @@ class EditComponent extends Component
             'guardarNota',
             'guardarNotaEdit',
             'destroy',
-            'confirmDelete'
+            'confirmDelete',
+            'alertaImpresion',
+            'imprecionSocio',
         ];
     }
 
@@ -1109,6 +1109,123 @@ class EditComponent extends Component
         NumerosLlave::where('socio_id', $this->identificador)->delete();
         TranseunteTripulantes::where('socio_id', $this->identificador)->delete();
         return redirect()->route('socios.index');
+    }
+    public function alertaImpresion()
+    {
+        $this->alert('info', '¿Seguro que desea imprimir el Socio?', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'imprecionSocio',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+            'timer' => null
+        ]);
+    }
+    public function imprecionSocio()
+    {
+        $socio = Socio::find($this->identificador);
+        $telefonospdf = [];
+        $llavespdf = [];
+        $tripulantespdf = [];
+        $registros_entrada_transeuntepdf = [];
+        $registros_entradapdf = [];
+
+        if ($socio->telefonos()->count() > 0) {
+            foreach ($socio->telefonos as $telefono) {
+                $telefonospdf[] = ['id' => $telefono->id, 'telefono' => $telefono->telefono];
+            }
+        }
+        if ($socio->numeros_llave()->count() > 0) {
+            foreach ($socio->numeros_llave as $numero_llave) {
+                $llavespdf[] = ['id' => $numero_llave->id, 'numero_llave' => $numero_llave->num_llave];
+            }
+         }
+        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            if ($socio->tripulantes()->count() > 0) {
+                foreach ($socio->tripulantes as $tripulante) {
+                    $tripulantespdf[] = ['id' => $tripulante->id, 'nombre' => $tripulante->nombre, 'dni' => $tripulante->dni];
+                }
+            }
+        }
+        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            if ($socio->registros_entradas_transeuntes()->count() > 0) {
+                foreach ($socio->registros_entradas_transeuntes as $registro) {
+                    $registros_entrada_transeuntepdf[] = [
+                        'id' => $registro->id,
+                        'fecha_entrada' => $registro->fecha_entrada,
+                        'fecha_salida' => $registro->fecha_salida,
+                        'precio' => $registro->precio,
+                        'total' => $registro->total,
+                        ];
+                }
+            }
+        }
+
+        $registrospdf = RegistrosEntrada::where('socio_id', $this->identificador)->get();
+
+        foreach ($registrospdf as $index => $registro) {
+            if ($registro->estado != 2) {
+                $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
+
+                $registros_entradapdf[] = [
+                    'fecha_1' => $registro->fecha_entrada,
+                    'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
+                    'tiempoAtraque' => $tiempoAtraque
+                ];
+                $tiempoVarada = null;
+                if (isset($registrospdf[$index + 1]) && $registrospdf[$index + 1]->estado != 2) {
+                    $tiempoVarada = Carbon::parse($registrospdf[$index + 1]->fecha_entrada)->diffInDays(Carbon::parse($registro->fecha_salida));
+                    $registros_entradapdf[] = [
+                        'fecha_1' => $registro->fecha_salida,
+                        'fecha_2' => $registrospdf[$index + 1]->fecha_entrada,
+                        'tiempoVarada' => $tiempoVarada
+                    ];
+                }
+            } else {
+                if ($index % 2 !== 0) {
+                    $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
+
+                    $registros_entradapdf[] = [
+                        'fecha_1' => $registro->fecha_entrada,
+                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de varada',
+                        'tiempoAtraque' => $tiempoAtraque,
+                        'estado' => 1,
+                    ];
+                    $tiempoVarada = null;
+                } else {
+                    $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
+
+                    $registros_entradapdf[] = [
+                        'fecha_1' => $registro->fecha_entrada,
+                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
+                        'tiempoAtraque' => $tiempoAtraque,
+                        'estado' => 2,
+                    ];
+                    $tiempoVarada = null;
+                }
+            }
+        }
+
+        $socio = Socio::find($this->identificador);
+        $telefonospdf = [];
+        $llavespdf = [];
+        $tripulantespdf = [];
+        $registros_entrada_transeuntepdf = [];
+        $registros_entradapdf = [];
+
+
+        $datos =  [
+            'socio' => $socio, 'telefonospdf' => $telefonospdf, 'llavespdf' => $llavespdf, 'tripulantespdf' => $tripulantespdf, 'registros_entrada_transeuntepdf' => $registros_entrada_transeuntepdf,
+            'registros_entradapdf' => $registros_entradapdf ];
+
+        $pdf = Pdf::loadView('livewire.socio.pdf-component', $datos)->setPaper('a4', 'vertical')->output(); //
+        return response()->streamDownload(
+            fn () => print($pdf),
+            'Socio_nº_'.$this->identificador.'.pdf'
+        );
     }
 
 }

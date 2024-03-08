@@ -1087,6 +1087,8 @@
                                         wire:click.prevent="alertaGuardar">Guardar
                                         datos de socio</button>
                                 @if ($puede_editar == true)
+                                    <button class="w-100 btn btn-warning mb-2"
+                                        wire:click.prevent="alertaImpresion">Impresion de Socio</button>
                                     <button class="w-100 btn btn-danger mb-2"
                                         wire:click.prevent="alertaEliminar">Eliminar
                                         datos de socio</button>
@@ -1208,12 +1210,12 @@
             Swal.fire({
                 title: '¿Estás seguro? Comprueba que todo está en orden.',
                 icon: 'warning',
-                text: 'Si estás seguro, pulsa el botón de "Confirmar" para imprimir el presupuesto.',
+                text: 'Si estás seguro, pulsa el botón de "Confirmar" para imprimir el socio.',
                 showConfirmButton: true,
                 showCancelButton: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.livewire.emit('imprimirPresupuesto');
+                    window.livewire.emit('imprecionSocio');
                 }
             });
         });
