@@ -15,6 +15,7 @@ use App\Models\RegistrosEntrada;
 use App\Models\RegistrosEntradaTranseunte;
 use App\Models\TranseunteTripulantes;
 use App\Models\User;
+use App\Models\club;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -217,7 +218,7 @@ class EditComponent extends Component
         if (isset($this->ultimo_registroverif)){
             $this->ultimo_registroverif->update(['fecha_entrada' => $this->entrada , 'estado' => 0]);
         }elseif(isset($this->entrada)){
-            RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->fecha_entrada,  'estado' => 0]);
+            RegistrosEntrada::create(['socio_id' => $this->identificador, 'fecha_entrada' => $this->entrada,  'estado' => 0]);
         }
         if ($this->situacion_barco_old != $this->situacion_barco) {
             if ($this->situacion_barco == 0) {
@@ -1134,6 +1135,7 @@ class EditComponent extends Component
         $tripulantespdf = [];
         $registros_entrada_transeuntepdf = [];
         $registros_entradapdf = [];
+        $club = Club::find(session()->get('clubSeleccionado'));
 
         if ($socio->telefonos()->count() > 0) {
             foreach ($socio->telefonos as $telefono) {
@@ -1221,7 +1223,7 @@ class EditComponent extends Component
 
         $datos =  [
             'socio' => $socio, 'telefonospdf' => $telefonospdf, 'llavespdf' => $llavespdf, 'tripulantespdf' => $tripulantespdf, 'registros_entrada_transeuntepdf' => $registros_entrada_transeuntepdf,
-            'registros_entradapdf' => $registros_entradapdf ];
+            'registros_entradapdf' => $registros_entradapdf ,'club' => $club];
 
         $pdf = Pdf::loadView('livewire.socio.pdf-component', $datos)->setPaper('a4', 'vertical')->output(); //
         return response()->streamDownload(

@@ -148,7 +148,7 @@
                                         <tr>
                                             <th colspan="4">Fecha de ultima entrada:</th>
                                             <td colspan="8"><input type="date" wire:model="entrada"
-                                                    class="form-control" name="fecha_entrada"
+                                                    class="form-control" name="entrada"
                                                     placeholder="Fecha de entrada"></td>
                                         </tr>
                                     @endif
@@ -454,7 +454,7 @@
                                         <tr>
                                             <th colspan="4">Fecha de ultima entrada:</th>
                                             <td colspan="8"><input type="date" wire:model="entrada"
-                                                    class="form-control" name="fecha_entrada"
+                                                    class="form-control" name="entrada"
                                                     placeholder="Fecha de entrada"></td>
                                         </tr>
                                     @endif
