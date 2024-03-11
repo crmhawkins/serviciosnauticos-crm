@@ -15,7 +15,7 @@ use App\Models\RegistrosEntrada;
 use App\Models\RegistrosEntradaTranseunte;
 use App\Models\TranseunteTripulantes;
 use App\Models\User;
-use App\Models\club;
+use App\Models\Club;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
