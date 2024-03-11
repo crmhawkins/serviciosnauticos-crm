@@ -30,7 +30,6 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ asset('storage/'.$club->club_logo) }}" alt="Logo del Club">
         <h1>{{ $club->nombre }}</h1>
     </div>
 
