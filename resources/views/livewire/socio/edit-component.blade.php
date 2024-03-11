@@ -296,16 +296,23 @@
                                     <tr>
                                         <th colspan="12">
                                             <table style="width: 100% !important;">
-                                                <tr>
-                                                    <th>Fecha</th>
-                                                    <th>Descripción</th>
-                                                    <th>Usuario</th>
-                                                </tr>
                                                 @foreach ($notas as $nota)
                                                 <tr>
-                                                <td> {{ date_format(date_create($nota->fecha), 'd/m/Y') }}</td>
-                                                <td> {{ $nota->descripcion }}</td>
-                                                <td> {{ $this->getNombre($nota->user_id)}}</td>
+                                                    <th>Fecha</th>
+                                                    <td> {{ date_format(date_create($nota->fecha), 'd/m/Y') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Descripción</th>
+                                                    <td> {{ $nota->descripcion }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Usuario</th>
+                                                    <td> {{ $this->getNombre($nota->user_id)}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <button type="button" class="btn btn-secondary w-100 mt-2" data-toggle="modal" data-target="#modal-edit" wire:click="cargarNota({{ $nota->id }})">Editar</button>
+                                                    </td>
                                                 </tr>
                                                 @endforeach
 
@@ -589,12 +596,16 @@
                                                     <th>Fecha</th>
                                                     <th>Descripción</th>
                                                     <th>Usuario</th>
+                                                    <th>Editar</th>
                                                 </tr>
                                                 @foreach ($notas as $nota)
                                                 <tr>
                                                 <td> {{ date_format(date_create($nota->fecha), 'd/m/Y') }}</td>
                                                 <td> {{ $nota->descripcion }}</td>
                                                 <td> {{ $this->getNombre($nota->user_id)}}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-edit" wire:click="cargarNota({{ $nota->id }})">Editar</button>
+                                                </td>
                                                 </tr>
                                                 @endforeach
 
@@ -849,6 +860,39 @@
                                     style="border-left-color: white !important; border-right-color: white !important;">
                                     &nbsp;</td>
                             </tr>
+                            @mobile
+                            <tr>
+                                <th colspan="12">
+                                    <h4 style="text-align: center !important">Notas</h4>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="12">
+                                    <table style="width: 100% !important;">
+                                        @foreach ($notas as $nota)
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <td> {{ date_format(date_create($nota->fecha), 'd/m/Y') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <td> {{ $nota->descripcion }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Usuario</th>
+                                            <td> {{ $this->getNombre($nota->user_id)}}</td>
+                                        </tr>
+                                        @endforeach
+
+                                    </table>
+                            @if ($puede_notas == true)
+                                        <button type="button" class="btn btn-primary w-100 mt-2" data-toggle="modal"
+                                            style="align-self: end !important;"
+                                            data-target="#modal-create">Añadir</button>
+                                    @endif
+                                </th>
+                            </tr>
+                            @elsemobile
                             <tr>
                                 <th colspan="12">
                                     <h4 style="text-align: center !important">Notas</h4>
@@ -867,6 +911,7 @@
                                         <td> {{ date_format(date_create($nota->fecha), 'd/m/Y') }}</td>
                                         <td> {{ $nota->descripcion }}</td>
                                         <td> {{ $this->getNombre($nota->user_id)}}</td>
+
                                         </tr>
                                         @endforeach
 
@@ -879,6 +924,7 @@
                                     @endif
                                 </th>
                             </tr>
+                            @endmobile
                         </table>
                     @endif
                     <div wire:ignore.self class="modal fade" id="modal-create" tabindex="-1" role="dialog">

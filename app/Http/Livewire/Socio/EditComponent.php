@@ -29,6 +29,7 @@ class EditComponent extends Component
     use WithFileUploads;
     public $identificador;
     public $club_id;
+    public $socio;
     public $situacion_persona;
     public $situacion_barco_old;
     public $situacion_barco;
@@ -79,11 +80,13 @@ class EditComponent extends Component
 
     public function mount()
     {
+
         $this->ultimo_registroverif = RegistrosEntrada::where('socio_id', $this->identificador)->latest()->first();
         if(isset($this->ultimo_registroverif)){
         $this->entrada = $this->ultimo_registroverif->fecha_entrada;}
         $this->club_id=session()->get('clubSeleccionado');
         $socio = Socio::find($this->identificador);
+        $this->socio = $socio;
         $this->notas = Nota::where('socio_id', $this->identificador)->get();
         $this->situacion_barco_old = $socio->situacion_barco;
         $this->situacion_persona = $socio->situacion_persona;
@@ -1015,7 +1018,7 @@ class EditComponent extends Component
         return $user->name . " " . $user->surname;
     }
 
-    public function editNota($id)
+    public function cargarNota($id)
     {
         $nota = Nota::find($id);
         $this->texto_nota = $nota->descripcion;
@@ -1029,7 +1032,7 @@ class EditComponent extends Component
     }
     public function guardarNota()
     {
-        $notaSave = Nota::create(['socio_id' => $this->identificador, 'user_id' => Auth::id(), 'descripcion' => $this->texto_nota, 'fecha' => $this->fecha_nota]);
+        $notaSave = Nota::create(['socio_id' => $this->identificador, 'user_id' => Auth::id(), 'descripcion' => $this->texto_nota, 'fecha' => $this->fecha_nota ?? carbon::now()]);
         if ($notaSave) {
             $this->notas = Nota::where('socio_id', $this->identificador)->get();
             $this->dispatchBrowserEvent('closeModal');
@@ -1129,101 +1132,12 @@ class EditComponent extends Component
     }
     public function imprecionSocio()
     {
-        $socio = Socio::find($this->identificador);
-        $telefonospdf = [];
-        $llavespdf = [];
-        $tripulantespdf = [];
-        $registros_entrada_transeuntepdf = [];
-        $registros_entradapdf = [];
-        $club = Club::find(session()->get('clubSeleccionado'));
 
-        if ($socio->telefonos()->count() > 0) {
-            foreach ($socio->telefonos as $telefono) {
-                $telefonospdf[] = ['id' => $telefono->id, 'telefono' => $telefono->telefono];
-            }
-        }
-        if ($socio->numeros_llave()->count() > 0) {
-            foreach ($socio->numeros_llave as $numero_llave) {
-                $llavespdf[] = ['id' => $numero_llave->id, 'numero_llave' => $numero_llave->num_llave];
-            }
-         }
-        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
-            if ($socio->tripulantes()->count() > 0) {
-                foreach ($socio->tripulantes as $tripulante) {
-                    $tripulantespdf[] = ['id' => $tripulante->id, 'nombre' => $tripulante->nombre, 'dni' => $tripulante->dni];
-                }
-            }
-        }
-        if ($this->situacion_persona == 1 || $this->situacion_persona == 2){
-            if ($socio->registros_entradas_transeuntes()->count() > 0) {
-                foreach ($socio->registros_entradas_transeuntes as $registro) {
-                    $registros_entrada_transeuntepdf[] = [
-                        'id' => $registro->id,
-                        'fecha_entrada' => $registro->fecha_entrada,
-                        'fecha_salida' => $registro->fecha_salida,
-                        'precio' => $registro->precio,
-                        'total' => $registro->total,
-                        ];
-                }
-            }
-        }
-
-        $registrospdf = RegistrosEntrada::where('socio_id', $this->identificador)->get();
-
-        foreach ($registrospdf as $index => $registro) {
-            if ($registro->estado != 2) {
-                $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
-
-                $registros_entradapdf[] = [
-                    'fecha_1' => $registro->fecha_entrada,
-                    'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
-                    'tiempoAtraque' => $tiempoAtraque
-                ];
-                $tiempoVarada = null;
-                if (isset($registrospdf[$index + 1]) && $registrospdf[$index + 1]->estado != 2) {
-                    $tiempoVarada = Carbon::parse($registrospdf[$index + 1]->fecha_entrada)->diffInDays(Carbon::parse($registro->fecha_salida));
-                    $registros_entradapdf[] = [
-                        'fecha_1' => $registro->fecha_salida,
-                        'fecha_2' => $registrospdf[$index + 1]->fecha_entrada,
-                        'tiempoVarada' => $tiempoVarada
-                    ];
-                }
-            } else {
-                if ($index % 2 !== 0) {
-                    $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
-
-                    $registros_entradapdf[] = [
-                        'fecha_1' => $registro->fecha_entrada,
-                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de varada',
-                        'tiempoAtraque' => $tiempoAtraque,
-                        'estado' => 1,
-                    ];
-                    $tiempoVarada = null;
-                } else {
-                    $tiempoAtraque = $registro->fecha_salida !== null ? Carbon::parse($registro->fecha_salida)->diffInDays(Carbon::parse($registro->fecha_entrada)) : Carbon::parse($registro->fecha_entrada)->diffInDays(Carbon::now()->toDate());
-
-                    $registros_entradapdf[] = [
-                        'fecha_1' => $registro->fecha_entrada,
-                        'fecha_2' => $registro->fecha_salida !== null ? $registro->fecha_salida : 'Sin fecha de salida',
-                        'tiempoAtraque' => $tiempoAtraque,
-                        'estado' => 2,
-                    ];
-                    $tiempoVarada = null;
-                }
-            }
-        }
-
-        $socio = Socio::find($this->identificador);
-        $telefonospdf = [];
-        $llavespdf = [];
-        $tripulantespdf = [];
-        $registros_entrada_transeuntepdf = [];
-        $registros_entradapdf = [];
-
+        $club = Club::find($this->club_id);
 
         $datos =  [
-            'socio' => $socio, 'telefonospdf' => $telefonospdf, 'llavespdf' => $llavespdf, 'tripulantespdf' => $tripulantespdf, 'registros_entrada_transeuntepdf' => $registros_entrada_transeuntepdf,
-            'registros_entradapdf' => $registros_entradapdf ,'club' => $club];
+            'socio' => $this->socio, 'telefonos' => $this->telefonos, 'llaves' => $this->numeros_llave, 'tripulantes' => $this->tripulantes, 'registros_entrada_transeunte' => $this->registros_entrada_transeunte,
+            'registros_entrada' => $this->registros_entrada ,'club' => $club];
 
         $pdf = Pdf::loadView('livewire.socio.pdf-component', $datos)->setPaper('a4', 'vertical')->output(); //
         return response()->streamDownload(
