@@ -95,7 +95,7 @@
                                     @endif
                                     @foreach($socio->telefonos as $telefono)
                                         @if(Str::startsWith($telefono->telefono, ['6', '7']))
-                                            <a href="https://wa.me/{{ $telefono->telefono }}" class="btn btn-success mt-2">WhatsApp a {{ $telefono->telefono }}</a><br>
+                                            <a href="https://wa.me/+34{{ $telefono->telefono }}" class="btn btn-success mt-2">WhatsApp a {{ $telefono->telefono }}</a><br>
                                         @endif
                                     @endforeach
                                 </td>
