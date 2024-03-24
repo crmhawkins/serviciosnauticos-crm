@@ -58,11 +58,14 @@
                         });" wire:key='{{ time() . 'juanito' }}'>
                             <label for="vista">Listado a seleccionar</label>
                             <select wire:model="vista" id="vista" class="form-control w-100 MB">
-                                <option value="1">Socios y transeúntes en alta</option>
-                                <option value="2">Socios y transeúntes en atraque</option>
-                                <option value="3">Socios y transeúntes en varada</option>
+                                <option value="1">Socios en alta</option>
+                                <option value="2">Socios en atraque</option>
+                                <option value="3">Socios en varada</option>
                                 <option value="4">Socios en baja</option>
-                                <option value="5">Transeúntes en baja</option>
+                                <option value="5">Transeúntes en alta</option>
+                                <option value="6">Transeúntes en atraque</option>
+                                <option value="7">Transeúntes en varada</option>
+                                <option value="8">Transeúntes en baja</option>
                             </select>
                         </div>
                     </div>
