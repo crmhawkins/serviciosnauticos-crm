@@ -93,8 +93,10 @@
                                 <td>
                                     @if ($socio->situacion_persona == 0)
                                         Socio
-                                    @else
+                                    @elseif ($socio->situacion_persona == 1)
                                         Transeúnte
+                                    @else
+                                        Socio/Transeúnte
                                     @endif
                                 </td>
                                 @mobile

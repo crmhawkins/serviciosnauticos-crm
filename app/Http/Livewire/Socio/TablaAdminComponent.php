@@ -14,6 +14,12 @@ class TablaAdminComponent extends Component
     public function mount()
     {
         switch ($this->vista) {
+            case 0:
+                $this->socios = Socio::where('club_id', session()->get('clubSeleccionado'))
+                    ->where('alta_baja', 0)
+                    ->with('telefonos') // Carga la relación de teléfonos
+                    ->get();
+                break;
             case 1:
                 $this->socios = Socio::where('alta_baja', 0)
                     ->where('situacion_persona', 0)
@@ -66,6 +72,13 @@ class TablaAdminComponent extends Component
                     ->with('telefonos') // Carga la relación de teléfonos
                     ->get();
                 break;
+                case 9:
+                    $this->socios = Socio::where('club_id', session()->get('clubSeleccionado'))
+                        ->where('situacion_persona', 2)
+                        ->where('alta_baja', 0)
+                        ->with('telefonos') // Carga la relación de teléfonos
+                        ->get();
+                    break;
             default:
                 $this->socios = Socio::where('alta_baja', 0)
                      ->with('telefonos') // Carga la relación de teléfonos
