@@ -58,25 +58,21 @@
                         });" wire:key='{{ time() . 'juanito' }}'>
                             <label for="vista">Listado a seleccionar</label>
                             <select wire:model="vista" id="vista" class="form-control w-100 MB">
-                                <option value="0">Todos en alta</option>
-                                <option value="1">Socios en alta</option>
-                                <option value="2">Socios en atraque</option>
-                                <option value="3">Socios en varada</option>
-                                <option value="4">Socios en baja</option>
-                                <option value="5">Transeúntes en alta</option>
-                                <option value="6">Transeúntes en atraque</option>
-                                <option value="7">Transeúntes en varada</option>
-                                <option value="8">Transeúntes en baja</option>
-                                <option value="9">Socio/Transeúntes en alta</option>
+                                <option value="1">Todos en alta</option>
+                                <option value="2">Socios en alta</option>
+                                <option value="3">Socios en atraque</option>
+                                <option value="4">Socios en varada</option>
+                                <option value="5">Socios en baja</option>
+                                <option value="6">Transeúntes en alta</option>
+                                <option value="7">Transeúntes en atraque</option>
+                                <option value="8">Transeúntes en varada</option>
+                                <option value="9">Transeúntes en baja</option>
+                                <option value="10">Socio/Transeúntes en alta</option>
                             </select>
                         </div>
                     </div>
 
                     @switch($vista)
-                        @case(0)
-                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
-                        @break
-
                         @case(1)
                             @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
@@ -113,7 +109,13 @@
                             @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
 
+                        @case(10)
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
+                        @break
+
                         @default
+                            @livewire('socio.tabla-admin-component', ['vista' => $vista])
+                        @break
                         @endswitch ($vista)
 
                     <a href="socios-create" class="btn btn-lg btn-primary">Añadir socio al club</a>
