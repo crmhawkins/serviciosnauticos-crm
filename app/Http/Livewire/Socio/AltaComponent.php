@@ -189,95 +189,95 @@ class AltaComponent extends Component
     {
         $this->alta_baja = 0;
 
-        $camposFaltantes = [];
+        // $camposFaltantes = [];
 
-        $camposRequeridos = [
-            'club_id',
-            'situacion_persona',
-            'situacion_barco',
-            'numero_socio',
-            'nombre_socio',
-            'dni',
-            'direccion',
-            'email',
-            'pantalan_t_atraque',
-            'nombre_barco',
-            'matricula',
-            'eslora',
-            'manga',
-            'calado',
-            'seguro_barco',
-            'poliza',
-            'vencimiento',
-            'itb',
-            'ruta_foto',
-            'ruta_foto2'
-        ];
-        $nombresDescriptivos = [
-            'club_id' => 'ID del Club',
-            'situacion_persona' => 'Situación de persona',
-            'situacion_barco' => 'Situación de barco',
-            'numero_socio' => 'Nº de socio',
-            'nombre_socio' => 'Nombre de socio',
-            'dni' => 'DNI',
-            'direccion' => 'Dirección',
-            'email' => 'Email',
-            'pantalan_t_atraque' => 'Pantalán y Atraque',
-            'nombre_barco' => 'Nombre del barco',
-            'matricula' => 'Matrícula',
-            'eslora' => 'Eslora',
-            'manga' => 'Manga',
-            'calado' => 'Calado',
-            'seguro_barco' => 'Seguro del barco',
-            'poliza' => 'Póliza',
-            'vencimiento' => 'Vencimiento',
-            'itb' => 'ITB',
-            'ruta_foto' => 'Imagen del barco',
-            'ruta_foto2' => 'Imagen del socio',
-        ];
-        foreach ($camposRequeridos as $campo) {
-            if ($this->{$campo} === null) {
-                $camposFaltantes[] = $nombresDescriptivos[$campo] ?? $campo;
-            }
-        }
+        // $camposRequeridos = [
+        //     'club_id',
+        //     'situacion_persona',
+        //     'situacion_barco',
+        //     'numero_socio',
+        //     'nombre_socio',
+        //     'dni',
+        //     'direccion',
+        //     'email',
+        //     'pantalan_t_atraque',
+        //     'nombre_barco',
+        //     'matricula',
+        //     'eslora',
+        //     'manga',
+        //     'calado',
+        //     'seguro_barco',
+        //     'poliza',
+        //     'vencimiento',
+        //     'itb',
+        //     'ruta_foto',
+        //     'ruta_foto2'
+        // ];
+        // $nombresDescriptivos = [
+        //     'club_id' => 'ID del Club',
+        //     'situacion_persona' => 'Situación de persona',
+        //     'situacion_barco' => 'Situación de barco',
+        //     'numero_socio' => 'Nº de socio',
+        //     'nombre_socio' => 'Nombre de socio',
+        //     'dni' => 'DNI',
+        //     'direccion' => 'Dirección',
+        //     'email' => 'Email',
+        //     'pantalan_t_atraque' => 'Pantalán y Atraque',
+        //     'nombre_barco' => 'Nombre del barco',
+        //     'matricula' => 'Matrícula',
+        //     'eslora' => 'Eslora',
+        //     'manga' => 'Manga',
+        //     'calado' => 'Calado',
+        //     'seguro_barco' => 'Seguro del barco',
+        //     'poliza' => 'Póliza',
+        //     'vencimiento' => 'Vencimiento',
+        //     'itb' => 'ITB',
+        //     'ruta_foto' => 'Imagen del barco',
+        //     'ruta_foto2' => 'Imagen del socio',
+        // ];
+        // foreach ($camposRequeridos as $campo) {
+        //     if ($this->{$campo} === null) {
+        //         $camposFaltantes[] = $nombresDescriptivos[$campo] ?? $campo;
+        //     }
+        // }
 
-        if (!empty($camposFaltantes)) {
-            $mensajeError = "Los siguientes campos son obligatorios y están faltantes: " . implode(', ', $camposFaltantes);
-            $this->alert('error', $mensajeError, [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => false,
-            ]);
-            return;
-        }
+        // if (!empty($camposFaltantes)) {
+        //     $mensajeError = "Los siguientes campos son obligatorios y están faltantes: " . implode(', ', $camposFaltantes);
+        //     $this->alert('error', $mensajeError, [
+        //         'position' => 'center',
+        //         'timer' => 3000,
+        //         'toast' => false,
+        //         'showConfirmButton' => true,
+        //         'confirmButtonText' => 'ok',
+        //         'timerProgressBar' => false,
+        //     ]);
+        //     return;
+        // }
 
         $validatedData = $this->validate(
             [
-                'club_id' => 'required',
-                'situacion_persona' => 'required',
-                'situacion_barco' => 'required',
-                'numero_socio' => 'required',
-                'nombre_socio' => 'required',
-                'dni' => 'required',
-                'direccion' => 'required',
-                'email' => 'required',
-                'pantalan_t_atraque' => 'required',
-                'nombre_barco' => 'required',
-                'matricula' => 'required',
-                'eslora' => 'required',
-                'manga' => 'required',
-                'calado' => 'required',
+                'club_id' => 'nullable',
+                'situacion_persona' => 'nullable',
+                'situacion_barco' => 'nullable',
+                'numero_socio' => 'nullable',
+                'nombre_socio' => 'nullable',
+                'dni' => 'nullable',
+                'direccion' => 'nullable',
+                'email' => 'nullable',
+                'pantalan_t_atraque' => 'nullable',
+                'nombre_barco' => 'nullable',
+                'matricula' => 'nullable',
+                'eslora' => 'nullable',
+                'manga' => 'nullable',
+                'calado' => 'nullable',
                 'puntal' => 'nullable',
-                'seguro_barco' => 'required',
-                'poliza' => 'required',
-                'vencimiento' => 'required',
-                'itb' => 'required',
-                'ruta_foto' => 'required',
-                'ruta_foto2' => 'required',
-                'alta_baja' => 'required',
+                'seguro_barco' => 'nullable',
+                'poliza' => 'nullable',
+                'vencimiento' => 'nullable',
+                'itb' => 'nullable',
+                'ruta_foto' => 'nullable',
+                'ruta_foto2' => 'nullable',
+                'alta_baja' => 'nullable',
 
             ],
             // Mensajes de error
@@ -305,19 +305,68 @@ class AltaComponent extends Component
             ]
         );
 
-        if (!is_string($this->ruta_foto)) {
-            $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto) == false && isset($this->ruta_foto) && is_object($this->ruta_foto)) {
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto->path();
+        list($width, $height) = getimagesize($sourcePath);
+        $ratio = $height / $width;
+        $targetHeight = $targetWidth * $ratio;
 
-            $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
+        // Crear una imagen en blanco con las dimensiones objetivo
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-            $validatedData['ruta_foto'] = $name;
+        // Cargar la imagen original
+        $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+        // Redimensionar la imagen original en la imagen objetivo
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+        $tempPath = sys_get_temp_dir() . '/' . $name;
+        imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+        // Mover la imagen al almacenamiento
+        Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+        // Limpiar
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        unlink($tempPath);
+
+        $validatedData['ruta_foto'] = $name;
         }
-        if (!is_string($this->ruta_foto2)) {
-            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
 
-            $this->ruta_foto->storePubliclyAs('public', 'photos/' . $name);
+        if (Storage::disk('public')->exists('assets/images/' . $this->ruta_foto2) == false && isset($this->ruta_foto2) && is_object($this->ruta_foto2)) {
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto2->path();
+        list($width, $height) = getimagesize($sourcePath);
+        $ratio = $height / $width;
+        $targetHeight = $targetWidth * $ratio;
 
-            $validatedData['ruta_foto2'] = $name;
+        // Crear una imagen en blanco con las dimensiones objetivo
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        // Cargar la imagen original
+        $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+        // Redimensionar la imagen original en la imagen objetivo
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+        $tempPath = sys_get_temp_dir() . '/' . $name;
+        imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+        // Mover la imagen al almacenamiento
+        Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+        // Limpiar
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        unlink($tempPath);
+
+        $validatedData['ruta_foto2'] = $name;
         }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);

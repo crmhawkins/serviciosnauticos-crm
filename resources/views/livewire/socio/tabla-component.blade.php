@@ -23,10 +23,10 @@
                 </div>
                 @mobile
                 <table id="datatable-buttons" class="table p-0 table-striped table-bordered dt-responsive nowrap"
-                    style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:ignore>
+                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 @elsemobile
                 <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
-                    style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:ignore>
+                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 @endmobile
                     <thead>
                         <tr>
@@ -118,39 +118,3 @@
     @endif
 
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    var table = $('#datatable-buttons').DataTable({
-        lengthChange: false,
-        dom: 'Bfrtip',
-        pageLength: 35,
-        buttons: ['copy', 'csv', 'excel', 'pdf'],
-        language: {
-            lengthMenu: 'Mostrando _MENU_ registros por página',
-            zeroRecords: 'No se encontraron registros coincidentes',
-            info: 'Mostrando página _PAGE_ de _PAGES_',
-            infoEmpty: 'No hay registros disponibles',
-            infoFiltered: '(filtrado de _MAX_ total registros)',
-            search: 'Buscar:',
-            paginate: {
-                first: 'Primero',
-                last: 'Ultimo',
-                next: '>',
-                previous: '<'
-            },
-        },
-        order: [[0, 'asc']],
-    });
-
-    table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
-
-    // Escucha el cambio en el selector de cantidad de páginas
-    $('#pageSize').change(function () {
-        var selectedValue = $(this).val();
-        table.page.len(selectedValue).draw();
-    });
-});
-
-</script>
-

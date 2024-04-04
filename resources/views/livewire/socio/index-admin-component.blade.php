@@ -128,59 +128,75 @@
 
 
 @section('scripts')
-    {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            console.log('entro');
-            $('#tablePresupuestos').DataTable({
-                responsive: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                buttons: [{
-                    extend: 'collection',
-                    text: 'Export',
-                    buttons: [{
-                            extend: 'pdf',
-                            className: 'btn-export'
-                        },
-                        {
-                            extend: 'excel',
-                            className: 'btn-export'
-                        }
-                    ],
-                    className: 'btn btn-info text-white'
-                }],
-                "language": {
-                    "lengthMenu": "Mostrando _MENU_ registros por página",
-                    "zeroRecords": "Nothing found - sorry",
-                    "info": "Mostrando página _PAGE_ of _PAGES_",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(filtrado de _MAX_ total registros)",
-                    "search": "Buscar:",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Ultimo",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    },
-                    "zeroRecords": "No se encontraron registros coincidentes",
-                }
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var table = $('#datatable-buttons').DataTable({
+        lengthChange: false,
+        dom: 'Bfrtip',
+        pageLength: 35,
+        buttons: ['copy', 'csv', 'excel', 'pdf'],
+        language: {
+            lengthMenu: 'Mostrando _MENU_ registros por página',
+            zeroRecords: 'No se encontraron registros coincidentes',
+            info: 'Mostrando página _PAGE_ de _PAGES_',
+            infoEmpty: 'No hay registros disponibles',
+            infoFiltered: '(filtrado de _MAX_ total registros)',
+            search: 'Buscar:',
+            paginate: {
+                first: 'Primero',
+                last: 'Ultimo',
+                next: '>',
 
-            addEventListener("resize", (event) => {
-                location.reload();
-            })
+                previous: '<'
+            },
+        },
+        order: [[0, 'asc']],
+    });
+
+    table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+
+    // Escucha el cambio en el selector de cantidad de páginas
+    $('#pageSize').change(function () {
+        var selectedValue = $(this).val();
+        table.page.len(selectedValue).draw();
+    });
+});
+</script>
+<script>
+    document.addEventListener('livewire:load', function() {
+        window.livewire.hook('message.processed', () => {
+            // Verifica si la instancia de DataTables ya existe y destrúyela
+            if ($.fn.DataTable.isDataTable('#datatable-buttons')) {
+                $('#datatable-buttons').DataTable().clear().destroy();
+            }
+
+            // Reinicializa DataTables aquí
+            $('#datatable-buttons').DataTable({
+                lengthChange: false,
+            dom: 'Bfrtip',
+            pageLength: 35,
+            buttons: ['copy', 'csv', 'excel', 'pdf'],
+            language: {
+                lengthMenu: 'Mostrando _MENU_ registros por página',
+                zeroRecords: 'No se encontraron registros coincidentes',
+                info: 'Mostrando página _PAGE_ de _PAGES_',
+                infoEmpty: 'No hay registros disponibles',
+                infoFiltered: '(filtrado de _MAX_ total registros)',
+                search: 'Buscar:',
+                paginate: {
+                    first: 'Primero',
+                    last: 'Ultimo',
+                    next: '>',
+
+                    previous: '<'
+                },
+            },
+            order: [[0, 'asc']],
+            });
         });
-    </script> --}}
+    });
+    </script>
+
     <script src="../assets/js/jquery.slimscroll.js"></script>
 
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
