@@ -72,6 +72,7 @@
                                         </th>
                                     </tr>
                                     <tr>
+
                                         <th colspan="12">
                                             @if (isset($ruta_foto2))
                                             @if (!is_string($ruta_foto2))

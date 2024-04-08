@@ -403,7 +403,8 @@ class AltaComponent extends Component
 
         if ($this->situacion_persona == 1) {
             $ultimo_registro = RegistrosEntradaTranseunte::where('socio_id', $this->identificador)->latest()->first();
-            $ultimo_registro->update(['fecha_salida' => $this->fecha_baja]);
+            if(isset($ultimo_registro)){
+                $ultimo_registro->update(['fecha_salida' => $this->fecha_baja]);}
         }
 
         // Alertas de guardado exitoso
