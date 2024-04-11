@@ -790,7 +790,7 @@
                                             <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
                                                 ({{ $registro['tiempoAtraque'] }} días de baja)</h6>
                                         @else
-                                            @if ($registroIndex % 2 !== 0)
+                                            @if ($registroIndex % 2 !== 0 && isset( $registro['tiempoVarada']))
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
                                                     ({{ $registro['tiempoVarada'] }} días en varada)</h6>
                                             @else
