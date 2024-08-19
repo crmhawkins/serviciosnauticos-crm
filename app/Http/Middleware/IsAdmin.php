@@ -17,6 +17,10 @@ class IsAdmin
 
     public function handle($request, Closure $next)
     {
+        if (! $request->expectsJson()) {
+            return route('login');
+        }
+
         if (Auth::user() && Auth::user()->role > 0) {
             if (session()->has('clubSeleccionado') == true) {
                 return $next($request);
