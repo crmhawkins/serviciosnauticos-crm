@@ -69,18 +69,18 @@ Route::name('inicio')->get('/', function () {
 });
 
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 //Route::get('/clients', [App\Http\Controllers\ClientController::class, 'index'])->name('clients.index');
 
 
 
-Route::group(['middleware' => ['is.admin' ,'auth' ], 'prefix' => 'admin'], function () {
+Route::group(['middleware' => ['is.admin','auth']], function () {
 
     /* --------------------------------------- */
 
     // RECORDATORIO: IMPORTAR CONTROLADORES NUEVOS
     // Alumnos
 
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::get('socios', [SocioController::class, 'index'])->name('socios.index');
     Route::get('socios-todos', [SocioController::class, 'indexadmin'])->name('socios.indexadmin');
