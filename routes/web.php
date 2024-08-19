@@ -74,7 +74,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 
-Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
+Route::group(['middleware' => ['is.admin' ,'auth' ], 'prefix' => 'admin'], function () {
 
     /* --------------------------------------- */
 
