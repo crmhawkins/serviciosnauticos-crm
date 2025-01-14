@@ -15,8 +15,7 @@ class TablaAdminComponent extends Component
     {
         switch ($this->vista) {
             case 1:
-                $this->socios = Socio::where('club_id', session()->get('clubSeleccionado'))
-                    ->where('alta_baja', 0)
+                $this->socios = Socio::where('alta_baja', 0)
                     ->with('telefonos') // Carga la relación de teléfonos
                     ->get();
                 break;
@@ -72,9 +71,8 @@ class TablaAdminComponent extends Component
                     ->with('telefonos') // Carga la relación de teléfonos
                     ->get();
                 break;
-                case 10:
-                    $this->socios = Socio::where('club_id', session()->get('clubSeleccionado'))
-                        ->where('situacion_persona', 2)
+            case 10:
+                    $this->socios = Socio::where('situacion_persona', 2)
                         ->where('alta_baja', 0)
                         ->with('telefonos') // Carga la relación de teléfonos
                         ->get();
