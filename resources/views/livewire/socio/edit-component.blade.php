@@ -1019,18 +1019,18 @@
                                         @if (isset($registro['estado']))
                                             @if ($registro['estado'] == 1)
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                    ({{ $registro['tiempoAtraque'] }} días en varada/fuera)</h6>
+                                                    ({{ $registro['tiempoAtraque'] ?? '-' }} días en varada/fuera)</h6>
                                             @else
-                                            <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                ({{ $registro['tiempoAtraque'] }} días de atraque)</h6>
+                                                <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
+                                                    ({{ $registro['tiempoAtraque'] ?? '-' }} días de atraque)</h6>
                                             @endif
                                         @else
-                                            @if ($registroIndex % 2 !== 0)
+                                            @if (isset($registro['tiempoVarada']))
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
                                                     ({{ $registro['tiempoVarada'] }} días en varada/fuera)</h6>
                                             @else
                                                 <h6>{{ $registro['fecha_1'] }} - {{ $registro['fecha_2'] }}
-                                                    ({{ $registro['tiempoAtraque'] }} días en atraque)</h6>
+                                                    ({{ $registro['tiempoAtraque'] ?? '-' }} días en atraque)</h6>
                                             @endif
                                         @endif
                                     @endforeach

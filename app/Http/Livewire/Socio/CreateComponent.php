@@ -11,6 +11,7 @@ use App\Models\NumerosLlave;
 use App\Models\RegistrosEntrada;
 use App\Models\RegistrosEntradaTranseunte;
 use App\Models\TranseunteTripulantes;
+use Illuminate\Support\Facades\Storage;
 
 class CreateComponent extends Component
 {
@@ -122,18 +123,66 @@ class CreateComponent extends Component
             ]
         );
         if($this->ruta_foto){
-        $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto->path();
+            list($width, $height) = getimagesize($sourcePath);
+            $ratio = $height / $width;
+            $targetHeight = $targetWidth * $ratio;
 
-        $this->ruta_foto->storePubliclyAs('assets/images/',  $name);
+            // Crear una imagen en blanco con las dimensiones objetivo
+            $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-        $validatedData['ruta_foto'] = $name;
+            // Cargar la imagen original
+            $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+            // Redimensionar la imagen original en la imagen objetivo
+            imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+            // Guardar la imagen redimensionada
+            $name = md5($this->ruta_foto . microtime()) . '.' . $this->ruta_foto->extension();
+            $tempPath = sys_get_temp_dir() . '/' . $name;
+            imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+            // Mover la imagen al almacenamiento
+            Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+            // Limpiar
+            imagedestroy($sourceImage);
+            imagedestroy($targetImage);
+            unlink($tempPath);
+
+            $validatedData['ruta_foto'] = $name;
         }
         if($this->ruta_foto2){
-        $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+            $targetWidth = 800;
+            $sourcePath = $this->ruta_foto2->path();
+            list($width, $height) = getimagesize($sourcePath);
+            $ratio = $height / $width;
+            $targetHeight = $targetWidth * $ratio;
 
-        $this->ruta_foto2->storePubliclyAs('assets/images/', $name);
+            // Crear una imagen en blanco con las dimensiones objetivo
+            $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-        $validatedData['ruta_foto2'] = $name;
+            // Cargar la imagen original
+            $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
+
+            // Redimensionar la imagen original en la imagen objetivo
+            imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+            // Guardar la imagen redimensionada
+            $name = md5($this->ruta_foto2 . microtime()) . '.' . $this->ruta_foto2->extension();
+            $tempPath = sys_get_temp_dir() . '/' . $name;
+            imagejpeg($targetImage, $tempPath, 75); // 75 es la calidad de JPEG
+
+            // Mover la imagen al almacenamiento
+            Storage::disk('public')->put('assets/images/' . $name, file_get_contents($tempPath));
+
+            // Limpiar
+            imagedestroy($sourceImage);
+            imagedestroy($targetImage);
+            unlink($tempPath);
+
+            $validatedData['ruta_foto2'] = $name;
         }
         // Guardar datos validados
         $socioSave = Socio::create($validatedData);
