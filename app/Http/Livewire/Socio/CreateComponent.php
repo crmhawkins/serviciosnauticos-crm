@@ -12,11 +12,13 @@ use App\Models\RegistrosEntrada;
 use App\Models\RegistrosEntradaTranseunte;
 use App\Models\TranseunteTripulantes;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Livewire\Traits\HandlesErrors;
 
 class CreateComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
+    use HandlesErrors;
     public $club_id;
     public $situacion_persona = 0;
     public $situacion_barco = 0;
@@ -66,62 +68,44 @@ class CreateComponent extends Component
 
     public function submit()
     {
-        // Validación de datos
-        $validatedData = $this->validate(
-            [
-                'club_id' => 'required',
-                'situacion_persona' => 'required',
-                'situacion_barco' => 'required',
-                'numero_socio' => 'nullable',
-                'nombre_socio' => 'required',
-                'dni' => 'nullable',
-                'direccion' => 'nullable',
-                'email' => 'nullable',
-                'pantalan_t_atraque' => 'nullable',
-                'nombre_barco' => 'nullable',
-                'matricula' => 'nullable',
-                'eslora' => 'nullable',
-                'manga' => 'nullable',
-                'calado' => 'nullable',
-                'seguro_barco' => 'nullable',
-                'poliza' => 'nullable',
-                'vencimiento' => 'nullable',
-                'itb' => 'nullable',
-                'ruta_foto' => 'nullable',
-                'ruta_foto2' => 'nullable',
-                'pin_socio' => 'nullable',
-                'alta_baja' => 'required',
-                'atraque_fijo' => 'nullable',
+        try {
+            // Validación de datos
+            $validatedData = $this->validate(
+                [
+                    'club_id' => 'required',
+                    'situacion_persona' => 'required',
+                    'situacion_barco' => 'required',
+                    'numero_socio' => 'nullable',
+                    'nombre_socio' => 'required',
+                    'dni' => 'nullable',
+                    'direccion' => 'nullable',
+                    'email' => 'nullable',
+                    'pantalan_t_atraque' => 'nullable',
+                    'nombre_barco' => 'nullable',
+                    'matricula' => 'nullable',
+                    'eslora' => 'nullable',
+                    'manga' => 'nullable',
+                    'calado' => 'nullable',
+                    'seguro_barco' => 'nullable',
+                    'poliza' => 'nullable',
+                    'vencimiento' => 'nullable',
+                    'itb' => 'nullable',
+                    'ruta_foto' => 'nullable',
+                    'ruta_foto2' => 'nullable',
+                    'pin_socio' => 'nullable',
+                    'alta_baja' => 'required',
+                    'atraque_fijo' => 'nullable',
 
-            ],
-            // Mensajes de error
-            [
-                'club_id.required' => 'required',
-                'situacion_persona.required' => 'required',
-                'situacion_barco.required' => 'required',
-                'numero_socio.required' => 'required',
-                'nombre_socio.required' => 'required',
-                'dni.required' => 'required',
-                'direccion.required' => 'required',
-                'email.required'  => 'required',
-                'pantalan_t_atraque.required' => 'required',
-                'nombre_barco.required' => 'required',
-                'matricula.required' => 'required',
-                'eslora.required' => 'required',
-                'manga.required' => 'required',
-                'calado.required' => 'required',
-                'seguro_barco.required' => 'required',
-                'poliza.required' => 'required',
-                'vencimiento.required' => 'required',
-                'itb.required' => 'required',
-                'ruta_foto.required' => 'required',
-                'ruta_foto2.required' => 'required',
-                'pin_socio.required' => 'required',
-                'alta_baja.required' => 'required',
-                'atraque_fijo.required' => 'required',
-
-            ]
-        );
+                ],
+                // Mensajes de error
+                [
+                    'club_id.required' => 'El club es obligatorio.',
+                    'situacion_persona.required' => 'La situación de persona es obligatoria.',
+                    'situacion_barco.required' => 'La situación del barco es obligatoria.',
+                    'nombre_socio.required' => 'El nombre del socio es obligatorio.',
+                    'alta_baja.required' => 'El estado de alta/baja es obligatorio.',
+                ]
+            );
         if($this->ruta_foto){
             $targetWidth = 800;
             $sourcePath = $this->ruta_foto->path();
@@ -184,41 +168,42 @@ class CreateComponent extends Component
 
             $validatedData['ruta_foto2'] = $name;
         }
+        
         // Guardar datos validados
         $socioSave = Socio::create($validatedData);
         RegistrosEntrada::create(['socio_id' => $socioSave->id, 'fecha_entrada' => $this->fecha_entrada, 'estado' => 0]);
 
-        foreach ($this->telefonos as $telefonoIndex => $telefono) {
-            $nuevo_telefono = Telefonos::create(['socio_id' => $socioSave->id, 'telefono' => $telefono['telefono']]);
+        // Limpiar y guardar solo teléfonos válidos
+        $telefonosLimpios = $this->limpiarTelefonos($this->telefonos);
+        foreach ($telefonosLimpios as $telefono) {
+            Telefonos::create(['socio_id' => $socioSave->id, 'telefono' => $telefono]);
         }
+
+        // Guardar números de llave (filtrar vacíos)
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
-            $nuevo_num_llave = NumerosLlave::create(['socio_id' => $socioSave->id, 'num_llave' => $numero_llave['numero_llave']]);
+            if (!empty(trim($numero_llave['numero_llave']))) {
+                NumerosLlave::create(['socio_id' => $socioSave->id, 'num_llave' => $numero_llave['numero_llave']]);
+            }
         }
+
+        // Guardar tripulantes si es transeúnte
         if($this->situacion_persona == 1){
             foreach ($this->tripulantes as $tripulanteIndex => $tripulante) {
-                $nuevo_tripulante = TranseunteTripulantes::create(['socio_id' => $socioSave->id, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                if (!empty(trim($tripulante['nombre'])) && !empty(trim($tripulante['dni']))) {
+                    TranseunteTripulantes::create(['socio_id' => $socioSave->id, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                }
             }
-
         }
 
+        // Mostrar mensaje de éxito
+        $this->showSuccessModal('¡Socio creado correctamente!', 'El socio ha sido registrado exitosamente.');
 
-        // Alertas de guardado exitoso
-        if ($socioSave) {
-            $this->alert('success', '¡Socio registrado correctamente!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
-            ]);
-        } else {
-            $this->alert('error', '¡No se ha podido guardar la información del socio!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Los errores de validación se muestran inline automáticamente
+            throw $e;
+            
+        } catch (\Exception $e) {
+            $this->handleException($e, 'creación de socio');
         }
     }
 

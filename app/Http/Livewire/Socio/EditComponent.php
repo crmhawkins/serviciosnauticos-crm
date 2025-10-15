@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\Club;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Http\Livewire\Traits\HandlesErrors;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 
@@ -27,6 +28,7 @@ class EditComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
+    use HandlesErrors;
     public $identificador;
     public $club_id;
     public $socio;
@@ -311,29 +313,30 @@ class EditComponent extends Component
             return;
         }
 
-        $validatedData = $this->validate(
-            [
-                'club_id' => 'required',
-                'situacion_persona' => 'required',
-                'situacion_barco' => 'required',
-                'numero_socio' => 'nullable',
-                'nombre_socio' => 'required',
-                'dni' => 'nullable',
-                'direccion' => 'nullable',
-                'email' => 'nullable',
-                'pantalan_t_atraque' => 'nullable',
-                'nombre_barco' => 'nullable',
-                'matricula' => 'nullable',
-                'eslora' => 'nullable',
-                'manga' => 'nullable',
-                'calado' => 'nullable',
-                'puntal' => 'nullable',
-                'seguro_barco' => 'nullable',
-                'poliza' => 'nullable',
-                'vencimiento' => 'nullable',
-                'itb' => 'nullable',
-                'ruta_foto' => 'nullable',
-                'ruta_foto2' => 'nullable',
+        try {
+            $validatedData = $this->validate(
+                [
+                    'club_id' => 'required',
+                    'situacion_persona' => 'required',
+                    'situacion_barco' => 'required',
+                    'numero_socio' => 'nullable',
+                    'nombre_socio' => 'required',
+                    'dni' => 'nullable',
+                    'direccion' => 'nullable',
+                    'email' => 'nullable',
+                    'pantalan_t_atraque' => 'nullable',
+                    'nombre_barco' => 'nullable',
+                    'matricula' => 'nullable',
+                    'eslora' => 'nullable',
+                    'manga' => 'nullable',
+                    'calado' => 'nullable',
+                    'puntal' => 'nullable',
+                    'seguro_barco' => 'nullable',
+                    'poliza' => 'nullable',
+                    'vencimiento' => 'nullable',
+                    'itb' => 'nullable',
+                    'ruta_foto' => 'nullable',
+                    'ruta_foto2' => 'nullable',
 
             ],
             // Mensajes de error
@@ -426,11 +429,28 @@ class EditComponent extends Component
 
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
+        
+        // Actualizar teléfonos existentes y crear nuevos
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
             if (isset($telefono['id'])) {
-                Telefonos::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
-            }else{
-                Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+                // Actualizar teléfono existente
+                if (!empty(trim($telefono['telefono']))) {
+                    $telefonoLimpio = preg_replace('/\D+/', '', $telefono['telefono']);
+                    if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                        Telefonos::find($telefono['id'])->update(['telefono' => $telefonoLimpio]);
+                    }
+                } else {
+                    // Si está vacío, eliminar el teléfono
+                    Telefonos::find($telefono['id'])->delete();
+                }
+            } else {
+                // Crear nuevo teléfono solo si no está vacío
+                if (!empty(trim($telefono['telefono']))) {
+                    $telefonoLimpio = preg_replace('/\D+/', '', $telefono['telefono']);
+                    if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                        Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefonoLimpio]);
+                    }
+                }
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
@@ -494,23 +514,16 @@ class EditComponent extends Component
                 $nuevo_tripulante = TranseunteTripulantes::find($tripulante['id'])->delete();
             }
         }
-        // Alertas de guardado exitoso
-        if ($socioSave) {
-            $this->alert('success', '¡Socio actualizado correctamente!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => false,
-            ]);
-        } else {
-            $this->alert('error', '¡No se ha podido guardar la información del socio!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-            ]);
+        
+        // Mostrar mensaje de éxito
+        $this->showSuccessModal('¡Socio actualizado correctamente!', 'El socio ha sido actualizado exitosamente.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Los errores de validación se muestran inline automáticamente
+            throw $e;
+            
+        } catch (\Exception $e) {
+            $this->handleException($e, 'actualización de socio');
         }
     }
 
@@ -686,11 +699,28 @@ class EditComponent extends Component
         }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
+        
+        // Actualizar teléfonos existentes y crear nuevos
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
             if (isset($telefono['id'])) {
-                Telefonos::find($telefono['id'])->update(['telefono' => $telefono['telefono']]);
-            }else{
-                Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+                // Actualizar teléfono existente
+                if (!empty(trim($telefono['telefono']))) {
+                    $telefonoLimpio = preg_replace('/\D+/', '', $telefono['telefono']);
+                    if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                        Telefonos::find($telefono['id'])->update(['telefono' => $telefonoLimpio]);
+                    }
+                } else {
+                    // Si está vacío, eliminar el teléfono
+                    Telefonos::find($telefono['id'])->delete();
+                }
+            } else {
+                // Crear nuevo teléfono solo si no está vacío
+                if (!empty(trim($telefono['telefono']))) {
+                    $telefonoLimpio = preg_replace('/\D+/', '', $telefono['telefono']);
+                    if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                        Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefonoLimpio]);
+                    }
+                }
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {

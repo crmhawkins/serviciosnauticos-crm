@@ -58,7 +58,7 @@
                                             <div class="col-sm-12">
                                                 <input type="file" class="form-control" wire:model="ruta_foto"
                                                     name="ruta_foto" id="ruta_foto" placeholder="Imagen del producto...">
-                                                @error('nombre')
+                                                @error('ruta_foto')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -90,7 +90,7 @@
                                             <div class="col-sm-12">
                                                 <input type="file" class="form-control" wire:model="ruta_foto2"
                                                     name="ruta_foto2" id="ruta_foto2" placeholder="Imagen del producto...">
-                                                @error('nombre')
+                                                @error('ruta_foto2')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -109,6 +109,13 @@
                                         <h6 style="text-align: center !important">Barco en varada</h6>
                                     </td>
                                 </tr>
+                                @error('situacion_barco')
+                                    <tr>
+                                        <td colspan="12" class="text-center">
+                                            <span class="text-danger">{{ $message }}</span>
+                                        </td>
+                                    </tr>
+                                @enderror
                                 <tr>
                                     <td colspan="6" wire:click="cambiarSituacionPersona(0)"
                                         @if ($situacion_persona == 0) style="background-color: #3b996d !important" @endif>
@@ -123,6 +130,13 @@
                                         <h6 style="text-align: center !important">Socio/Transeúnte</h6>
                                     </td>
                                 </tr>
+                                @error('situacion_persona')
+                                    <tr>
+                                        <td colspan="12" class="text-center">
+                                            <span class="text-danger">{{ $message }}</span>
+                                        </td>
+                                    </tr>
+                                @enderror
                                 <tr>
                                     <th colspan="4">Fecha de entrada:</th>
                                     <td colspan="8"><input type="text" wire:model="fecha_entrada" class="form-control"
@@ -130,8 +144,13 @@
                                 </tr>
                                 <tr>
                                     <th colspan="4">Nombre:</th>
-                                    <td colspan="8"><input type="text" wire:model="nombre_socio" class="form-control"
-                                            name="nombre_socio" placeholder="Nombre"></td>
+                                    <td colspan="8">
+                                        <input type="text" wire:model="nombre_socio" class="form-control"
+                                            name="nombre_socio" placeholder="Nombre">
+                                        @error('nombre_socio')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th colspan="4">Nº de socio</th>
@@ -300,7 +319,7 @@
                                             <div class="col-sm-12">
                                                 <input type="file" class="form-control" wire:model="ruta_foto"
                                                     name="ruta_foto" id="ruta_foto" placeholder="Imagen del producto...">
-                                                @error('nombre')
+                                                @error('ruta_foto')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -320,7 +339,7 @@
                                                 <input type="file" class="form-control" wire:model="ruta_foto2"
                                                     name="ruta_foto2" id="ruta_foto2"
                                                     placeholder="Imagen del producto...">
-                                                @error('nombre')
+                                                @error('ruta_foto')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>

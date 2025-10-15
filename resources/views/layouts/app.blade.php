@@ -128,6 +128,43 @@
     @livewireScripts
     @yield('scripts')
 
+    <!-- Error Modals JavaScript -->
+    <script>
+        // Manejo de modales de error
+        window.addEventListener('show-error-modal', event => {
+            const { title, message, type } = event.detail;
+            
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: type,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545',
+                showCloseButton: true,
+                allowOutsideClick: true,
+                customClass: {
+                    popup: 'swal2-popup-error'
+                }
+            });
+        });
+
+        // Manejo de modales de éxito
+        window.addEventListener('show-success-modal', event => {
+            const { title, message } = event.detail;
+            
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: 'success',
+                confirmButtonText: 'Perfecto',
+                confirmButtonColor: '#28a745',
+                showCloseButton: true,
+                allowOutsideClick: true,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        });
+    </script>
 
 </body>
 

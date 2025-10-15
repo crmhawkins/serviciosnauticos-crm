@@ -17,11 +17,13 @@ use App\Models\TranseunteTripulantes;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
+use App\Http\Livewire\Traits\HandlesErrors;
 
 class AltaComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
+    use HandlesErrors;
     public $identificador;
     public $club_id;
     public $situacion_persona;
@@ -370,9 +372,16 @@ class AltaComponent extends Component
         }
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
+        
+        // Crear nuevos teléfonos solo si no están vacíos
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
             if (!isset($telefono['id'])) {
-                $nuevo_telefono = Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefono['telefono']]);
+                if (!empty(trim($telefono['telefono']))) {
+                    $telefonoLimpio = preg_replace('/\D+/', '', $telefono['telefono']);
+                    if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                        Telefonos::create(['socio_id' => $this->identificador, 'telefono' => $telefonoLimpio]);
+                    }
+                }
             }
         }
         foreach ($this->numeros_llave as $llaveIndex => $numero_llave) {
