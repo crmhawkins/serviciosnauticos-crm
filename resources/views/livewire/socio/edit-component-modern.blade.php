@@ -7,7 +7,7 @@
             <div class="title-section">
                 <h1 class="page-title">
                     <i class="fas fa-user-edit"></i>
-                    Editar Socio {{ $numero_socio ?? 'Cargando...' }}
+                    Editar Socio {{ $numero_socio }}
                 </h1>
                 <p class="page-subtitle">Modifica los datos del socio y transeúnte</p>
             </div>

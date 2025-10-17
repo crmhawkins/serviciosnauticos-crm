@@ -25,7 +25,7 @@
         <!-- Breadcrumb -->
         <div class="breadcrumb-section">
             <nav class="breadcrumb">
-                <a href="{{ route('home') }}" class="breadcrumb-item">
+                <a href="{{ route('dashboard') }}" class="breadcrumb-item">
                     <i class="fas fa-home"></i>
                     Dashboard
                 </a>
@@ -44,8 +44,9 @@
     </div>
 
     @if ($puede_editar)
-        <form method="POST" action="#" enctype="multipart/form-data" id="socio-form">
+        <form method="POST" action="{{ route('socios.update', $socio->id) }}" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
             
             <!-- Main Form Section -->
             <div class="form-section">
@@ -556,5 +557,3 @@ document.querySelectorAll('input[type="radio"]').forEach(radio => {
 });
 </script>
 @endsection
-
-

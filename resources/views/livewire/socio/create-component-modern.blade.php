@@ -11,20 +11,9 @@
             </div>
             <div class="breadcrumb-section">
                 <nav class="breadcrumb">
-                    <a href="javascript:void(0);" class="breadcrumb-item">
-                        <i class="fas fa-home"></i>
-                        Dashboard
-                    </a>
-                    <span class="breadcrumb-separator">/</span>
-                    <a href="javascript:void(0);" class="breadcrumb-item">
-                        <i class="fas fa-users"></i>
-                        Socios
-                    </a>
-                    <span class="breadcrumb-separator">/</span>
-                    <span class="breadcrumb-item active">
-                        <i class="fas fa-user-plus"></i>
-                        Crear socio/transeúnte
-                    </span>
+                    <a href="javascript:void(0);" class="breadcrumb-item">Dashboard</a>
+                    <a href="javascript:void(0);" class="breadcrumb-item">Socios</a>
+                    <span class="breadcrumb-item active">Crear socio/transeúnte</span>
                 </nav>
             </div>
         </div>
@@ -545,17 +534,20 @@
                 </div>
             </div>
 
+            <!-- Acciones -->
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">
+                    <i class="fas fa-save"></i>
+                    Guardar Socio
+                </h4>
+                <button type="button" 
+                        class="btn-save"
+                        wire:click.prevent="submit">
+                    <i class="fas fa-save"></i>
+                    Guardar Nuevo Socio
+                </button>
+            </div>
         </div>
-    </div>
-
-    <!-- Botón Fixed de Guardar -->
-    <div class="fixed-save-button">
-        <button type="button" 
-                class="btn-save-fixed"
-                wire:click.prevent="submit">
-            <i class="fas fa-save"></i>
-            <span>Guardar Nuevo Socio</span>
-        </button>
     </div>
 </div>
 
@@ -648,53 +640,29 @@
 }
 
 .breadcrumb {
-    display: flex !important;
+    display: flex;
     align-items: center;
-    gap: var(--space-1);
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-    flex-wrap: nowrap !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-    font-size: var(--font-size-sm);
-    white-space: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    max-width: 100%;
-    box-sizing: border-box;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .breadcrumb-item {
     color: var(--gray-500);
     text-decoration: none;
     font-size: var(--font-size-sm);
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1);
-    border-radius: 4px;
-    transition: all var(--transition-normal);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.breadcrumb-item:hover {
-    color: var(--primary-blue);
-    background: rgba(37, 99, 235, 0.1);
 }
 
 .breadcrumb-item.active {
     color: var(--gray-700);
     font-weight: 500;
-    background: var(--gray-100);
 }
 
-.breadcrumb-separator {
+.breadcrumb-item:not(:last-child)::after {
+    content: '/';
+    margin-left: var(--space-2);
     color: var(--gray-400);
-    font-size: var(--font-size-sm);
-    white-space: nowrap;
-    flex-shrink: 0;
 }
 
 /* Layout principal */
@@ -1026,25 +994,6 @@
     .btn-remove {
         align-self: flex-end;
     }
-    
-    /* Breadcrumb más compacto en móvil */
-    .breadcrumb {
-        gap: 4px;
-        font-size: 12px;
-    }
-    
-    .breadcrumb-item {
-        padding: 2px 4px;
-        font-size: 12px;
-    }
-    
-    .breadcrumb-item i {
-        font-size: 10px;
-    }
-    
-    .breadcrumb-separator {
-        font-size: 12px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -1060,101 +1009,5 @@
         padding: var(--space-4);
     }
 }
-
-/* Botón Fixed de Guardar */
-.fixed-save-button {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 1px solid var(--gray-200);
-    padding: var(--space-4);
-    z-index: 1000;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.btn-save-fixed {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    background: var(--success-green);
-    color: white;
-    border: none;
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--border-radius-lg);
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-    outline: none;
-    position: relative;
-}
-
-.btn-save-fixed:hover {
-    background: var(--success-green-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
-}
-
-.btn-save-fixed:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
-    background: #0c8f64;
-}
-
-.btn-save-fixed:focus {
-    outline: none;
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
-    background: #0c8f64;
-}
-
-.btn-save-fixed:focus:not(:active) {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
-    background: #0c8f64;
-}
-
-.btn-save-fixed i {
-    font-size: var(--font-size-lg);
-}
-
-/* Evitar que el botón se quede en estado activo */
-.btn-save-fixed:not(:active):not(:focus) {
-    transform: none;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-    background: var(--success-green);
-}
-
-/* Reset del estado cuando no está siendo interactuado */
-.btn-save-fixed:not(:hover):not(:active):not(:focus) {
-    transform: none;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-    background: var(--success-green);
-}
-
-/* Ajustar el padding del body para el botón fixed */
-body {
-    padding-bottom: 80px;
-}
-
-@media (max-width: 768px) {
-    .fixed-save-button {
-        padding: var(--space-3);
-    }
-    
-    .btn-save-fixed {
-        padding: var(--space-3);
-        font-size: var(--font-size-sm);
-    }
-    
-    body {
-        padding-bottom: 70px;
-    }
-}
 </style>
+

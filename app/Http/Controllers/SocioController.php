@@ -61,8 +61,20 @@ class SocioController extends Controller
      */
     public function edit($id)
     {
-        return view('socio.edit', compact('id'));
-
+        $socio = \App\Models\Socio::find($id);
+        
+        if (!$socio) {
+            abort(404, 'Socio no encontrado');
+        }
+        
+        // Cargar relaciones
+        $socio->load(['telefonos', 'numeros_llave', 'tripulantes', 'notas']);
+        
+        // Verificar permisos
+        $puede_editar = auth()->user()->role <= 3;
+        $puede_notas = auth()->user()->role <= 4;
+        
+        return view('socio.edit', compact('socio', 'puede_editar', 'puede_notas'));
     }
     public function alta($id)
     {
