@@ -111,3 +111,4 @@
 </div>
 
 @include('livewire.socio.edit-component-styles')
+

@@ -131,3 +131,4 @@ cp resources/views/livewire/socio/create-component-modern.blade.php resources/vi
 
 El nuevo diseño es **100% compatible** con el código existente y mejora significativamente la experiencia de usuario.
 
+
