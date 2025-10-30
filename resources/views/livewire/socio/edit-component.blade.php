@@ -928,3 +928,23 @@
         </div>
     </div>
 </div>
+
+<script>
+// Forzar apertura del modal de registros aunque data-toggle no se inicialice tras Livewire
+(function(){
+    function bindRegistrosModal(){
+        var btn = document.getElementById('btnRegistros');
+        if (!btn) return;
+        btn.removeEventListener('click', window.__openRegistros || (()=>{}));
+        window.__openRegistros = function(ev){
+            ev.preventDefault();
+            try { $('#modal-registros').modal('show'); } catch(e) { console.warn('Bootstrap modal not found:', e); }
+        };
+        btn.addEventListener('click', window.__openRegistros);
+    }
+    document.addEventListener('DOMContentLoaded', bindRegistrosModal);
+    document.addEventListener('livewire:load', function(){
+        window.livewire.hook('message.processed', bindRegistrosModal);
+    });
+})();
+</script>

@@ -43,6 +43,26 @@
 
 // @import './navbar';
 
+// Menú inferior móvil
+@import './_bottom-nav';
+
+// Estilos del selector de club (home)
+@import './_home-club';
+
+// Estilos para editar club
+@import './_club-edit';
+
+// Estilos para editar usuario
+@import './_usuario-edit';
+
+// Estilos para crear usuario
+@import './_usuario-create';
+
+// Top mobile navigation (disabled)
+// @import './_top-mobile-nav';
+
+// Top main navbar
+@import './_top-main-nav';
 
 // Bootstrap
 // @import 'bootstrap/scss/bootstrap';

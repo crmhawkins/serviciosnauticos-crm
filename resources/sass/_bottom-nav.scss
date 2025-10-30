@@ -1,0 +1,78 @@
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030; // sobre cards y contenido
+  backdrop-filter: saturate(180%) blur(12px);
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.06);
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin: 0;
+    padding: 6px 10px env(safe-area-inset-bottom);
+    list-style: none;
+  }
+
+  &__item {
+    text-align: center;
+  }
+
+  &__link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-decoration: none;
+    color: #616f80;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 10px;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+
+    i {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .bottom-nav__label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  .is-active .bottom-nav__link {
+    color: $secundario;
+    background: rgba(71, 234, 181, 0.12);
+  }
+
+  &__spacer {
+    height: env(safe-area-inset-bottom);
+  }
+}
+
+// Evitar que el contenido quede oculto tras el nav en móvil
+/* Mostrar solo en móvil */
+@media (min-width: 992px) { .bottom-nav { display: none !important; } }
+
+@media (max-width: 991.98px) {
+  .content-page .content { padding-bottom: 64px; }
+  html, body { overflow-x: hidden; }
+  .page-wrapper, .content-page { width: 100% !important; }
+  .enlarged #wrapper .content-page { margin-left: 0 !important; }
+}
+
+

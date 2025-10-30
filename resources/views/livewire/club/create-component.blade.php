@@ -1,96 +1,115 @@
-<div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <div class="page-title-box">
-        <div class="row align-items-center">
-            <div class="col-sm-6">
-                <h4 class="page-title">AÑADIR NUEVO CLUB</span></h4>
+<div class="modern-index-container">
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <i class="fas fa-building"></i>
+                    Añadir nuevo club
+                </h1>
+                <p class="page-subtitle">Crea un club con su información básica y logotipo</p>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Club</a></li>
-                    <li class="breadcrumb-item active">Añadir nuevo club</li>
-                </ol>
+        </div>
+        <div class="breadcrumb-section">
+            <nav class="breadcrumb">
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-building"></i>
+                    Club
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">
+                    <i class="fas fa-plus-circle"></i>
+                    Añadir nuevo club
+                </span>
+            </nav>
             </div>
-        </div> <!-- end row -->
     </div>
-    <!-- end page-title -->
-    <div class="row">
-        <div class="col-md-9">
-            <div class="card m-b-30">
-                <div class="card-body">
+
+    <div class="form-layout">
+        <div class="form-main">
+            <div class="form-card">
+                <div class="form-header">
+                    <h3 class="form-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información del club
+                    </h3>
+                </div>
+                <div class="form-content">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <label for="nombre" class="col-sm-12 col-form-label">Nombre</label>
-                                <div class="col-sm-10">
-                                    <input type="text" wire:model.defer="nombre" class="form-control" name="nombre"
-                                        id="nombre" placeholder="Club Náutico...">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" wire:model.defer="nombre" class="form-input" name="nombre" id="nombre" placeholder="Club Náutico...">
                                     @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
                             </div>
 
-                            <div class="col-sm-6">
-                                <label for="email" class="col-sm-12 col-form-label">Email</label>
-                                <div class="col-sm-11">
-                                    <input type="text" wire:model.defer="email" class="form-control" name="email"
-                                        id="email" placeholder="jose85@hotmail.com ...">
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" wire:model.defer="email" class="form-input" name="email" id="email" placeholder="jose85@hotmail.com">
                                     @error('email')
-                                        <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
                             </div>
                         </div>
-                        <div class="form-group row justify-content-center">
-                            <div class="col-sm-12">
-                                <label for="email" class="col-sm-12 col-form-label">Logotipo del club</label>
+
+                        <div class="form-group image-upload-section">
+                            <label class="form-label">Logotipo del club</label>
+
                                 @if ($ruta_foto)
-                                    <div class="col-sm-10">
-                                        <img src="{{ $ruta_foto->temporaryUrl() }}"
-                                            style="max-width: 50% !important; text-align: center">
-                                    </div>
-                                @endif
-                                <div class="col-sm-12">
-                                    <input type="file" class="form-control" wire:model="ruta_foto" name="ruta_foto"
-                                        id="ruta_foto" placeholder="Logotipo del club...">
-                                    @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
+                                <div class="image-preview">
+                                    <img class="preview-image" src="{{ $ruta_foto->temporaryUrl() }}" alt="Vista previa del logotipo">
                                 </div>
+                            @endif
+
+                            <div class="file-input-wrapper">
+                                <label for="ruta_foto" class="file-input-label">
+                                    <i class="fas fa-upload"></i>
+                                    Seleccionar archivo
+                                </label>
+                                <input type="file" wire:model="ruta_foto" name="ruta_foto" id="ruta_foto" accept="image/*">
                             </div>
+                            @error('ruta_foto')
+                                <span class="form-error">{{ $message }}</span>
+                            @enderror
                         </div>
+                    </form>
                 </div>
-                </form>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Crear
-                                nuevo club</button>
+
+        <div class="form-sidebar">
+            <div class="actions-card">
+                <div class="actions-header">
+                    <h3 class="actions-title">
+                        <i class="fas fa-cogs"></i>
+                        Acciones
+                    </h3>
                         </div>
-                    </div>
+                <div class="actions-content">
+                    <button class="btn-action btn-save" id="alertaGuardar">
+                        <i class="fas fa-plus"></i>
+                        <span>Crear nuevo club</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
 </div>
 
 @section('scripts')
     <script>
-        $("#alertaGuardar").on("click", () => {
+        document.getElementById('alertaGuardar').addEventListener('click', function () {
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: 'Pulsa el botón de confirmar para crear el nuevo usuario.',
+                text: 'Pulsa el botón de confirmar para crear el nuevo club.',
                 icon: 'warning',
                 showConfirmButton: true,
                 showCancelButton: true
@@ -100,51 +119,5 @@
                 }
             });
         });
-
-        $.datepicker.regional['es'] = {
-            closeText: 'Cerrar',
-            prevText: '< Ant',
-            nextText: 'Sig >',
-            currentText: 'Hoy',
-            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-                'Octubre', 'Noviembre', 'Diciembre'
-            ],
-            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb'],
-            dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
-            weekHeader: 'Sm',
-            dateFormat: 'dd/mm/yy',
-            firstDay: 1,
-            isRTL: false,
-            showMonthAfterYear: false,
-            yearSuffix: ''
-        };
-        $.datepicker.setDefaults($.datepicker.regional['es']);
-        document.addEventListener('livewire:load', function() {
-
-
-        })
-        $(document).ready(function() {
-            console.log('select2')
-            $("#datepicker").datepicker();
-
-            $("#datepicker").on('change', function(e) {
-                @this.set('fecha_nac', $('#datepicker').val());
-            });
-
-        });
-
-        function togglePasswordVisibility() {
-            var passwordInput = document.getElementById("password");
-            var eyeIcon = document.getElementById("eye-icon");
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                eyeIcon.className = "fas fa-eye-slash";
-            } else {
-                passwordInput.type = "password";
-                eyeIcon.className = "fas fa-eye";
-            }
-        }
     </script>
 @endsection

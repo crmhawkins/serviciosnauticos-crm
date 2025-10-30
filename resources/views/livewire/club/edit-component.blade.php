@@ -1,95 +1,118 @@
-<div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <div class="page-title-box">
-        <div class="row align-items-center">
-            <div class="col-sm-6">
-                <h4 class="page-title">EDITAR CLUB {{$nombre}}</span></h4>
+<div class="modern-index-container">
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <i class="fas fa-building"></i>
+                    Editar club {{ $nombre }}
+                </h1>
+                <p class="page-subtitle">Modifica los datos del club seleccionado</p>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Club</a></li>
-                    <li class="breadcrumb-item active">Editar club</li>
-                </ol>
+        </div>
+        <div class="breadcrumb-section">
+            <nav class="breadcrumb">
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-building"></i>
+                    Club
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">
+                    <i class="fas fa-edit"></i>
+                    Editar club
+                </span>
+            </nav>
             </div>
-        </div> <!-- end row -->
     </div>
-    <!-- end page-title -->
-    <div class="row">
-        <div class="col-md-9">
-            <div class="card m-b-30">
-                <div class="card-body">
+
+    <div class="form-layout">
+        <div class="form-main">
+            <div class="form-card">
+                <div class="form-header">
+                    <h3 class="form-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información del club
+                    </h3>
+                </div>
+                <div class="form-content">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <label for="nombre" class="col-sm-12 col-form-label">Nombre</label>
-                                <div class="col-sm-10">
-                                    <input type="text" wire:model.defer="nombre" class="form-control" name="nombre"
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombre" class="form-label">Nombre del club</label>
+                                <input type="text" wire:model.defer="nombre" class="form-input" name="nombre"
                                         id="nombre" placeholder="Club Náutico...">
                                     @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
                             </div>
 
-                            <div class="col-sm-6">
-                                <label for="email" class="col-sm-12 col-form-label">Email</label>
-                                <div class="col-sm-11">
-                                    <input type="text" wire:model.defer="email" class="form-control" name="email"
-                                        id="email" placeholder="jose85@hotmail.com ...">
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" wire:model.defer="email" class="form-input" name="email"
+                                    id="email" placeholder="jose85@hotmail.com">
                                     @error('email')
-                                        <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
                             </div>
                         </div>
-                        <div class="form-group row justify-content-center">
-                            <div class="col-sm-12">
-                                <label for="email" class="col-sm-12 col-form-label">Logotipo del club</label>
+
+                        <div class="form-group">
+                            <label for="ruta_foto" class="form-label">Logotipo del club</label>
+                            <div class="image-upload-section">
                                 @if (!is_string($ruta_foto))
-                                    <div class="col-sm-10">
-                                        <img src="{{ $ruta_foto->temporaryUrl() }}"
-                                            style="max-width: 50% !important; text-align: center">
+                                    <div class="image-preview">
+                                        <img src="{{ $ruta_foto->temporaryUrl() }}" alt="Vista previa" class="preview-image">
                                     </div>
                                 @else
-                                <div class="col-sm-10">
-                                    <img src="{{ asset('assets/images/' . $ruta_foto) }}"
-                                        style="max-width: 50% !important; text-align: center">
+                                    <div class="image-preview">
+                                        <img src="{{ asset('assets/images/' . $ruta_foto) }}" alt="Logo actual" class="preview-image">
                                 </div>
                                 @endif
-                                <div class="col-sm-12">
-                                    <input type="file" class="form-control" wire:model="ruta_foto" name="ruta_foto"
-                                        id="ruta_foto" placeholder="Logotipo del club...">
-                                    @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
+                                <div class="file-input-wrapper">
+                                    <input type="file" class="form-input" wire:model="ruta_foto" name="ruta_foto"
+                                        id="ruta_foto" accept="image/*">
+                                    <label for="ruta_foto" class="file-input-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Seleccionar imagen</span>
+                                    </label>
                                 </div>
+                                @error('ruta_foto')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
+                    </form>
                 </div>
-                </form>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar datos</button>
+
+        <div class="form-sidebar">
+            <div class="actions-card">
+                <div class="actions-header">
+                    <h3 class="actions-title">
+                        <i class="fas fa-cogs"></i>
+                        Acciones
+                    </h3>
                         </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar club</button>
-                        </div>
-                    </div>
+                <div class="actions-content">
+                    <button class="btn-action btn-save" id="alertaGuardar">
+                        <i class="fas fa-save"></i>
+                        <span>Guardar datos</span>
+                    </button>
+                    <button class="btn-action btn-delete" id="alertaEliminar">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminar club</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
 </div>
 
 @section('scripts')

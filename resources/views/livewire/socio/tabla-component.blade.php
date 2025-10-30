@@ -418,7 +418,7 @@
 }
 
 .export-buttons {
-    display: flex;
+    display: none; /* oculto en escritorio */
     gap: var(--space-2);
 }
 
@@ -619,6 +619,7 @@
 
 /* Mobile View */
 @media (max-width: 768px) {
+    .export-buttons { display: flex; }
     .desktop-view {
         display: none;
     }
@@ -927,9 +928,8 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeDataTable() {
     $('#sociosTable').DataTable({
         lengthChange: false,
-        dom: 'Bfrtip',
+        dom: 'lrtip',
         pageLength: 35,
-        buttons: ['copy', 'csv', 'excel', 'pdf'],
         language: {
             lengthMenu: 'Mostrando _MENU_ registros por página',
             zeroRecords: 'No se encontraron registros coincidentes',
@@ -959,9 +959,7 @@ function initializeSearch() {
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const table = $('#sociosTable').DataTable();
-            if (table) {
-                table.search(this.value).draw();
-            }
+            if (table) { table.search(this.value).draw(); }
         });
     }
     
@@ -996,9 +994,7 @@ function initializePageSize() {
     if (pageSizeSelect) {
         pageSizeSelect.addEventListener('change', function() {
             const table = $('#sociosTable').DataTable();
-            if (table) {
-                table.page.len(parseInt(this.value)).draw();
-            }
+            if (table) { table.page.len(parseInt(this.value)).draw(); }
         });
     }
 }

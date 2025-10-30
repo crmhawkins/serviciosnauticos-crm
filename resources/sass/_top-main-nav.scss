@@ -1,0 +1,71 @@
+.content-page .top-main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1035;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e5e7eb;
+  width: 100%;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+  }
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: #1f2937;
+    text-decoration: none;
+
+    i { color: #2563eb; }
+  }
+
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-weight: 600;
+
+    &:hover { background: #f9fafb; }
+  }
+
+  .is-active .top-main-nav__link {
+    color: #2563eb;
+    border-color: #bfdbfe;
+    background: #eff6ff;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-main-nav__brand span { display: none; }
+  .top-main-nav__list { flex-wrap: nowrap; overflow-x: auto; }
+}
+
+/* Al estar dentro de .content-page ya hereda el ancho correcto con el sidebar */
+
+/* Responsive: ocultar top navbar en móvil y mostrar solo bottom nav */
+@media (max-width: 991.98px) {
+  .content-page .top-main-nav { display: none !important; }
+}
+

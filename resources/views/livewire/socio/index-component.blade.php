@@ -9,8 +9,8 @@
                 </h1>
                 <p class="page-subtitle">Gestiona los socios y transeúntes del club</p>
             </div>
-            <div class="header-actions">
-                <a href="socios-create" class="btn-add-socio">
+            <div class="header-actions header-actions--single">
+                <a href="socios-create" class="btn-add-socio btn-add-socio--full">
                     <i class="fas fa-user-plus"></i>
                     <span>Nuevo Socio</span>
                 </a>
@@ -63,6 +63,16 @@
                         </div>
                     </div>
                 </div>
+                    <div class="export-actions">
+                        <a href="{{ route('socios.export.excel') }}" class="btn-export btn-export-excel">
+                            <i class="fas fa-file-excel"></i>
+                            <span>Exportar Excel</span>
+                        </a>
+                        <a href="{{ route('socios.export.pdf') }}" class="btn-export btn-export-pdf">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Exportar PDF</span>
+                        </a>
+                    </div>
             </div>
         </div>
     </div>
@@ -113,9 +123,8 @@
     document.addEventListener('DOMContentLoaded', function () {
     var table = $('#datatable-buttons').DataTable({
         lengthChange: false,
-        dom: 'Bfrtip',
+        dom: 'lrtip',
         pageLength: 35,
-        buttons: ['copy', 'csv', 'excel', 'pdf'],
         language: {
             lengthMenu: 'Mostrando _MENU_ registros por página',
             zeroRecords: 'No se encontraron registros coincidentes',
@@ -134,7 +143,7 @@
         order: [[0, 'asc']],
     });
 
-    table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+    // botones de DataTables deshabilitados; usamos nuestros botones propios en Filtros
 
     // Escucha el cambio en el selector de cantidad de páginas
     $('#pageSize').change(function () {
@@ -154,9 +163,8 @@
             // Reinicializa DataTables aquí
             $('#datatable-buttons').DataTable({
                 lengthChange: false,
-            dom: 'Bfrtip',
+            dom: 'lrtip',
             pageLength: 35,
-            buttons: ['copy', 'csv', 'excel', 'pdf'],
             language: {
                 lengthMenu: 'Mostrando _MENU_ registros por página',
                 zeroRecords: 'No se encontraron registros coincidentes',
@@ -336,6 +344,15 @@
     cursor: pointer;
 }
 
+.header-actions--single { width: 100%; }
+.btn-add-socio--full { width: 100%; justify-content: center; }
+
+/* Desktop: botón tamaño normal alineado a la derecha */
+@media (min-width: 992px) {
+    .header-actions--single { width: auto; }
+    .btn-add-socio--full { width: auto; padding: var(--space-3) var(--space-6); }
+}
+
 .btn-add-socio:hover {
     background: var(--success-green-dark);
     transform: translateY(-2px);
@@ -441,6 +458,33 @@
     flex-direction: column;
     gap: var(--space-4);
 }
+
+.export-actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.btn-export {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--border-radius-lg);
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    transition: all var(--transition-normal);
+}
+
+.btn-export-excel {
+    background: #198754;
+}
+.btn-export-excel:hover { background: #157347; }
+
+.btn-export-pdf { background: #dc3545; }
+.btn-export-pdf:hover { background: #bb2d3b; }
 
 .filter-row {
     display: grid;
@@ -570,8 +614,9 @@
         font-size: var(--font-size-sm);
     }
     
+    /* Mantener el texto visible también en móvil */
     .btn-add-socio span {
-        display: none;
+        display: inline;
     }
     
     .btn-add-socio i {

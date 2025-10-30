@@ -1,6 +1,6 @@
 <!-- contenedor-sidebar -->
 <!-- Top Bar Start -->
-<div class="topbar">
+<div class="topbar d-none d-md-block">
 
     <!-- LOGO -->
     @mobile

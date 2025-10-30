@@ -1,0 +1,95 @@
+.modern-index-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.header-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.header-content { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+.title-section { flex: 1; }
+.page-title { font-size: 2.25rem; font-weight: 700; color: #111827; margin: 0 0 8px 0; display: flex; align-items: center; gap: 12px; }
+.page-title i { color: #2563eb; font-size: 1.875rem; }
+.page-subtitle { color: #4b5563; margin: 0; font-size: 1.125rem; }
+
+.breadcrumb-section { padding-top: 16px; border-top: 1px solid #e5e7eb; }
+.breadcrumb { display: flex !important; align-items: center; gap: 4px; margin: 0 !important; padding: 0 !important; list-style: none !important; background: transparent !important; border-radius: 0 !important; font-size: 0.875rem; }
+.breadcrumb-item { color: #6b7280; text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 4px 6px; border-radius: 4px; transition: color .2s ease, background .2s ease; }
+.breadcrumb-item:hover { color: #2563eb; background: rgba(37, 99, 235, 0.1); text-decoration: none; }
+.breadcrumb-item.active { color: #374151; font-weight: 500; }
+.breadcrumb-separator { color: #9ca3af; }
+
+.club-card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  transition: transform .15s ease, box-shadow .2s ease;
+  background: #ffffff;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  &__btn {
+    background: transparent;
+    border: none;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  &__title {
+    color: #354558;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &__image-wrap {
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1.2 / 1; // rectangular similar al índice de socio
+    display: grid;
+    place-items: center;
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px dashed rgba(0, 0, 0, 0.08);
+  }
+}
+
+.club-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .modern-index-container { padding: 16px; }
+  .header-section { padding: 24px; }
+  .page-title { font-size: 1.875rem; }
+}
+
+

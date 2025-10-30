@@ -1,142 +1,159 @@
-<div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <div class="page-title-box">
-        <div class="row align-items-center">
-            <div class="col-sm-6">
-                <h4 class="page-title">Editando usuario {{$name}}</span></h4>
+<div class="modern-index-container">
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <i class="fas fa-user-edit"></i>
+                    Editar usuario {{ $name }}
+                </h1>
+                <p class="page-subtitle">Modifica los datos del usuario seleccionado</p>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Usuarios</a></li>
-                    <li class="breadcrumb-item active">Editando usuario {{$name}}</li>
-                </ol>
+        </div>
+        <div class="breadcrumb-section">
+            <nav class="breadcrumb">
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-users"></i>
+                    Usuarios
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">
+                    <i class="fas fa-user-edit"></i>
+                    Editar usuario {{ $name }}
+                </span>
+            </nav>
             </div>
-        </div> <!-- end row -->
     </div>
-    <!-- end page-title -->
-    <div class="row">
-        <div class="col-md-9">
-            <div class="card m-b-30">
-                <div class="card-body">
+
+    <div class="form-layout">
+        <div class="form-main">
+            <div class="form-card">
+                <div class="form-header">
+                    <h3 class="form-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información del usuario
+                    </h3>
+                </div>
+                <div class="form-content">
                     <form wire:update.prevent="update">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
 
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <label for="name" class="col-sm-12 col-form-label">Alias  </label>
-                                <div class="col-sm-10">
-                                    <input type="text" wire:model="name" class="form-control" name="name" id="name" placeholder="José Carlos...">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name" class="form-label">Alias</label>
+                                <input type="text" wire:model="name" class="form-input" name="name" 
+                                    id="name" placeholder="José Carlos...">
                                     @error('name')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
                             </div>
 
-                            <div class="col-sm-6">
-                                <label for="surname" class="col-sm-12 col-form-label">Nombre Completo </label>
-                                <div class="col-sm-10">
-                                    <input type="text" wire:model="surname" class="form-control" name="surname" id="surname" placeholder="Pérez...">
+                            <div class="form-group">
+                                <label for="surname" class="form-label">Nombre Completo</label>
+                                <input type="text" wire:model="surname" class="form-input" name="surname" 
+                                    id="surname" placeholder="Pérez...">
                                     @error('surname')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-12">
-                                <label for="email" class="col-sm-12 col-form-label">Email </label>
-                                <div class="col-sm-11">
-                                    <input type="text" wire:model="email" class="form-control" name="email" id="email" placeholder="jose85@hotmail.com ...">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" wire:model="email" class="form-input" name="email" 
+                                id="email" placeholder="jose85@hotmail.com">
                                     @error('email')
-                                    <span class="text-danger">{{ $message }}</span>
+                                <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
-                            </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-6">
-                                <label for="user_department_id" class="col-sm-12 col-form-label">Clubes</label>
-                                <div class="col-sm-10">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Clubes</label>
+                                <div class="checkbox-group">
                                     @foreach ($clubs as $club)
-                                        <div>
+                                        <label class="checkbox-item">
                                             <input type="checkbox" value="{{ $club->id }}"
                                                 wire:model.defer="user_clubs.{{ $club->id }}">
-                                            {{ $club->nombre }}
-                                        </div>
+                                            <span class="checkbox-label">{{ $club->nombre }}</span>
+                                        </label>
                                     @endforeach
                                 </div>
                                 @error('user_department_id')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <span class="form-error">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-sm-6">
-                                <label for="role" class="col-sm-12 col-form-label">Rol</label>
-                                <div class="col-sm-10" x-data="" x-init="$nextTick( () => { $('#select2-role').select2();
+
+                            <div class="form-group">
+                                <label for="role" class="form-label">Rol</label>
+                                <div x-data="" x-init="$nextTick( () => { 
+                                    $('#select2-role').select2();
                                 $('#select2-role').on('change', function(e) {
                                     var data = $('#select2-role').select2('val');
                                     @this.set('role', data);
-                                }); });" wire:key="{{time()}}">
-                                    <select id="select2-role" class="form-control js-example-responsive"
+                                    }); 
+                                });" wire:key="{{time()}}">
+                                    <select id="select2-role" class="form-input js-example-responsive"
                                         wire:model.defer="role">
                                         @foreach ($roles as $rol)
                                             <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
                                         @endforeach
                                     </select>
-                                    @error('role')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
                                 </div>
+                                @error('role')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-12">
-                                <label for="username" class="col-sm-12 col-form-label">Usuario </label>
-                                <div class="col-sm-11">
-                                    <input type="text" wire:model="username" class="form-control" name="username" id="username" placeholder="jose85">
+                        <div class="form-group">
+                            <label for="username" class="form-label">Usuario</label>
+                            <input type="text" wire:model="username" class="form-input" name="username" 
+                                id="username" placeholder="jose85">
                                     @error('username')
-                                    <span class="text-danger">{{ $message }}</span>
+                                <span class="form-error">{{ $message }}</span>
                                     @enderror
-                                </div>
-                            </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-11">
-                                <label for="password" class="col-sm-12 col-form-label">Contraseña nueva</label>
-                                <div class="col-sm-12">
-                                    <input type="password" wire:model="password" class="form-control" name="password" id="password" placeholder="123456...">
-                                    @error('password')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-sm-1">
-                                <label for="password" class="col-sm-12 col-form-label">&nbsp;</label>
-                                <button type="button" class="me-auto btn btn-primary" onclick="togglePasswordVisibility()">
+                        <div class="form-group">
+                            <label for="password" class="form-label">Contraseña nueva</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" wire:model="password" class="form-input" 
+                                    name="password" id="password" placeholder="123456...">
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
                                     <i class="fas fa-eye" id="eye-icon"></i>
                                 </button>
                             </div>
+                            @error('password')
+                                <span class="form-error">{{ $message }}</span>
+                            @enderror
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
-                                Usuario</button>
-                            <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Eliminar
-                                Usuario</button>
+
+        <div class="form-sidebar">
+            <div class="actions-card">
+                <div class="actions-header">
+                    <h3 class="actions-title">
+                        <i class="fas fa-cogs"></i>
+                        Acciones
+                    </h3>
                         </div>
-                    </div>
+                <div class="actions-content">
+                    <button class="btn-action btn-save" id="alertaGuardar">
+                        <i class="fas fa-save"></i>
+                        <span>Guardar usuario</span>
+                    </button>
+                    <button class="btn-action btn-delete" wire:click="destroy">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminar usuario</span>
+                    </button>
                 </div>
             </div>
         </div>

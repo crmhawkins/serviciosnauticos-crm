@@ -1,0 +1,42 @@
+.top-mobile-nav { display:none; }
+
+@media (max-width: 768px) {
+  .top-mobile-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    display: flex;
+    /* Evitar que el nav se expanda para ocupar toda la altura cuando es hijo de un contenedor flex */
+    flex: 0 0 auto !important;
+    height: auto !important;
+    align-self: auto !important;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #e5e7eb;
+    width: 100%;
+    max-height: 56px;
+    overflow: visible;
+  }
+  /* Aumentar especificidad contra reglas del layout */
+  .content-page > nav.top-mobile-nav { flex: 0 0 auto !important; max-height: 56px !important; }
+  .top-mobile-nav .tmn-btn {
+    flex: 1;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #374151;
+    min-height: 40px;
+    line-height: 1;
+  }
+  .top-mobile-nav .tmn-btn i { color: #2563eb; }
+}
+

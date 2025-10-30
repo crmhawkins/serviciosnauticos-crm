@@ -71,11 +71,15 @@
             }
 
             }
+            
         </style>
         <div class="page-wrapper chiller-theme toggled sticky-sidebar" id="wrapper">
-            @include('layouts.header')
-            @include('layouts.sidebar')
+            {{-- @include('layouts.sideba/*  */r') --}}
             <div class="content-page">
+                {{-- Navbar superior solo en desktop/tablet --}}
+                @notmobile
+                    @include('layouts.top-main-nav')
+                @endnotmobile
                 <div class="content">
                     {{-- @livewire('container-component') --}}
                     @yield('content-principal')
@@ -98,6 +102,7 @@
             </div> --}}
 
 
+            @include('layouts.bottom-nav')
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"

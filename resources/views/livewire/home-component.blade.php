@@ -1,26 +1,48 @@
-<div class="container-fluid">
-    <div class="page-title-box">
-        <div class="row">
-            <div class="col-sm-12">
-                <h1 style="text-align: center">SELECCIONA UN CLUB</h1>
+<div class="modern-index-container">
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <i class="fas fa-flag"></i>
+                    Selecciona un club
+                </h1>
+                <p class="page-subtitle">Elige el club con el que quieres trabajar</p>
             </div>
         </div>
+        <div class="breadcrumb-section">
+            <nav class="breadcrumb">
+                <a href="javascript:void(0);" class="breadcrumb-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">
+                    <i class="fas fa-flag"></i>
+                    Selección de club
+                </span>
+            </nav>
+        </div>
     </div>
-    <div class="row justify-content-center">
+
+    <div class="content-section p-4">
+        <div class="club-grid">
         @foreach ($clubs as $club)
-            <div class="col-sm-6 col-xl-4">
-                <div class="card"
-                    style="height: 90% !important; justify-content: center !important; align-items: center !important; flex-direction: row !important">
-                    <div class="card-heading p-4">
-                        <button type="button" class="btn"
+                <div class="club-card h-100">
+                    <button type="button" class="btn club-card__btn w-100"
                             wire:click.prevent="seleccionarClub('{{ $club->id }}')">
-                            <h3 style="text-align: center !important">{{ $club->nombre }}</h3>
-                            <img src='{{ asset('assets/images/' . $club->club_logo) }}' width="50%">
+                        <h3 class="text-center club-card__title">{{ strtoupper($club->nombre) }}</h3>
+                        @php
+                            $logoPath = $club->club_logo ? asset('assets/images/' . $club->club_logo) : asset('assets/images/club-placeholder.svg');
+                            $fallback = asset('assets/images/club-placeholder.svg');
+                        @endphp
+                        <div class="club-card__image-wrap">
+                            <img class="club-card__image" src="{{ $logoPath }}" alt="Logo {{ $club->nombre }}"
+                                onerror="this.onerror=null;this.src='{{ $fallback }}';">
+                        </div>
                         </button>
-                    </div>
                 </div>
+            @endforeach
             </div>
-        @endforeach
     </div>
 @if (is_null(Auth::user()->proteccion))
     <div class="modal" id="proteccionDatosModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">

@@ -114,5 +114,13 @@ Route::group(['middleware' => 'is.admin','prefix' => 'admin'], function () {
     Route::get('clients/create', [ClientsController::class, 'create'])->name('clients.create');
     Route::get('clients/edit/{id}', [ClientsController::class, 'edit'])->name('clients.edit');
 
+    // Exportaciones
+    Route::get('socios-export/excel', [App\Http\Controllers\ExportController::class, 'sociosExcel'])->name('socios.export.excel');
+    Route::get('socios-export/pdf', [App\Http\Controllers\ExportController::class, 'sociosPdf'])->name('socios.export.pdf');
+    Route::get('club-export/excel', [App\Http\Controllers\ExportController::class, 'clubesExcel'])->name('club.export.excel');
+    Route::get('club-export/pdf', [App\Http\Controllers\ExportController::class, 'clubesPdf'])->name('club.export.pdf');
+    Route::get('usuarios-export/excel', [App\Http\Controllers\ExportController::class, 'usuariosExcel'])->name('usuarios.export.excel');
+    Route::get('usuarios-export/pdf', [App\Http\Controllers\ExportController::class, 'usuariosPdf'])->name('usuarios.export.pdf');
+
 
 });

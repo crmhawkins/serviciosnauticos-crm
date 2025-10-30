@@ -1,63 +1,43 @@
-@mobile
-<div class="container-fluid p-0">
-@elsemobile
-<div class="container-fluid ">
-@endmobile
-
+<div class="modern-index-container">
     <style>
-        .dataTables_wrapper .dataTables_filter>label {
-            display: block;
-            text-align: left;
-            font-size: 1rem;
-        }
-
-        .dataTables_wrapper .dataTables_filter {
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        #datatable-buttons>tbody>tr.child>td>ul>li>span.dtr-title {
-            font-weight: bold !important;
-        }
+        .dataTables_wrapper .dataTables_filter>label { display: block; text-align: left; font-size: 1rem; }
+        .dataTables_wrapper .dataTables_filter { width: 100%; margin-bottom: 1rem; }
+        #datatable-buttons>tbody>tr.child>td>ul>li>span.dtr-title { font-weight: bold !important; }
     </style>
-    <div class="page-title-box">
-        <div class="row align-items-center">
-            <div class="col-sm-6">
-                <h4 class="page-title">SOCIOS</h4>
+
+    <div class="header-section">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title"><i class="fas fa-users"></i> Socios</h1>
+                <p class="page-subtitle">Listado general de socios y transeúntes</p>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Socios</a></li>
-                    <li class="breadcrumb-item active">Todos los socios</li>
-                </ol>
-            </div>
-        </div> <!-- end row -->
+        </div>
+        <div class="breadcrumb-section">
+            <nav class="breadcrumb">
+                <a href="javascript:void(0);" class="breadcrumb-item"><i class="fas fa-home"></i> Dashboard</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="javascript:void(0);" class="breadcrumb-item"><i class="fas fa-id-card"></i> Socios</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active"><i class="fas fa-list"></i> Todos los socios</span>
+            </nav>
+        </div>
     </div>
-    <!-- end page-title -->
-    @mobile
-    <div class="row p-0">
-        <div class="col-12 p-0">
-            <div class="card m-b-30 p-0">
-                <div class="card-body row p-0 m-0">
-    @elsemobile
-    <div class="row">
-        <div class="col-12">
-            <div class="card m-b-30">
-                <div class="card-body row">
-    @endmobile
-                    <div class="col-md-12 mb-3" wire:ignore.self>
+
+    <div class="content-section">
+        <div class="form-card" style="margin-bottom:16px;">
+            <div class="form-content">
+                <div class="form-row" wire:ignore.self>
+                    <div class="form-group" style="min-width:260px;">
+                        <label for="vista" class="form-label">Listado a seleccionar</label>
                         <div x-init="$nextTick(() => {
-                            $('#vista').select2();
-                            $('#vista').on('change', function(e) {
-                                var data = $('#vista').select2('val');
-                                @this.set('vista', data);
-                                @this.emit('cambiarVista');
-                                console.log(data);
-                            });
-                        });" wire:key='{{ time() . 'juanito' }}'>
-                            <label for="vista">Listado a seleccionar</label>
-                            <select wire:model="vista" id="vista" class="form-control w-100 MB">
+                                $('#vista').select2();
+                                $('#vista').on('change', function(e) {
+                                    var data = $('#vista').select2('val');
+                                    @this.set('vista', data);
+                                    @this.emit('cambiarVista');
+                                });
+                            });" wire:key='{{ time() . 'juanito' }}'>
+                            <select wire:model="vista" id="vista" class="form-input js-example-responsive w-100">
                                 <option value="1">Todos en alta</option>
                                 <option value="2">Socios en alta</option>
                                 <option value="3">Socios en atraque</option>
@@ -71,6 +51,28 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group d-none d-md-block" style="min-width:200px;">
+                        <label for="pageSize" class="form-label">Barcos por página:</label>
+                        <select id="pageSize" class="form-input">
+                            <option value="35">35</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="p-2" style="display:flex; gap:12px;">
+            <a href="{{ route('socios.export.excel') }}" class="export-btn export-btn--excel">
+                <i class="fas fa-file-excel"></i>
+                <span>Exportar Excel</span>
+            </a>
+            <a href="{{ route('socios.export.pdf') }}" class="export-btn export-btn--pdf">
+                <i class="fas fa-file-pdf"></i>
+                <span>Exportar PDF</span>
+            </a>
+        </div>
 
                     @switch($vista)
                         @case(1)
@@ -117,11 +119,6 @@
                             @livewire('socio.tabla-admin-component', ['vista' => $vista])
                         @break
                         @endswitch ($vista)
-
-                    <a href="socios-create" class="btn btn-lg btn-primary">Añadir socio al club</a>
-
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -132,9 +129,8 @@
     document.addEventListener('DOMContentLoaded', function () {
     var table = $('#datatable-buttons').DataTable({
         lengthChange: false,
-        dom: 'Bfrtip',
+        dom: 'lrtip',
         pageLength: 35,
-        buttons: ['copy', 'csv', 'excel', 'pdf'],
         language: {
             lengthMenu: 'Mostrando _MENU_ registros por página',
             zeroRecords: 'No se encontraron registros coincidentes',
@@ -153,7 +149,7 @@
         order: [[0, 'asc']],
     });
 
-    table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+    // Botones nativos de DataTables desactivados
 
     // Escucha el cambio en el selector de cantidad de páginas
     $('#pageSize').change(function () {
@@ -173,9 +169,8 @@
             // Reinicializa DataTables aquí
             $('#datatable-buttons').DataTable({
                 lengthChange: false,
-            dom: 'Bfrtip',
+            dom: 'lrtip',
             pageLength: 35,
-            buttons: ['copy', 'csv', 'excel', 'pdf'],
             language: {
                 lengthMenu: 'Mostrando _MENU_ registros por página',
                 zeroRecords: 'No se encontraron registros coincidentes',
@@ -201,16 +196,46 @@
 
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
-    <!-- Buttons examples -->
-    <script src="../plugins/datatables/dataTables.buttons.min.js"></script>
-    <script src="../plugins/datatables/buttons.bootstrap4.min.js"></script>
-    <script src="../plugins/datatables/jszip.min.js"></script>
-    <script src="../plugins/datatables/pdfmake.min.js"></script>
-    <script src="../plugins/datatables/vfs_fonts.js"></script>
-    <script src="../plugins/datatables/buttons.html5.min.js"></script>
-    <script src="../plugins/datatables/buttons.print.min.js"></script>
-    <script src="../plugins/datatables/buttons.colVis.min.js"></script>
+    <!-- Buttons deshabilitados -->
     <!-- Responsive examples -->
     <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
     <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
 @endsection
+
+<style>
+/* Botones de exportación unificados como en Socios */
+.export-btn{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; border-radius:10px; font-weight:700; text-decoration:none; color:#fff; box-shadow:0 4px 10px rgba(0,0,0,.06); transition:all .2s ease; }
+.export-btn--excel{ background:#198754; }
+.export-btn--excel:hover{ background:#157347; color:#fff; text-decoration:none; }
+.export-btn--pdf{ background:#dc3545; }
+.export-btn--pdf:hover{ background:#bb2d3b; color:#fff; text-decoration:none; }
+
+/* Título estandarizado como en Usuarios (con prioridad para evitar overrides) */
+.page-title { font-size: 2.25rem !important; line-height: 2.5rem !important; font-weight: 700 !important; color: #111827 !important; margin: 0 0 8px 0 !important; display: flex !important; align-items: center !important; gap: 12px !important; }
+.page-title i { color: #2563eb !important; font-size: 1.875rem !important; }
+
+@media (max-width: 768px) {
+  .page-title { font-size: 1.5rem !important; line-height: 1.75rem !important; }
+  .page-title i { font-size: 1.25rem !important; }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .btn-add-socio {
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Mantener el texto visible también en móvil */
+    .btn-add-socio span {
+        display: inline;
+    }
+    
+    .btn-add-socio i {
+        margin: 0;
+    }
+}
+</style>

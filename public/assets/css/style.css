@@ -1362,14 +1362,14 @@ dt {
 
 /******* Content Page *******/
 .content-page {
-    margin-left: 270px;
+  margin-left: 0;
   overflow: auto;
   width: 100%;
 }
 
 .content-page .content {
   padding: 15px 15px 10px 15px;
-  margin-top: 100px;
+  margin-top: 0;
   margin-bottom: 60px;
 }
 
