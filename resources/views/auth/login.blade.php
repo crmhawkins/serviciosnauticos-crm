@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+<title>Iniciar sesión · Marinería CRM</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.css"
         integrity="sha512-CaTMQoJ49k4vw9XO0VpTBpmMz8XpCWP5JhGmBvuBqCOaOHWENWO1CrVl09u4yp8yBVSID6smD4+gpzDJVQOPwQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -18,100 +18,95 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
         integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+<style>
+    :root {
+        --primary: #1d60a3;
+        --primary-dark: #104a83;
+        --bg: #f3f6fb;
+        --card-bg: #ffffff;
+        --text: #0f172a;
+    }
+    html, body { height: 100%; }
+    body {
+        margin: 0;
+        background: linear-gradient(135deg, #4f86c6 0%, #2c6fb2 60%, #1f5d99 100%);
+        background-attachment: fixed;
+        font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        color: var(--text);
+    }
+    .login-wrapper {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr;
+        place-items: center;
+        padding: 24px 16px;
+    }
+    .login-card {
+        width: 100%;
+        max-width: 440px;
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 20px 35px rgba(3, 24, 54, 0.18);
+        overflow: hidden;
+    }
+    .login-header {
+        padding: 28px 28px 0 28px;
+        text-align: center;
+    }
+    .brand-logo { width: 72px; height: 72px; object-fit: contain; }
+    .title { font-weight: 800; margin: 12px 0 4px 0; color: #0b2240; }
+    .subtitle { color: #64748b; margin: 0 0 8px 0; font-size: 14px; }
+    .login-body { padding: 24px 28px 28px 28px; }
+    .form-control { height: 48px; }
+    .input-group .btn { height: 48px; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+    .legal { color: rgba(255,255,255,.9); font-size: 12px; text-align: center; padding: 10px 16px; }
+    @media (max-width: 480px) {
+        .title { font-size: 22px; }
+        .login-card { max-width: 100%; }
+    }
+</style>
 </head>
 
-<body style="background-color: #5083b5;">
-    <div class="container">
-        <div class="row justify-content-center mt-5">
-            <div class="col-sm-12 text-center">
-                <img src="{{ asset('assets/images/logo-empresa.png') }}" style="width: 15% !important;">
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="{{ asset('assets/images/logo-empresa.png') }}" alt="Logo" class="brand-logo">
+                <h2 class="title">Iniciar sesión</h2>
+                <p class="subtitle">Accede a tu cuenta para continuar</p>
             </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-sm-12 text-center text-white">
-                <h1 style="font-size: 3rem !important;">Iniciar sesión</h1>
-            </div>
-        </div>
-        <div class="row justify-content-center"
-            style="position: relative;
-    top: 48%;F
-    transform: translateY(10%);">
-
-            <div class="col-sm-4">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('login') }}">
+            <div class="login-body">
+                <form method="POST" action="{{ route('login') }}">
                             @csrf
-
-                            <div class="row mb-3 justify-content-center">
-                                <div class="col-md-10">
-                                    <input id="email" type="email"
-                                        class="form-control @error('email') is-invalid @enderror" name="email"
-                                        value="{{ old('email') }}" required autocomplete="email"
-                                        placeholder="Correo electrónico" autofocus>
-
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="row mb-3 justify-content-center">
-                                <div class="col-md-9">
-                                    <input id="password" type="password"
-                                        class="form-control @error('password') is-invalid @enderror"
-                                        placeholder="Contraseña" name="password" required
-                                        autocomplete="current-password">
-
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-sm-1">
-                                    <button type="button" class="btn btn-primary"
-                                        onclick="togglePasswordVisibility()">
-                                        <i class="fas fa-eye" id="eye-icon"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3 justify-content-center">
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="remember" id="remember"
-                                            {{ old('remember') ? 'checked' : '' }}>
-
-                                        <label class="form-check-label" for="remember">
-                                            {{ __('Recordar contraseña') }}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mb-0 justify-content-center">
-                                <div class="col-sm-11">
-                                    <button type="submit" class="btn w-100"
-                                        style="background-color: #1d60a3; color: white;">
-                                        {{ __('Iniciar sesión') }}
-                                    </button>
-                                </div>
-
-                            </div>
-                        </form>
+                    <div class="mb-3">
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Correo electrónico" autofocus>
+                        @error('email')
+                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                        @enderror
                     </div>
-                </div>
+                    <div class="mb-3 input-group">
+                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Contraseña" name="password" required autocomplete="current-password">
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility()"><i class="fas fa-eye" id="eye-icon"></i></button>
+                        @error('password')
+                            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                        @enderror
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="remember">Recordar contraseña</label>
+                        </div>
+                        @if (Route::has('password.request'))
+                            <a class="link-primary" href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+                        @endif
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+                </form>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-sm-12 text-center text-white">
-            <h1 style="font-size: 1rem !important;position: absolute; bottom: 0; text-align: center; width: 100%;">Pulsa
-                aquí para acceder a las condiciones de la Ley de Protección de Datos</h1>
-        </div>
+        <div class="legal">Pulsa aquí para acceder a las condiciones de la Ley de Protección de Datos</div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
