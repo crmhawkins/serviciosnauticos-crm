@@ -75,6 +75,43 @@
                     </div>
             </div>
         </div>
+        
+        <!-- Order Section -->
+        <div class="filter-card" style="margin-top: 1rem;">
+            <div class="filter-header">
+                <h3 class="filter-title">
+                    <i class="fas fa-sort"></i>
+                    Ordenar
+                </h3>
+            </div>
+            <div class="filter-content">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="orderBy" class="filter-label">Ordenar por</label>
+                        <div class="select-wrapper">
+                            <select wire:model="orderBy" id="orderBy" class="modern-select">
+                                <option value="pantalan_t_atraque">Pantalán / Atraque</option>
+                                <option value="nombre_socio">Nombre del socio</option>
+                                <option value="numero_socio">Nº de socio</option>
+                                <option value="nombre_barco">Nombre del barco</option>
+                                <option value="matricula">Matrícula</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="orderDir" class="filter-label">Dirección</label>
+                        <div class="select-wrapper">
+                            <select wire:model="orderDir" id="orderDir" class="modern-select">
+                                <option value="asc">Ascendente</option>
+                                <option value="desc">Descendente</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Content Section -->

@@ -76,4 +76,14 @@ class Socio extends Model
     {
         return $this->hasMany(RegistrosEntradaTranseunte::class, 'socio_id');
     }
+
+    public function socio_fotos(): HasMany
+    {
+        return $this->hasMany(SocioFoto::class, 'socio_id')->orderBy('orden');
+    }
+
+    public function barco_fotos(): HasMany
+    {
+        return $this->hasMany(BarcoFoto::class, 'socio_id')->orderBy('orden');
+    }
 }

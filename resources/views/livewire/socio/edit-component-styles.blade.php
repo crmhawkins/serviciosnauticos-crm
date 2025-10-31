@@ -758,17 +758,17 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: white;
-    border-top: 1px solid var(--gray-200);
-    padding: var(--space-4);
+    background: transparent;
+    border-top: none;
+    padding: var(--space-2);
     z-index: 1000;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .btn-save-fixed {
     width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1076,6 +1076,12 @@ body {
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
+
+/* Forzar espacio y posición del botón fijo en móvil para no solaparse con el bottom nav */
+@media (max-width: 768px) {
+    .modern-edit-container { padding-bottom: 90px !important; }
+    .fixed-save-button { bottom: 64px !important; }
+}
 </style>
 
 <script>
@@ -1171,11 +1177,21 @@ $("#alertaImpresion").on("click", () => {
     });
 });
 
+// Forzar apertura del modal de registros (se pierde tras renders de Livewire)
+function bindOpenRegistros(){
+    $(document).off('click', '#btnRegistros');
+    $(document).on('click', '#btnRegistros', function(){
+        $('#modal-registros').modal('show');
+    });
+}
+bindOpenRegistros();
+
 // Livewire hooks
 document.addEventListener('livewire:load', function() {
     window.livewire.hook('message.processed', (message, component) => {
         // Reinitialize components after Livewire updates
         initializeDatePickers();
+        bindOpenRegistros();
     });
 });
 </script>

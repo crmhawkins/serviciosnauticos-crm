@@ -131,6 +131,64 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="gallery-card">
+                        <div class="photo-header">
+                            <h3 class="photo-title"><i class="fas fa-images"></i> Galería del Barco</h3>
+                        </div>
+                        <div class="photo-content">
+                            <input type="file" class="photo-input" wire:model="fotos_barco_nuevas" multiple accept="image/*" id="galeria_barco_files">
+                            <label for="galeria_barco_files" class="photo-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Añadir fotos del barco</span>
+                            </label>
+                            @error('fotos_barco_nuevas.*')<span class="error-message">{{ $message }}</span>@enderror
+                            <div class="gallery-grid">
+                                @foreach($galeria_barco as $foto)
+                                    <div class="gallery-item">
+                                        <img src="{{ asset('assets/images/' . $foto['ruta']) }}" class="gallery-image" alt="foto barco">
+                                        <div class="gallery-actions">
+                                            <button type="button" class="btn btn-sm btn-primary" wire:click="destacarFoto('barco', {{ $foto['id'] }})">
+                                                <i class="fas fa-star"></i> Destacar
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" wire:click="eliminarFoto('barco', {{ $foto['id'] }})">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gallery-card">
+                        <div class="photo-header">
+                            <h3 class="photo-title"><i class="fas fa-images"></i> Galería del Socio</h3>
+                        </div>
+                        <div class="photo-content">
+                            <input type="file" class="photo-input" wire:model="fotos_socio_nuevas" multiple accept="image/*" id="galeria_socio_files">
+                            <label for="galeria_socio_files" class="photo-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Añadir fotos del socio</span>
+                            </label>
+                            @error('fotos_socio_nuevas.*')<span class="error-message">{{ $message }}</span>@enderror
+                            <div class="gallery-grid">
+                                @foreach($galeria_socio as $foto)
+                                    <div class="gallery-item">
+                                        <img src="{{ asset('assets/images/' . $foto['ruta']) }}" class="gallery-image" alt="foto socio">
+                                        <div class="gallery-actions">
+                                            <button type="button" class="btn btn-sm btn-primary" wire:click="destacarFoto('socio', {{ $foto['id'] }})">
+                                                <i class="fas fa-star"></i> Destacar
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" wire:click="eliminarFoto('socio', {{ $foto['id'] }})">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Status Section -->

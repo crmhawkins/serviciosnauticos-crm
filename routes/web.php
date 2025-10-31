@@ -88,6 +88,15 @@ Route::group(['middleware' => 'is.admin','prefix' => 'admin'], function () {
     Route::get('socios-create', [SocioController::class, 'create'])->name('socios.create');
     Route::get('socios-alta/{id}', [SocioController::class, 'alta'])->name('socios.alta');
     Route::get('socios-edit/{id}', [SocioController::class, 'edit'])->name('socios.edit');
+    Route::get('socios/{id}/registros', [SocioController::class, 'registros'])->name('socios.registros');
+    Route::put('socios-update/{id}', [SocioController::class, 'update'])->name('socios.update');
+
+// Galería fotos: destacar/eliminar
+Route::post('admin/socios/{id}/foto-barco/{fotoId}/destacar', [SocioController::class, 'destacarBarcoFoto'])->name('socios.foto_barco.destacar');
+Route::delete('admin/socios/{id}/foto-barco/{fotoId}', [SocioController::class, 'eliminarBarcoFoto'])->name('socios.foto_barco.eliminar');
+Route::post('admin/socios/{id}/foto-socio/{fotoId}/destacar', [SocioController::class, 'destacarSocioFoto'])->name('socios.foto_socio.destacar');
+Route::delete('admin/socios/{id}/foto-socio/{fotoId}', [SocioController::class, 'eliminarSocioFoto'])->name('socios.foto_socio.eliminar');
+    Route::put('socios-update/{id}', [SocioController::class, 'update'])->name('socios.update');
 
     Route::get('club', [ClubController::class, 'index'])->name('club.index');
     Route::get('club-create', [ClubController::class, 'create'])->name('club.create');

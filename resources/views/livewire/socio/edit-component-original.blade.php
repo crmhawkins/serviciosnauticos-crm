@@ -1,5 +1,15 @@
 @include('livewire.socio.edit-component-styles')
 
+<style>
+/* Evitar solape con el bottom-nav en móvil */
+@media (max-width: 768px) {
+    .modern-edit-container { padding-bottom: 140px; }
+    .fixed-save-button { bottom: 96px !important; }
+    .fixed-save-button .btn-row { display: flex; gap: 8px; align-items: center; }
+    .fixed-save-button .btn-back-mini { background: #e5e7eb; color: #111827; border: 0; padding: 10px 12px; border-radius: 10px; font-weight: 600; }
+}
+</style>
+
 <div class="modern-edit-container">
     <!-- Header Section -->
     <div class="header-section">
@@ -11,12 +21,7 @@
                 </h1>
                 <p class="page-subtitle">Modifica los datos del socio y transeúnte</p>
             </div>
-            <div class="header-actions">
-                <a href="javascript:void(0);" class="btn-back">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver</span>
-                </a>
-            </div>
+            <div class="header-actions"></div>
         </div>
         
         <!-- Breadcrumb -->
@@ -706,12 +711,20 @@
 
     <!-- Fixed Save Button -->
     <div class="fixed-save-button">
-        <button type="button"
-                class="btn-save-fixed"
-                wire:click.prevent="alertaGuardar">
-            <i class="fas fa-save"></i>
-            <span>Guardar Cambios</span>
-        </button>
+        <div class="btn-row" style="display:flex; gap:8px;">
+            <button type="button"
+                    class="btn-back-mini" style="flex:1;"
+                    onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver</span>
+            </button>
+            <button type="button"
+                    class="btn-save-fixed" style="flex:1;"
+                    wire:click.prevent="alertaGuardar">
+                <i class="fas fa-save"></i>
+                <span>Guardar Cambios</span>
+            </button>
+        </div>
     </div>
 </div>
 

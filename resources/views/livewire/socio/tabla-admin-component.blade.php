@@ -91,9 +91,39 @@
                         <input id="mobile-search-input" type="search" placeholder="Buscar en socios..." style="flex:1;">
                     </div>
                 </div>
-                <div class="col-12 p-0" id="mobile-cards">
+                <style>
+                    /* Controles de orden solo en móvil */
+                    #mobile-order { display: none; }
+                    @media (max-width: 768px) {
+                        #mobile-order { display: block; margin: 0 0 12px 0; }
+                        #todos-orderBy, #todos-orderDir { width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 10px; }
+                        #mobile-order .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+                    }
+                </style>
+                <div id="mobile-order">
+                    <div class="row">
+                        <select id="todos-orderBy">
+                            <option value="pantalan_t_atraque">Pantalán / Atraque</option>
+                            <option value="nombre_socio">Nombre del socio</option>
+                            <option value="numero_socio">Nº de socio</option>
+                            <option value="nombre_barco">Nombre del barco</option>
+                            <option value="matricula">Matrícula</option>
+                        </select>
+                        <select id="todos-orderDir">
+                            <option value="asc">Ascendente</option>
+                            <option value="desc">Descendente</option>
+                        </select>
+                    </div>
+                </div>
+<div class="col-12 p-0" id="mobile-cards" wire:ignore>
                     @foreach ($socios as $socio)
-                        <div class="socio-card" data-search="{{ Str::slug($socio->nombre_barco . ' ' . $socio->nombre_socio . ' ' . $socio->matricula . ' ' . $socio->pantalan_t_atraque, ' ') }}">
+                        <div class="socio-card" 
+                             data-search="{{ Str::slug($socio->nombre_barco . ' ' . $socio->nombre_socio . ' ' . $socio->matricula . ' ' . $socio->pantalan_t_atraque, ' ') }}"
+                             data-nombre="{{ Str::of($socio->nombre_socio)->lower() }}"
+                             data-barco="{{ Str::of($socio->nombre_barco)->lower() }}"
+                             data-matricula="{{ Str::of($socio->matricula)->lower() }}"
+                             data-pantalan="{{ Str::of($socio->pantalan_t_atraque)->lower() }}"
+                             data-numero="{{ (string) $socio->numero_socio }}">
                             <div class="card-header">
                                 <div class="socio-info">
                                     <div class="socio-photo-section">
@@ -299,6 +329,47 @@
         }
       });
       console.log('[todos-socios] filter=', q, 'normalized=', query, 'cards shown/total=', shown, '/', total);
+    }
+  });
+})();
+</script>
+
+<script>
+// Ordenación de cards en móvil (igual que vista Socios)
+(function(){
+  function isMobile(){ return window.matchMedia('(max-width: 768px)').matches; }
+  function sortCards(orderBy, orderDir){
+    if(!isMobile()) return;
+    var container = document.getElementById('mobile-cards');
+    if(!container) return;
+    var cards = Array.from(container.querySelectorAll('.socio-card'));
+    var dir = (orderDir||'asc').toLowerCase()==='desc' ? -1 : 1;
+    var map = { 'nombre_socio':'nombre', 'numero_socio':'numero', 'pantalan_t_atraque':'pantalan', 'nombre_barco':'barco', 'matricula':'matricula' };
+    var key = map[orderBy] || 'nombre';
+    cards.sort(function(a,b){
+      var va = a.dataset[key] || '';
+      var vb = b.dataset[key] || '';
+      if(key==='numero'){
+        var na = parseFloat(va)||0, nb = parseFloat(vb)||0; return (na-nb)*dir;
+      }
+      return va.localeCompare(vb,'es',{sensitivity:'base'})*dir;
+    });
+    cards.forEach(function(card){ container.appendChild(card); });
+  }
+  document.addEventListener('change', function(e){
+    if(e.target && (e.target.id==='todos-orderBy' || e.target.id==='todos-orderDir')){
+      var ob = document.getElementById('todos-orderBy');
+      var od = document.getElementById('todos-orderDir');
+      sortCards(ob ? ob.value : 'nombre_socio', od ? od.value : 'asc');
+    }
+  });
+  document.addEventListener('livewire:load', function(){
+    if(window.livewire){
+      window.livewire.hook('message.processed', function(){
+        var ob = document.getElementById('todos-orderBy');
+        var od = document.getElementById('todos-orderDir');
+        sortCards(ob ? ob.value : 'nombre_socio', od ? od.value : 'asc');
+      });
     }
   });
 })();

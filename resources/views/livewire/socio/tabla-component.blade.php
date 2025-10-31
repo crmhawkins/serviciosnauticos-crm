@@ -141,7 +141,56 @@
         </div>
 
         <!-- Mobile Cards View -->
-        <div class="mobile-view">
+        <div class="mobile-view" wire:ignore>
+            <style>
+            :root {
+                --primary-blue: #2563eb; --primary-blue-dark: #1d4ed8; --success-green: #22c55e; --success-green-dark: #16a34a;
+                --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-400:#9ca3af; --gray-500:#6b7280; --gray-700:#374151; --gray-900:#111827;
+                --space-1:.25rem; --space-2:.5rem; --space-3:.75rem; --space-4:1rem; --space-6:1.5rem;
+                --border-radius:.5rem; --border-radius-lg:.75rem; --border-radius-xl:1rem;
+                --shadow-md:0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+                --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+                --transition-normal:200ms ease-in-out; --font-size-sm:.875rem; --font-size-base:1rem; --font-size-lg:1.125rem;
+            }
+            @media (max-width:768px){
+                .socio-cardscope .cards-container{display:flex;flex-direction:column;gap:var(--space-4)}
+                .socio-cardscope .socio-card{background:#fff;border-radius:var(--border-radius-xl);box-shadow:var(--shadow-md);border:1px solid var(--gray-200);overflow:hidden;transition:all var(--transition-normal)}
+                .socio-cardscope .socio-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+                .socio-cardscope .card-header{padding:var(--space-4);border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:flex-start}
+                .socio-cardscope .socio-info{display:flex;gap:var(--space-3);flex:1}
+                .socio-cardscope .socio-photo-section{flex-shrink:0}
+                .socio-cardscope .photo-wrapper{position:relative;width:60px;height:60px}
+                .socio-cardscope .socio-photo{width:100%;height:100%;object-fit:cover;border-radius:var(--border-radius);border:2px solid var(--gray-200)}
+                .socio-cardscope .photo-placeholder{width:100%;height:100%;background:var(--gray-100);border:2px solid var(--gray-200);border-radius:var(--border-radius);display:flex;align-items:center;justify-content:center;color:#9ca3af}
+                .socio-cardscope .socio-details{flex:1;min-width:0}
+                .socio-cardscope .socio-name{font-size:var(--font-size-lg);font-weight:600;color:var(--gray-900);margin:0 0 var(--space-1) 0}
+                .socio-cardscope .barco-name{font-size:var(--font-size-base);color:#6b7280;margin:0 0 var(--space-2) 0}
+                .socio-cardscope .socio-meta{display:flex;flex-direction:column;gap:var(--space-1)}
+                .socio-cardscope .pantalan-info,.socio-cardscope .matricula-info{display:flex;align-items:center;gap:var(--space-1);font-size:var(--font-size-sm);color:var(--gray-500)}
+                .socio-cardscope .pantalan-info i,.socio-cardscope .matricula-info i{color:var(--primary-blue);width:12px}
+                .socio-cardscope .card-content{padding:var(--space-4)}
+                .socio-cardscope .telefonos-section{margin-bottom:var(--space-4)}
+                .socio-cardscope .section-title{font-size:var(--font-size-sm);font-weight:600;color:var(--gray-700);margin:0 0 var(--space-3) 0;display:flex;align-items:center;gap:var(--space-2)}
+                .socio-cardscope .section-title i{color:var(--primary-blue)}
+                .socio-cardscope .telefonos-list{display:flex;flex-direction:column;gap:var(--space-2)}
+                .socio-cardscope .telefono-item{display:flex;justify-content:space-between;align-items:center;padding:var(--space-2) var(--space-3);background:var(--gray-50);border-radius:var(--border-radius)}
+                .socio-cardscope .telefono-number{font-weight:500;color:var(--gray-900)}
+                .socio-cardscope .telefono-actions{display:flex;gap:var(--space-1)}
+                .socio-cardscope .btn-telefono{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--border-radius);text-decoration:none;transition:all var(--transition-normal)}
+                .socio-cardscope .btn-telefono.btn-call{background:#4b5563;color:#fff}
+                .socio-cardscope .btn-telefono.btn-call:hover{background:#374151;color:#fff}
+                .socio-cardscope .btn-telefono.btn-whatsapp{background:#25d366;color:#fff}
+                .socio-cardscope .btn-telefono.btn-whatsapp:hover{background:#128c7e;color:#fff}
+                .socio-cardscope .card-actions{padding:var(--space-4);border-top:1px solid var(--gray-200);background:var(--gray-50)}
+                .socio-cardscope .btn-card{display:flex;align-items:center;justify-content:center;gap:var(--space-2);width:100%;padding:var(--space-3) var(--space-4);border-radius:var(--border-radius-lg);font-weight:600;text-decoration:none;transition:all var(--transition-normal)}
+                .socio-cardscope .btn-edit{background:var(--primary-blue)!important;color:#fff!important;border:none}
+                .socio-cardscope .btn-edit:hover{background:var(--primary-blue-dark)!important;color:#fff!important}
+                .socio-cardscope .btn-alta{background:var(--success-green)!important;color:#fff!important;border:none}
+                .socio-cardscope .btn-alta:hover{background:var(--success-green-dark)!important;color:#fff!important}
+                .socio-cardscope .socio-card.is-hidden{display:none!important}
+            }
+            </style>
+            <div class="socio-cardscope">
             <div class="mobile-controls">
                 <div class="search-control">
                     <div class="search-input-wrapper">
@@ -151,9 +200,9 @@
                 </div>
             </div>
             
-            <div class="cards-container">
+            <div class="cards-container" id="mobileCardsContainer">
                 @foreach ($socios as $socio)
-                    <div class="socio-card" data-socio-id="{{ $socio->id }}">
+                    <div class="socio-card" data-socio-id="{{ $socio->id }}" data-nombre="{{ Str::of($socio->nombre_socio)->lower() }}" data-barco="{{ Str::of($socio->nombre_barco)->lower() }}" data-matricula="{{ Str::of($socio->matricula)->lower() }}" data-pantalan="{{ Str::of($socio->pantalan_t_atraque)->lower() }}" data-numero="{{ (string) $socio->numero_socio }}">
                         <div class="card-header">
                             <div class="socio-info">
                                 <div class="socio-photo-section">
@@ -248,6 +297,7 @@
                     </div>
                 @endforeach
             </div>
+            </div>
         </div>
     @else
         <div class="empty-state">
@@ -264,656 +314,13 @@
     @endif
 </div>
 
-<style>
-/* Design System Variables */
-:root {
-    /* Colors */
-    --primary-blue: #2563eb;
-    --primary-blue-dark: #1d4ed8;
-    --primary-blue-light: #3b82f6;
-    --success-green: #22c55e;
-    --success-green-dark: #16a34a;
-    --warning-orange: #f59e0b;
-    --warning-orange-dark: #d97706;
-    --danger-red: #ef4444;
-    --danger-red-dark: #dc2626;
-    --whatsapp-green: #25d366;
-    --whatsapp-green-dark: #128c7e;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    
-    /* Spacing */
-    --space-1: 0.25rem;
-    --space-2: 0.5rem;
-    --space-3: 0.75rem;
-    --space-4: 1rem;
-    --space-5: 1.25rem;
-    --space-6: 1.5rem;
-    --space-8: 2rem;
-    --space-10: 2.5rem;
-    --space-12: 3rem;
-    
-    /* Typography */
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-base: 1rem;
-    --font-size-lg: 1.125rem;
-    --font-size-xl: 1.25rem;
-    --font-size-2xl: 1.5rem;
-    --font-size-3xl: 1.875rem;
-    
-    /* Border Radius */
-    --border-radius-sm: 0.375rem;
-    --border-radius: 0.5rem;
-    --border-radius-lg: 0.75rem;
-    --border-radius-xl: 1rem;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    
-    /* Transitions */
-    --transition-fast: 150ms ease-in-out;
-    --transition-normal: 200ms ease-in-out;
-    --transition-slow: 300ms ease-in-out;
-}
-
-/* Main Container */
-.socios-container {
-    padding: var(--space-6);
-}
-
-/* Desktop View */
-.desktop-view {
-    display: block;
-}
-
-.mobile-view {
-    display: none;
-}
-
-/* Table Header */
-.table-header {
-    background: white;
-    padding: var(--space-6);
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.table-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-4);
-}
-
-.search-control {
-    flex: 1;
-    max-width: 400px;
-}
-
-.search-input-wrapper {
-    position: relative;
-}
-
-.search-input {
-    width: 100%;
-    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
-    border: 2px solid var(--gray-200);
-    border-radius: var(--border-radius-lg);
-    font-size: var(--font-size-base);
-    transition: all var(--transition-normal);
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.search-icon {
-    position: absolute;
-    left: var(--space-3);
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gray-400);
-    font-size: var(--font-size-sm);
-}
-
-.table-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-}
-
-.page-size-control {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.control-label {
-    font-size: var(--font-size-sm);
-    color: var(--gray-600);
-    font-weight: 500;
-}
-
-.page-size-select {
-    padding: var(--space-2) var(--space-3);
-    border: 2px solid var(--gray-200);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-sm);
-    background: white;
-    cursor: pointer;
-}
-
-.export-buttons {
-    display: none; /* oculto en escritorio */
-    gap: var(--space-2);
-}
-
-.export-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2) var(--space-3);
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-sm);
-    color: var(--gray-700);
-    cursor: pointer;
-    transition: all var(--transition-normal);
-}
-
-.export-btn:hover {
-    background: var(--gray-200);
-    color: var(--gray-900);
-}
-
-/* Table */
-.table-wrapper {
-    overflow-x: auto;
-    background: white;
-}
-
-.modern-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--font-size-sm);
-}
-
-.modern-table thead {
-    background: var(--gray-50);
-}
-
-.modern-table th {
-    padding: var(--space-4);
-    text-align: left;
-    font-weight: 600;
-    color: var(--gray-700);
-    border-bottom: 2px solid var(--gray-200);
-    white-space: nowrap;
-}
-
-.modern-table td {
-    padding: var(--space-4);
-    border-bottom: 1px solid var(--gray-200);
-    vertical-align: middle;
-}
-
-.socio-row:hover {
-    background: var(--gray-50);
-}
-
-/* Photo */
-.photo-wrapper {
-    position: relative;
-    width: 50px;
-    height: 50px;
-}
-
-.socio-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    border: 2px solid var(--gray-200);
-}
-
-.photo-placeholder {
-    width: 100%;
-    height: 100%;
-    background: var(--gray-100);
-    border: 2px solid var(--gray-200);
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-400);
-    font-size: var(--font-size-lg);
-}
-
-/* Situación Badge */
-.situacion-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--border-radius-lg);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.situacion-0 {
-    background: rgba(34, 197, 94, 0.1);
-    color: var(--success-green-dark);
-}
-
-.situacion-1 {
-    background: rgba(245, 158, 11, 0.1);
-    color: var(--warning-orange-dark);
-}
-
-.situacion-2 {
-    background: rgba(37, 99, 235, 0.1);
-    color: var(--primary-blue-dark);
-}
-
-/* Action Buttons */
-.acciones-buttons {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-}
-
-.btn-action {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-    text-decoration: none;
-    transition: all var(--transition-normal);
-    white-space: nowrap;
-}
-
-.btn-edit {
-    background: var(--primary-blue);
-    color: white;
-}
-
-.btn-edit:hover {
-    background: var(--primary-blue-dark);
-    color: white;
-    text-decoration: none;
-}
-
-.btn-alta {
-    background: var(--success-green);
-    color: white;
-}
-
-.btn-alta:hover {
-    background: var(--success-green-dark);
-    color: white;
-    text-decoration: none;
-}
-
-.btn-call {
-    background: var(--gray-600);
-    color: white;
-}
-
-.btn-call:hover {
-    background: var(--gray-700);
-    color: white;
-    text-decoration: none;
-}
-
-.btn-whatsapp {
-    background: var(--whatsapp-green);
-    color: white;
-}
-
-.btn-whatsapp:hover {
-    background: var(--whatsapp-green-dark);
-    color: white;
-    text-decoration: none;
-}
-
-/* Telefono Info */
-.telefono-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-}
-
-.telefono-number {
-    font-weight: 500;
-    color: var(--gray-900);
-}
-
-.telefono-count {
-    font-size: var(--font-size-xs);
-    color: var(--gray-500);
-}
-
-.no-telefono {
-    color: var(--gray-400);
-    font-style: italic;
-}
-
-/* Mobile View */
-@media (max-width: 768px) {
-    .export-buttons { display: flex; }
-    .desktop-view {
-        display: none;
-    }
-    
-    .mobile-view {
-        display: block;
-    }
-    
-    .socios-container {
-        padding: var(--space-4);
-    }
-    
-    .mobile-controls {
-        margin-bottom: var(--space-4);
-    }
-    
-    .cards-container {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-4);
-    }
-    
-    .socio-card {
-        background: white;
-        border-radius: var(--border-radius-xl);
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--gray-200);
-        overflow: hidden;
-        transition: all var(--transition-normal);
-    }
-    
-    .socio-card:hover {
-        box-shadow: var(--shadow-lg);
-        transform: translateY(-2px);
-    }
-    
-    .card-header {
-        padding: var(--space-4);
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-    
-    .socio-info {
-        display: flex;
-        gap: var(--space-3);
-        flex: 1;
-    }
-    
-    .socio-photo-section {
-        flex-shrink: 0;
-    }
-    
-    .socio-photo-section .photo-wrapper {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .socio-details {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .socio-name {
-        font-size: var(--font-size-lg);
-        font-weight: 600;
-        color: var(--gray-900);
-        margin: 0 0 var(--space-1) 0;
-    }
-    
-    .barco-name {
-        font-size: var(--font-size-base);
-        color: var(--gray-600);
-        margin: 0 0 var(--space-2) 0;
-    }
-    
-    .socio-meta {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-1);
-    }
-    
-    .pantalan-info,
-    .matricula-info {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        font-size: var(--font-size-sm);
-        color: var(--gray-500);
-    }
-    
-    .pantalan-info i,
-    .matricula-info i {
-        color: var(--primary-blue);
-        width: 12px;
-    }
-    
-    .card-content {
-        padding: var(--space-4);
-    }
-    
-    .telefonos-section {
-        margin-bottom: var(--space-4);
-    }
-    
-    .section-title {
-        font-size: var(--font-size-sm);
-        font-weight: 600;
-        color: var(--gray-700);
-        margin: 0 0 var(--space-3) 0;
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-    }
-    
-    .section-title i {
-        color: var(--primary-blue);
-    }
-    
-    .telefonos-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-2);
-    }
-    
-    .telefono-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--space-2) var(--space-3);
-        background: var(--gray-50);
-        border-radius: var(--border-radius);
-    }
-    
-    .telefono-number {
-        font-weight: 500;
-        color: var(--gray-900);
-    }
-    
-    .telefono-actions {
-        display: flex;
-        gap: var(--space-1);
-    }
-    
-    .btn-telefono {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: var(--border-radius);
-        text-decoration: none;
-        transition: all var(--transition-normal);
-    }
-    
-    .btn-telefono.btn-call {
-        background: var(--gray-600);
-        color: white;
-    }
-    
-    .btn-telefono.btn-call:hover {
-        background: var(--gray-700);
-        color: white;
-    }
-    
-    .btn-telefono.btn-whatsapp {
-        background: var(--whatsapp-green);
-        color: white;
-    }
-    
-    .btn-telefono.btn-whatsapp:hover {
-        background: var(--whatsapp-green-dark);
-        color: white;
-    }
-    
-    .card-actions {
-        padding: var(--space-4);
-        border-top: 1px solid var(--gray-200);
-        background: var(--gray-50);
-    }
-    
-    .btn-card {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-2);
-        width: 100%;
-        padding: var(--space-3) var(--space-4);
-        border-radius: var(--border-radius-lg);
-        font-weight: 600;
-        text-decoration: none;
-        transition: all var(--transition-normal);
-    }
-    
-    .btn-card.btn-edit {
-        background: var(--primary-blue);
-        color: white;
-    }
-    
-    .btn-card.btn-edit:hover {
-        background: var(--primary-blue-dark);
-        color: white;
-        text-decoration: none;
-    }
-    
-    .btn-card.btn-alta {
-        background: var(--success-green);
-        color: white;
-    }
-    
-    .btn-card.btn-alta:hover {
-        background: var(--success-green-dark);
-        color: white;
-        text-decoration: none;
-    }
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: var(--space-12) var(--space-6);
-    background: white;
-    border-radius: var(--border-radius-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
-}
-
-.empty-icon {
-    font-size: 4rem;
-    color: var(--gray-300);
-    margin-bottom: var(--space-4);
-}
-
-.empty-title {
-    font-size: var(--font-size-2xl);
-    font-weight: 600;
-    color: var(--gray-900);
-    margin: 0 0 var(--space-2) 0;
-}
-
-.empty-description {
-    color: var(--gray-600);
-    margin: 0 0 var(--space-6) 0;
-    font-size: var(--font-size-lg);
-}
-
-.btn-empty-action {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-6);
-    background: var(--success-green);
-    color: white;
-    text-decoration: none;
-    border-radius: var(--border-radius-lg);
-    font-weight: 600;
-    transition: all var(--transition-normal);
-}
-
-.btn-empty-action:hover {
-    background: var(--success-green-dark);
-    color: white;
-    text-decoration: none;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-    .socios-container {
-        padding: var(--space-3);
-    }
-    
-    .socio-name {
-        font-size: var(--font-size-base);
-    }
-    
-    .barco-name {
-        font-size: var(--font-size-sm);
-    }
-    
-    .socio-meta {
-        font-size: var(--font-size-xs);
-    }
-}
-</style>
+ 
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize DataTable for desktop
-    if (window.innerWidth > 768) {
-        initializeDataTable();
-    }
+    if (window.innerWidth > 768) { initializeDataTable(); }
+    updateResponsiveViews();
     
     // Initialize search functionality
     initializeSearch();
@@ -923,6 +330,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // Initialize export buttons
     initializeExportButtons();
+    // Keep correct view on resize
+    window.addEventListener('resize', updateResponsiveViews);
 });
 
 function initializeDataTable() {
@@ -950,6 +359,26 @@ function initializeDataTable() {
             { orderable: false, targets: [0, 7] } // Photo and actions columns
         ]
     });
+}
+
+function updateResponsiveViews() {
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    var desktop = document.querySelector('.desktop-view');
+    var mobile = document.querySelector('.mobile-view');
+    if (!desktop || !mobile) return;
+    if (isMobile) {
+        desktop.style.display = 'none';
+        mobile.style.display = 'block';
+        if ($.fn.DataTable && $.fn.DataTable.isDataTable('#sociosTable')) {
+            $('#sociosTable').DataTable().clear().destroy();
+        }
+    } else {
+        desktop.style.display = 'block';
+        mobile.style.display = 'none';
+        if ($.fn.DataTable && !$.fn.DataTable.isDataTable('#sociosTable')) {
+            initializeDataTable();
+        }
+    }
 }
 
 function initializeSearch() {
@@ -1025,12 +454,67 @@ function initializeExportButtons() {
 // Reinitialize when Livewire updates
 document.addEventListener('livewire:load', function() {
     window.livewire.hook('message.processed', () => {
-        if (window.innerWidth > 768) {
-            if ($.fn.DataTable.isDataTable('#sociosTable')) {
-                $('#sociosTable').DataTable().clear().destroy();
-            }
-            initializeDataTable();
-        }
+        // Reaplicar modo responsive y volver a enlazar comportamientos tras cada render
+        // Timeout 0 para asegurar DOM final aplicado
+        setTimeout(function(){
+            updateResponsiveViews();
+            initializeSearch();
+            initializePageSize();
+            initializeExportButtons();
+            applyMobileSortFromSelectors();
+        }, 0);
     });
+});
+</script>
+
+<script>
+// Mobile sorting helpers
+function isMobile() { return window.matchMedia('(max-width: 768px)').matches; }
+
+function applyMobileSortFromSelectors() {
+    if (!isMobile()) return;
+    var orderBySel = document.getElementById('orderBy');
+    var orderDirSel = document.getElementById('orderDir');
+    if (!orderBySel || !orderDirSel) return;
+    sortMobileCards(orderBySel.value, orderDirSel.value);
+}
+
+function sortMobileCards(orderBy, orderDir) {
+    if (!isMobile()) return;
+    var container = document.getElementById('mobileCardsContainer');
+    if (!container) return;
+    var cards = Array.from(container.querySelectorAll('.socio-card'));
+    var dir = (orderDir || 'asc').toLowerCase() === 'desc' ? -1 : 1;
+    var map = {
+        'nombre_socio': 'nombre',
+        'numero_socio': 'numero',
+        'pantalan_t_atraque': 'pantalan',
+        'nombre_barco': 'barco',
+        'matricula': 'matricula'
+    };
+    var dataKey = map[orderBy] || 'nombre';
+    cards.sort(function(a, b) {
+        var va = a.dataset[dataKey] || '';
+        var vb = b.dataset[dataKey] || '';
+        if (dataKey === 'numero') {
+            var na = parseFloat(va) || 0;
+            var nb = parseFloat(vb) || 0;
+            return (na - nb) * dir;
+        }
+        return va.localeCompare(vb, 'es', { sensitivity: 'base' }) * dir;
+    });
+    cards.forEach(function(card){ container.appendChild(card); });
+}
+
+// Bind selectors once
+document.addEventListener('DOMContentLoaded', function(){
+    function bindChange(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', function(){ applyMobileSortFromSelectors(); });
+    }
+    bindChange('orderBy');
+    bindChange('orderDir');
+    applyMobileSortFromSelectors();
 });
 </script>

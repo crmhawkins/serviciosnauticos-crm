@@ -9,6 +9,8 @@ class IndexComponent extends Component
 {
     public $socios;
     public $vista = 1;
+    public $orderBy = 'nombre_socio';
+    public $orderDir = 'asc';
     //protected $listeners = ['refreshComponent' => '$refresh', 'cambiarVista'];
     public function mount()
     {
@@ -17,6 +19,16 @@ class IndexComponent extends Component
     public function render()
     {
         return view('livewire.socio.index-component');
+    }
+
+    public function updatedOrderBy($value)
+    {
+        $this->emit('sociosOrderChanged', $this->orderBy, $this->orderDir);
+    }
+
+    public function updatedOrderDir($value)
+    {
+        $this->emit('sociosOrderChanged', $this->orderBy, $this->orderDir);
     }
 
     // public function cambiarVista()

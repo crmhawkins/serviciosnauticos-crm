@@ -24,7 +24,6 @@ class ExportController extends Controller
         $pdf = PDF::loadView('exports.socios', [ 'socios' => $socios ]);
         return $pdf->download('socios_' . now()->format('Ymd_His') . '.pdf');
     }
-}
 
     public function clubesExcel(Request $request)
     {
@@ -51,5 +50,6 @@ class ExportController extends Controller
         $pdf = PDF::loadView('exports.usuarios', [ 'usuarios' => $usuarios ]);
         return $pdf->download('usuarios_' . now()->format('Ymd_His') . '.pdf');
     }
+}
 
 

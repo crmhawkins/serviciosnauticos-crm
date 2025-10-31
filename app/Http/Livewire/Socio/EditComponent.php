@@ -20,6 +20,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Http\Livewire\Traits\HandlesErrors;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\SocioFoto;
+use App\Models\BarcoFoto;
 
 
 use DateTime;
@@ -59,12 +61,18 @@ class EditComponent extends Component
     public $itb;
     public $ruta_foto;
     public $ruta_foto2;
+    // Galería: nuevas fotos a subir y listas actuales
+    public $fotos_barco_nuevas = [];
+    public $fotos_socio_nuevas = [];
+    public $galeria_barco = [];
+    public $galeria_socio = [];
     public $notas;
     public $puntal;
     public $fecha_nota;
     public $fecha_entrada;
     public $fecha_entrada_barco;
     public $fecha_baja;
+
 
     public $texto_nota;
     public $id_nota;
@@ -194,6 +202,9 @@ class EditComponent extends Component
         $this->ruta_foto = $socio->ruta_foto;
         $this->ruta_foto2 = $socio->ruta_foto2;
         $this->pin_socio = $socio->pin_socio;
+        // cargar galerías existentes
+        $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
         $this->puedeEditar();
     }
     public function render()
@@ -429,6 +440,40 @@ class EditComponent extends Component
 
         $socio = Socio::find($this->identificador);
         $socioSave = $socio->update($validatedData);
+        
+        // Guardar nuevas fotos de galería (barco)
+        if (!empty($this->fotos_barco_nuevas)) {
+            foreach ($this->fotos_barco_nuevas as $file) {
+                if (is_object($file)) {
+                    $name = md5($file . microtime()) . '.' . $file->extension();
+                    Storage::disk('public')->put('assets/images/' . $name, file_get_contents($file->path()));
+                    BarcoFoto::create([
+                        'socio_id' => $this->identificador,
+                        'ruta' => $name,
+                        'orden' => (int) (BarcoFoto::where('socio_id', $this->identificador)->max('orden') + 1),
+                    ]);
+                }
+            }
+            $this->fotos_barco_nuevas = [];
+        }
+        // Guardar nuevas fotos de galería (socio)
+        if (!empty($this->fotos_socio_nuevas)) {
+            foreach ($this->fotos_socio_nuevas as $file) {
+                if (is_object($file)) {
+                    $name = md5($file . microtime()) . '.' . $file->extension();
+                    Storage::disk('public')->put('assets/images/' . $name, file_get_contents($file->path()));
+                    SocioFoto::create([
+                        'socio_id' => $this->identificador,
+                        'ruta' => $name,
+                        'orden' => (int) (SocioFoto::where('socio_id', $this->identificador)->max('orden') + 1),
+                    ]);
+                }
+            }
+            $this->fotos_socio_nuevas = [];
+        }
+        // recargar galerías
+        $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
         
         // Actualizar teléfonos existentes y crear nuevos
         foreach ($this->telefonos as $telefonoIndex => $telefono) {
@@ -1124,6 +1169,90 @@ class EditComponent extends Component
         return redirect()->route('socios.index');
     }
 
+    /**
+     * Guardar nuevas fotos de galería del barco
+     */
+    public function guardarGaleriaBarco()
+    {
+        if (!empty($this->fotos_barco_nuevas)) {
+            foreach ($this->fotos_barco_nuevas as $file) {
+                if (is_object($file)) {
+                    $name = md5($file . microtime()) . '.' . $file->extension();
+                    \Storage::disk('public')->put('assets/images/' . $name, file_get_contents($file->path()));
+                    BarcoFoto::create([
+                        'socio_id' => $this->identificador,
+                        'ruta' => $name,
+                        'orden' => (int) (BarcoFoto::where('socio_id', $this->identificador)->max('orden') + 1),
+                    ]);
+                }
+            }
+        }
+        $this->fotos_barco_nuevas = [];
+        $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        $this->alert('success', 'Galería de barco actualizada');
+    }
+
+    /**
+     * Guardar nuevas fotos de galería del socio
+     */
+    public function guardarGaleriaSocio()
+    {
+        if (!empty($this->fotos_socio_nuevas)) {
+            foreach ($this->fotos_socio_nuevas as $file) {
+                if (is_object($file)) {
+                    $name = md5($file . microtime()) . '.' . $file->extension();
+                    \Storage::disk('public')->put('assets/images/' . $name, file_get_contents($file->path()));
+                    SocioFoto::create([
+                        'socio_id' => $this->identificador,
+                        'ruta' => $name,
+                        'orden' => (int) (SocioFoto::where('socio_id', $this->identificador)->max('orden') + 1),
+                    ]);
+                }
+            }
+        }
+        $this->fotos_socio_nuevas = [];
+        $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        $this->alert('success', 'Galería de socio actualizada');
+    }
+
+    /**
+     * Marcar una foto como destacada y sincronizar con ruta principal
+     */
+    public function destacarFoto($tipo, $id)
+    {
+        if ($tipo === 'barco') {
+            BarcoFoto::where('socio_id', $this->identificador)->update(['destacada' => false]);
+            if ($foto = BarcoFoto::find($id)) {
+                $foto->update(['destacada' => true]);
+                Socio::find($this->identificador)->update(['ruta_foto' => $foto->ruta]);
+                $this->ruta_foto = $foto->ruta;
+            }
+            $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        } else {
+            SocioFoto::where('socio_id', $this->identificador)->update(['destacada' => false]);
+            if ($foto = SocioFoto::find($id)) {
+                $foto->update(['destacada' => true]);
+                Socio::find($this->identificador)->update(['ruta_foto2' => $foto->ruta]);
+                $this->ruta_foto2 = $foto->ruta;
+            }
+            $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        }
+    }
+
+    /**
+     * Eliminar una foto de la galería
+     */
+    public function eliminarFoto($tipo, $id)
+    {
+        if ($tipo === 'barco') {
+            if ($foto = BarcoFoto::find($id)) { $foto->delete(); }
+            $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        } else {
+            if ($foto = SocioFoto::find($id)) { $foto->delete(); }
+            $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        }
+    }
+
     public function destroy()
     {
         $this->alert('error', '¿Seguro que desea borrar al socio? No hay vuelta atrás.', [
@@ -1176,4 +1305,36 @@ class EditComponent extends Component
         );
     }
 
+    // === Galería: destacar / eliminar ===
+    public function destacarFoto($tipo, $id)
+    {
+        if ($tipo === 'barco') {
+            BarcoFoto::where('socio_id', $this->identificador)->update(['destacada' => false]);
+            if ($foto = BarcoFoto::find($id)) {
+                $foto->update(['destacada' => true]);
+                Socio::find($this->identificador)->update(['ruta_foto' => $foto->ruta]);
+                $this->ruta_foto = $foto->ruta;
+            }
+            $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        } else {
+            SocioFoto::where('socio_id', $this->identificador)->update(['destacada' => false]);
+            if ($foto = SocioFoto::find($id)) {
+                $foto->update(['destacada' => true]);
+                Socio::find($this->identificador)->update(['ruta_foto2' => $foto->ruta]);
+                $this->ruta_foto2 = $foto->ruta;
+            }
+            $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        }
+    }
+
+    public function eliminarFoto($tipo, $id)
+    {
+        if ($tipo === 'barco') {
+            if ($foto = BarcoFoto::find($id)) { $foto->delete(); }
+            $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        } else {
+            if ($foto = SocioFoto::find($id)) { $foto->delete(); }
+            $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
+        }
+    }
 }

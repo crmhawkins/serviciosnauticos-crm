@@ -4,6 +4,23 @@
 
 @section('content-principal')
 <div class="modern-edit-container">
+    @if (session('success') || session('status') || session('error'))
+        <div class="header-section" style="margin-bottom: 16px; padding: 12px;">
+            @if(session('success') || session('status'))
+                <div class="alert alert-success" role="alert" style="margin:0;">
+                    {{ session('success') ?? session('status') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger" role="alert" style="margin:0;">
+                    {{ session('error') }}
+                </div>
+            @endif
+        </div>
+        <script>
+            try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) {}
+        </script>
+    @endif
     <!-- Header Section -->
     <div class="header-section">
         <div class="header-content">
@@ -14,12 +31,7 @@
                 </h1>
                 <p class="page-subtitle">Modifica los datos del socio y transeúnte</p>
             </div>
-            <div class="header-actions">
-                <a href="{{ route('socios.index') }}" class="btn-back">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver</span>
-                </a>
-            </div>
+            <div class="header-actions"></div>
         </div>
         
         <!-- Breadcrumb -->
@@ -44,7 +56,8 @@
     </div>
 
     @if ($puede_editar)
-        <form method="POST" action="#" enctype="multipart/form-data" id="socio-form">
+        <form method="POST" action="{{ route('socios.update', $socio->id) }}" enctype="multipart/form-data" id="socio-form">
+            @method('PUT')
             @csrf
             
             <!-- Main Form Section -->
@@ -64,7 +77,30 @@
                                     <div class="photo-preview">
                                         <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}" 
                                              alt="Foto del barco" 
-                                             class="photo-image">
+                                             class="photo-image" id="preview-barco">
+                                    </div>
+                                @endif
+                                @if($socio->barco_fotos && $socio->barco_fotos->count())
+                                    <div style="margin-top:12px;">
+                                        <div class="input-label" style="margin-bottom:6px; color:#374151;">Galería del Barco</div>
+                                        <div class="photo-gallery" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap:8px;">
+                                        @foreach($socio->barco_fotos as $foto)
+                                            <div style="position:relative;">
+                                                <img src="{{ asset('assets/images/' . $foto->ruta) }}" alt="Barco foto" style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;">
+                                                <div style="display:flex; gap:6px; margin-top:6px;">
+                                                    <form method="POST" action="{{ route('socios.foto_barco.destacar', [$socio->id, $foto->id]) }}">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm" style="background:#2563eb; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Destacar</button>
+                                                    </form>
+                                                    <form method="POST" action="{{ route('socios.foto_barco.eliminar', [$socio->id, $foto->id]) }}" onsubmit="return confirm('¿Eliminar esta foto?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Eliminar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                        </div>
                                     </div>
                                 @endif
                                 <div class="photo-upload">
@@ -96,7 +132,30 @@
                                     <div class="photo-preview">
                                         <img src="{{ asset('assets/images/' . $socio->ruta_foto2) }}" 
                                              alt="Foto del socio" 
-                                             class="photo-image">
+                                             class="photo-image" id="preview-socio">
+                                    </div>
+                                @endif
+                                @if($socio->socio_fotos && $socio->socio_fotos->count())
+                                    <div style="margin-top:12px;">
+                                        <div class="input-label" style="margin-bottom:6px; color:#374151;">Galería del Socio</div>
+                                        <div class="photo-gallery" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap:8px;">
+                                        @foreach($socio->socio_fotos as $foto)
+                                            <div style="position:relative;">
+                                                <img src="{{ asset('assets/images/' . $foto->ruta) }}" alt="Socio foto" style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;">
+                                                <div style="display:flex; gap:6px; margin-top:6px;">
+                                                    <form method="POST" action="{{ route('socios.foto_socio.destacar', [$socio->id, $foto->id]) }}">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm" style="background:#2563eb; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Destacar</button>
+                                                    </form>
+                                                    <form method="POST" action="{{ route('socios.foto_socio.eliminar', [$socio->id, $foto->id]) }}" onsubmit="return confirm('¿Eliminar esta foto?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Eliminar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                        </div>
                                     </div>
                                 @endif
                                 <div class="photo-upload">
@@ -432,7 +491,7 @@
                         Acciones
                     </h3>
                     <div class="action-buttons">
-                        <a href="#" class="action-btn btn-success">
+                        <a href="{{ route('socios.registros', $socio->id) }}" class="action-btn btn-success">
                             <i class="fas fa-history"></i>
                             <span>Ver registros de entrada y salida</span>
                         </a>
@@ -479,11 +538,18 @@
 
     <!-- Fixed Save Button -->
     @if ($puede_editar)
-        <div class="fixed-save-button">
-            <button type="submit" form="socio-form" class="btn-save-fixed">
-                <i class="fas fa-save"></i>
-                <span>Guardar Cambios</span>
-            </button>
+        <div class="fixed-save-button" style="padding:8px; background:transparent;">
+            <div style="display:flex; gap:8px;">
+                <a href="{{ route('socios.index') }}" 
+                   style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:#2563eb; color:#fff; padding:10px 12px; border-radius:10px; font-weight:600; text-decoration:none; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver</span>
+                </a>
+                <button type="submit" form="socio-form" class="btn-save-fixed" style="flex:1;">
+                    <i class="fas fa-save"></i>
+                    <span>Guardar Cambios</span>
+                </button>
+            </div>
         </div>
     @endif
 </div>
@@ -553,6 +619,57 @@ document.querySelectorAll('input[type="radio"]').forEach(radio => {
         // Añadir clase active al seleccionado
         this.closest('.status-btn').classList.add('active');
     });
+});
+
+// Previews de imagen
+document.getElementById('ruta_foto')?.addEventListener('change', function(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt){
+        const content = e.target.closest('.photo-content');
+        let previewWrap = content.querySelector('.photo-preview');
+        if(!previewWrap){
+            previewWrap = document.createElement('div');
+            previewWrap.className = 'photo-preview';
+            const uploadBlock = content.querySelector('.photo-upload');
+            content.insertBefore(previewWrap, uploadBlock);
+        }
+        let img = document.getElementById('preview-barco');
+        if(!img){
+            img = document.createElement('img');
+            img.id = 'preview-barco';
+            img.className = 'photo-image';
+            previewWrap.appendChild(img);
+        }
+        img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+document.getElementById('ruta_foto2')?.addEventListener('change', function(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt){
+        const content = e.target.closest('.photo-content');
+        let previewWrap = content.querySelector('.photo-preview');
+        if(!previewWrap){
+            previewWrap = document.createElement('div');
+            previewWrap.className = 'photo-preview';
+            const uploadBlock = content.querySelector('.photo-upload');
+            content.insertBefore(previewWrap, uploadBlock);
+        }
+        let img = document.getElementById('preview-socio');
+        if(!img){
+            img = document.createElement('img');
+            img.id = 'preview-socio';
+            img.className = 'photo-image';
+            previewWrap.appendChild(img);
+        }
+        img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
 });
 </script>
 @endsection
