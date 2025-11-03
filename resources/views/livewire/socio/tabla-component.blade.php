@@ -1,4 +1,39 @@
 <div class="socios-container">
+    <style>
+    /* Desktop table header controls */
+    .desktop-view .table-header{background:#fff;border:1px solid #e5e7eb;border-bottom:none;border-radius:12px 12px 0 0;padding:16px 16px 8px 16px}
+    .desktop-view .table-wrapper{background:#fff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;overflow:hidden}
+    .table-controls{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .search-input-wrapper{position:relative;min-width:260px}
+    .search-input{width:100%;padding:10px 12px 10px 36px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;transition:.2s}
+    .search-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+    .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af}
+    .table-actions{display:flex;align-items:center;gap:14px}
+    .control-label{font-size:.875rem;color:#374151;margin-right:6px}
+    .page-size-select{padding:8px 10px;border:2px solid #e5e7eb;border-radius:10px;background:#fff}
+    .export-buttons{display:flex;gap:8px}
+    .export-btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:10px;padding:10px 12px;font-weight:600;cursor:pointer;transition:.2s;color:#fff}
+    .export-btn[data-action="copy"]{background:#4b5563}
+    .export-btn[data-action="copy"]:hover{background:#374151}
+    .export-btn[data-action="csv"]{background:#198754}
+    .export-btn[data-action="csv"]:hover{background:#157347}
+    .export-btn[data-action="pdf"]{background:#dc3545}
+    .export-btn[data-action="pdf"]:hover{background:#bb2d3b}
+    .modern-table{width:100%;border-collapse:separate;border-spacing:0}
+    .modern-table thead th{background:#f9fafb;color:#374151;font-weight:600;padding:12px;border-bottom:1px solid #e5e7eb}
+    .modern-table tbody td{padding:12px;border-bottom:1px solid #f1f5f9}
+    .photo-placeholder,.photo-wrapper{width:44px;height:44px}
+    .socio-photo{width:44px;height:44px;object-fit:cover;border-radius:8px;border:2px solid #e5e7eb}
+    .acciones-buttons{display:flex;gap:8px;flex-wrap:wrap}
+    .btn-action{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;text-decoration:none;font-weight:600}
+    .btn-edit{background:#2563eb;color:#fff}
+    .btn-edit:hover{background:#1d4ed8}
+    .btn-alta{background:#22c55e;color:#fff}
+    .btn-alta:hover{background:#16a34a}
+    .btn-call{background:#4b5563;color:#fff}
+    .btn-whatsapp{background:#25d366;color:#fff}
+    @media (max-width: 1024px){.desktop-view .table-header{border-radius:12px}}
+    </style>
     @if (count($socios) > 0)
         <!-- Desktop Table View -->
         <div class="desktop-view">
