@@ -178,11 +178,15 @@
     $logo = null;
     if ($club && !empty($club->club_logo)) {
         $candidates = [
-            $club->club_logo,
-            'assets/images/' . ltrim($club->club_logo, '/'),
-            'images/' . ltrim($club->club_logo, '/'),
+            'assets/images/' . ltrim($club->club_logo, '/'), // public/assets/images
+            'images/' . ltrim($club->club_logo, '/'),        // public/images
+            ltrim($club->club_logo, '/'),                    // ruta absoluta relativa al public
         ];
-        foreach ($candidates as $c) { $logo = asset($c); break; }
+        foreach ($candidates as $c) {
+            if (file_exists(public_path($c))) { $logo = asset($c); break; }
+        }
+        // Si no encuentra archivo local, intenta tratar club_logo como URL absoluta
+        if (!$logo && filter_var($club->club_logo, FILTER_VALIDATE_URL)) { $logo = $club->club_logo; }
     }
     $logo = $logo ?: asset('la_fabrica_logo.png');
 @endphp
