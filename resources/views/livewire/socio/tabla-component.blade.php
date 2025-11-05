@@ -137,7 +137,7 @@
                                 <td class="acciones-cell">
                                     <div class="acciones-buttons">
                                         @if($socio->alta_baja == 0)
-                                            <a href="socios-edit/{{ $socio->id }}" class="btn-action btn-edit">
+                                            <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-action btn-edit">
                                                 <i class="fas fa-edit"></i>
                                                 <span>Editar</span>
                                             </a>
@@ -318,7 +318,7 @@
                         
                         <div class="card-actions">
                             @if($socio->alta_baja == 0)
-                                <a href="socios-edit/{{ $socio->id }}" class="btn-card btn-edit">
+                                <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-card btn-edit">
                                     <i class="fas fa-edit"></i>
                                     <span>Editar</span>
                                 </a>
@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeDataTable() {
     $('#sociosTable').DataTable({
         lengthChange: false,
-        dom: 'lrtip',
+        dom: 'Bfrtip',
         pageLength: 35,
         language: {
             lengthMenu: 'Mostrando _MENU_ registros por página',
@@ -392,6 +392,11 @@ function initializeDataTable() {
         responsive: true,
         columnDefs: [
             { orderable: false, targets: [0, 7] } // Photo and actions columns
+        ],
+        buttons: [
+            { extend: 'copy', text: 'Copiar', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } },
+            { extend: 'csv', text: 'CSV', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } },
+            { extend: 'pdf', text: 'PDF', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } }
         ]
     });
 }
@@ -472,13 +477,13 @@ function initializeExportButtons() {
             if (table) {
                 switch(action) {
                     case 'copy':
-                        // Copy functionality
+                        table.button('.buttons-copy').trigger();
                         break;
                     case 'csv':
-                        // CSV export
+                        table.button('.buttons-csv').trigger();
                         break;
                     case 'pdf':
-                        // PDF export
+                        table.button('.buttons-pdf').trigger();
                         break;
                 }
             }
@@ -553,3 +558,10 @@ document.addEventListener('DOMContentLoaded', function(){
     applyMobileSortFromSelectors();
 });
 </script>
+
+<!-- DataTables Buttons dependencies (solo si no están ya cargadas globalmente) -->
+<script src="../plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables/jszip.min.js"></script>
+<script src="../plugins/datatables/pdfmake.min.js"></script>
+<script src="../plugins/datatables/vfs_fonts.js"></script>
+<script src="../plugins/datatables/buttons.html5.min.js"></script>

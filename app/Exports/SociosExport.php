@@ -8,16 +8,27 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class SociosExport implements FromCollection, WithHeadings
 {
+    private $clubId;
+
+    public function __construct($clubId = null)
+    {
+        $this->clubId = $clubId;
+    }
+
     public function collection()
     {
-        return Socio::select([
+        $query = Socio::select([
             'id',
             'nombre_socio',
             'nombre_barco',
             'matricula',
             'pantalan_t_atraque',
             'situacion_persona',
-        ])->get();
+        ]);
+        if ($this->clubId) {
+            $query->where('club_id', $this->clubId);
+        }
+        return $query->get();
     }
 
     public function headings(): array

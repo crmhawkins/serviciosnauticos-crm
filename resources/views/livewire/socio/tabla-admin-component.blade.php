@@ -179,7 +179,7 @@
                             </div>
                             <div class="card-actions">
                                 @if($socio->alta_baja == 0)
-                                    <a href="socios-edit/{{ $socio->id }}" class="btn-card btn-edit"><i class="fas fa-edit"></i><span>Ver/Editar</span></a>
+                                    <a href="socios-edit/{{ $socio->id }}?from=todos" class="btn-card btn-edit"><i class="fas fa-edit"></i><span>Ver/Editar</span></a>
                                 @else
                                     <a href="socios-alta/{{ $socio->id }}" class="btn-card btn-alta"><i class="fas fa-user-plus"></i><span>Dar de alta</span></a>
                                 @endif
@@ -264,7 +264,7 @@
                                     @endif
                                 </td>
                                 @mobile
-                                <td> @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}" class="btn btn-primary">Ver/Editar</a> <br>@else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a><br> @endif
+                                <td> @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}?from=todos" class="btn btn-primary">Ver/Editar</a> <br>@else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a><br> @endif
                                     @if($socio->telefonos->isNotEmpty())
                                     @foreach($socio->telefonos as $telefono)
                                         @if(!empty($telefono->telefono))
@@ -281,7 +281,7 @@
                                 </td>
                                 @elsemobile
                                 <td>
-                                    @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}" class="btn btn-primary">Ver/Editar</a> @else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a> @endif
+                                    @if($socio->alta_baja == 0) <a href="socios-edit/{{ $socio->id }}?from=todos" class="btn btn-primary">Ver/Editar</a> @else <a href="socios-alta/{{ $socio->id }}" class="btn btn-primary">Dar de alta</a> @endif
 
                                 </td>
                                 @endmobile

@@ -56,9 +56,10 @@
     </div>
 
     @if ($puede_editar)
-        <form method="POST" action="{{ route('socios.update', $socio->id) }}" enctype="multipart/form-data" id="socio-form">
+          <form method="POST" action="{{ route('socios.update', $socio->id) }}" enctype="multipart/form-data" id="socio-form">
             @method('PUT')
             @csrf
+              <input type="hidden" name="redirect_to" value="{{ $from ?? (request('from')==='todos' ? 'todos' : 'socios') }}">
             
             <!-- Main Form Section -->
             <div class="form-section">
@@ -77,7 +78,7 @@
                                     <div class="photo-preview">
                                         <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}" 
                                              alt="Foto del barco" 
-                                             class="photo-image" id="preview-barco">
+                                             class="photo-image js-lightbox" id="preview-barco">
                                     </div>
                                 @endif
                                 @if($socio->barco_fotos && $socio->barco_fotos->count())
@@ -86,7 +87,7 @@
                                         <div class="photo-gallery" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap:8px;">
                                         @foreach($socio->barco_fotos as $foto)
                                             <div style="position:relative;">
-                                                <img src="{{ asset('assets/images/' . $foto->ruta) }}" alt="Barco foto" style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;">
+                                                <img src="{{ asset('assets/images/' . $foto->ruta) }}" alt="Barco foto" class="js-lightbox" style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;">
                                                 <div style="display:flex; gap:6px; margin-top:6px;">
                                                     <form method="POST" action="{{ route('socios.foto_barco.destacar', [$socio->id, $foto->id]) }}">
                                                         @csrf
@@ -132,7 +133,7 @@
                                     <div class="photo-preview">
                                         <img src="{{ asset('assets/images/' . $socio->ruta_foto2) }}" 
                                              alt="Foto del socio" 
-                                             class="photo-image" id="preview-socio">
+                                             class="photo-image js-lightbox" id="preview-socio">
                                     </div>
                                 @endif
                                 @if($socio->socio_fotos && $socio->socio_fotos->count())
@@ -141,7 +142,7 @@
                                         <div class="photo-gallery" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap:8px;">
                                         @foreach($socio->socio_fotos as $foto)
                                             <div style="position:relative;">
-                                                <img src="{{ asset('assets/images/' . $foto->ruta) }}" alt="Socio foto" style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;">
+                                                <img src="{{ asset('assets/images/' . $foto->ruta) }}" alt="Socio foto" class="js-lightbox" style="width:100%; height:80px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;">
                                                 <div style="display:flex; gap:6px; margin-top:6px;">
                                                     <form method="POST" action="{{ route('socios.foto_socio.destacar', [$socio->id, $foto->id]) }}">
                                                         @csrf
@@ -466,11 +467,33 @@
                             <i class="fas fa-sticky-note"></i>
                             Notas
                         </h3>
+                        <form method="POST" action="{{ route('socios.notas.store', $socio->id) }}">
+                            @csrf
+                            <div class="nota-inline">
+                                <input type="date" name="fecha_nota" class="modern-input">
+                                <input type="text" name="descripcion_nota" class="modern-input" placeholder="Escribe una nota..." required>
+                                <button type="submit" class="btn-add-note">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Añadir nota</span>
+                                </button>
+                            </div>
+                        </form>
+                        <style>
+                        .nota-inline{margin-bottom:12px; display:flex; align-items:center; gap:8px}
+                        .nota-inline input[type="date"]{width:180px; flex:0 0 auto}
+                        .nota-inline input[type="text"]{flex:2 1 380px; min-width:280px}
+                        .nota-inline .btn-add-note{white-space:nowrap; flex:0 0 160px; display:inline-flex; align-items:center; gap:6px; padding: var(--space-3) var(--space-4); height:44px; line-height:1; background: var(--primary-blue); color:#fff; border:none; border-radius: var(--border-radius-lg); font-weight:600; cursor:pointer}
+                        .nota-inline .btn-add-note:hover{background: var(--primary-blue-dark)}
+                        @media (max-width: 768px){ .nota-inline{flex-direction:column; align-items:stretch}
+                            .nota-inline input[type="date"]{width:100%}
+                            .nota-inline input[type="text"]{min-width:unset; flex:1 1 auto}
+                            .nota-inline .btn-add-note{width:100%; justify-content:center; flex:0 0 auto} }
+                        </style>
                         <div class="notes-list">
                             @foreach ($socio->notas as $nota)
                                 <div class="note-item">
                                     <div class="note-header">
-                                        <span class="note-date">{{ $nota->fecha->format('d/m/Y') }}</span>
+                                        <span class="note-date">{{ $nota->fecha ? \Carbon\Carbon::parse($nota->fecha)->format('d/m/Y') : '' }}</span>
                                         <span class="note-user">{{ $nota->user->name ?? 'Usuario' }}</span>
                                     </div>
                                     <div class="note-content">
@@ -495,34 +518,28 @@
                             <i class="fas fa-history"></i>
                             <span>Ver registros de entrada y salida</span>
                         </a>
-                        
-                        <a href="#" class="action-btn btn-danger">
-                            <i class="fas fa-user-times"></i>
-                            <span>Dar de baja</span>
-                        </a>
-                    </div>
-                </div>
+                        <form id="form-baja" method="POST" action="{{ route('socios.baja', $socio->id) }}">
+                            @csrf
+                            <input type="hidden" name="fecha_baja" value="{{ now()->format('Y-m-d') }}">
+                            <button type="button" class="action-btn btn-danger" id="btn-baja">
+                                <i class="fas fa-user-times"></i>
+                                <span>Dar de baja</span>
+                            </button>
+                        </form>
 
-                <div class="sidebar-card">
-                    <h3 class="sidebar-title">
-                        <i class="fas fa-save"></i>
-                        Opciones de Guardado
-                    </h3>
-                    <div class="action-buttons">
-                        <button type="submit" class="action-btn btn-success">
-                            <i class="fas fa-save"></i>
-                            <span>Guardar datos de socio</span>
-                        </button>
-                        
-                        <a href="#" class="action-btn btn-warning">
+                        <a href="{{ route('socios.imprimir', $socio->id) }}" id="btn-imprimir-socio" class="action-btn btn-warning">
                             <i class="fas fa-print"></i>
                             <span>Impresión de Socio</span>
                         </a>
-                        
-                        <a href="#" class="action-btn btn-danger">
-                            <i class="fas fa-trash"></i>
-                            <span>Eliminar datos de socio</span>
-                        </a>
+
+                        <form id="form-eliminar" method="POST" action="{{ route('socios.destroy', $socio->id) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="action-btn btn-danger" id="btn-eliminar">
+                                <i class="fas fa-trash"></i>
+                                <span>Eliminar datos de socio</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -540,7 +557,7 @@
     @if ($puede_editar)
         <div class="fixed-save-button" style="padding:8px; background:transparent;">
             <div style="display:flex; gap:8px;">
-                <a href="{{ route('socios.index') }}" 
+                      <a href="{{ route(($from ?? (request('from')==='todos' ? 'todos' : 'socios')) === 'todos' ? 'socios.indexadmin' : 'socios.index') }}"
                    style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:#2563eb; color:#fff; padding:10px 12px; border-radius:10px; font-weight:600; text-decoration:none; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
                     <i class="fas fa-arrow-left"></i>
                     <span>Volver</span>
@@ -554,6 +571,59 @@
     @endif
 </div>
 
+<script>
+// Imprimir sin abrir nueva pestaña: carga la vista en un iframe oculto y lanza print()
+document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('btn-imprimir-socio');
+    if (!btn) return;
+    btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var url = this.getAttribute('href');
+        var iframe = document.getElementById('print-iframe');
+        if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.id = 'print-iframe';
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            document.body.appendChild(iframe);
+        }
+        iframe.onload = function(){
+            try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch (ex) { window.open(url, '_blank'); }
+        };
+        iframe.src = url;
+    });
+});
+</script>
+<!-- Simple Lightbox -->
+<style>
+.lightbox-overlay{position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:2000}
+.lightbox-overlay img{max-width:90vw; max-height:85vh; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.lightbox-overlay.show{display:flex}
+.lightbox-overlay .close-btn{position:absolute; top:16px; right:16px; color:#fff; font-size:28px; cursor:pointer}
+</style>
+<div id="lightboxOverlay" class="lightbox-overlay" aria-hidden="true">
+  <span class="close-btn" aria-label="Cerrar">×</span>
+  <img id="lightboxImage" src="" alt="preview">
+  
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var overlay = document.getElementById('lightboxOverlay');
+  var imgEl = document.getElementById('lightboxImage');
+  function openLightbox(src){ imgEl.src = src; overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); }
+  function closeLightbox(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); imgEl.src=''; }
+  document.body.addEventListener('click', function(e){
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('js-lightbox')) { e.preventDefault(); openLightbox(t.src); }
+  });
+  overlay.addEventListener('click', function(e){ if(e.target===overlay || e.target.classList.contains('close-btn')) closeLightbox(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
+});
+</script>
 @include('livewire.socio.edit-component-styles')
 
 <script>
@@ -621,6 +691,43 @@ document.querySelectorAll('input[type="radio"]').forEach(radio => {
     });
 });
 
+// Confirmaciones con SweetAlert2 para Baja y Eliminación
+document.addEventListener('DOMContentLoaded', function(){
+    var bajaBtn = document.getElementById('btn-baja');
+    var eliminarBtn = document.getElementById('btn-eliminar');
+    if (bajaBtn) {
+        bajaBtn.addEventListener('click', function(){
+            if (window.Swal) {
+                Swal.fire({
+                    title: '¿Dar de baja al socio?',
+                    text: 'Podrás dar de alta más tarde desde la lista.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirmar',
+                    cancelButtonText: 'Cancelar'
+                }).then(function(res){ if(res.isConfirmed){ document.getElementById('form-baja').submit(); } });
+            } else {
+                if (confirm('¿Dar de baja al socio?')) document.getElementById('form-baja').submit();
+            }
+        });
+    }
+    if (eliminarBtn) {
+        eliminarBtn.addEventListener('click', function(){
+            if (window.Swal) {
+                Swal.fire({
+                    title: '¿Eliminar definitivamente?',
+                    text: 'Esta acción no se puede deshacer.',
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then(function(res){ if(res.isConfirmed){ document.getElementById('form-eliminar').submit(); } });
+            } else {
+                if (confirm('¿Eliminar definitivamente?')) document.getElementById('form-eliminar').submit();
+            }
+        });
+    }
+});
 // Previews de imagen
 document.getElementById('ruta_foto')?.addEventListener('change', function(e){
     const file = e.target.files && e.target.files[0];

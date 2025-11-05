@@ -172,4 +172,32 @@
 
 </body>
 
+@php
+    $clubId = session('clubSeleccionado');
+    $club = $clubId ? \App\Models\Club::find($clubId) : null;
+    $logo = null;
+    if ($club && !empty($club->club_logo)) {
+        $candidates = [
+            $club->club_logo,
+            'assets/images/' . ltrim($club->club_logo, '/'),
+            'images/' . ltrim($club->club_logo, '/'),
+        ];
+        foreach ($candidates as $c) { $logo = asset($c); break; }
+    }
+    $logo = $logo ?: asset('la_fabrica_logo.png');
+@endphp
+
+@if($clubId)
+    <style>
+        .floating-club-badge{position:fixed;left:16px;top:88px;z-index:1100;width:56px;height:56px;border-radius:50%;background:#fff;border:2px solid #e5e7eb;box-shadow:0 6px 18px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .floating-club-badge img{width:100%;height:100%;object-fit:cover}
+        .floating-club-badge::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(37,99,235,.25);animation:pulse 2s infinite}
+        @keyframes pulse{0%{transform:scale(.9);opacity:.8}70%{transform:scale(1.15);opacity:0}100%{opacity:0}}
+        @media (max-width:768px){.floating-club-badge{top:88px;left:12px}}
+    </style>
+    <a href="{{ route('home') }}" class="floating-club-badge" title="Cambiar de club">
+        <img src="{{ $logo }}" alt="Club">
+    </a>
+@endif
+
 </html>

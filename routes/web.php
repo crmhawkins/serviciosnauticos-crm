@@ -90,6 +90,9 @@ Route::group(['middleware' => 'is.admin','prefix' => 'admin'], function () {
     Route::get('socios-edit/{id}', [SocioController::class, 'edit'])->name('socios.edit');
     Route::get('socios/{id}/registros', [SocioController::class, 'registros'])->name('socios.registros');
     Route::put('socios-update/{id}', [SocioController::class, 'update'])->name('socios.update');
+    Route::post('socios/{id}/baja', [SocioController::class, 'baja'])->name('socios.baja');
+    Route::delete('socios/{id}', [SocioController::class, 'destroy'])->name('socios.destroy');
+    Route::post('socios/{id}/notas', [SocioController::class, 'agregarNota'])->name('socios.notas.store');
 
     // Galería fotos: destacar/eliminar (sin duplicar prefijo 'admin')
     Route::post('socios/{id}/foto-barco/{fotoId}/destacar', [SocioController::class, 'destacarBarcoFoto'])->name('socios.foto_barco.destacar');
@@ -125,6 +128,10 @@ Route::group(['middleware' => 'is.admin','prefix' => 'admin'], function () {
     // Exportaciones
     Route::get('socios-export/excel', [App\Http\Controllers\ExportController::class, 'sociosExcel'])->name('socios.export.excel');
     Route::get('socios-export/pdf', [App\Http\Controllers\ExportController::class, 'sociosPdf'])->name('socios.export.pdf');
+    // Impresión (vista HTML imprimible) de un socio concreto
+    Route::get('socios/{id}/imprimir', [App\Http\Controllers\SocioController::class, 'imprimir'])->name('socios.print');
+    // Impresión HTML del socio (abre diálogo de impresión)
+    Route::get('socios/{id}/imprimir', [App\Http\Controllers\SocioController::class, 'imprimir'])->name('socios.imprimir');
     Route::get('club-export/excel', [App\Http\Controllers\ExportController::class, 'clubesExcel'])->name('club.export.excel');
     Route::get('club-export/pdf', [App\Http\Controllers\ExportController::class, 'clubesPdf'])->name('club.export.pdf');
     Route::get('usuarios-export/excel', [App\Http\Controllers\ExportController::class, 'usuariosExcel'])->name('usuarios.export.excel');

@@ -14,13 +14,17 @@ class ExportController extends Controller
 {
     public function sociosExcel(Request $request)
     {
+        $clubId = session()->get('clubSeleccionado');
         $filename = 'socios_' . now()->format('Ymd_His') . '.xlsx';
-        return Excel::download(new SociosExport(), $filename);
+        return Excel::download(new SociosExport($clubId), $filename);
     }
 
     public function sociosPdf(Request $request)
     {
-        $socios = Socio::with('telefonos')->get();
+        $clubId = session()->get('clubSeleccionado');
+        $query = Socio::with('telefonos');
+        if ($clubId) { $query->where('club_id', $clubId); }
+        $socios = $query->get();
         $pdf = PDF::loadView('exports.socios', [ 'socios' => $socios ]);
         return $pdf->download('socios_' . now()->format('Ymd_His') . '.pdf');
     }

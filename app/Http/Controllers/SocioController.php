@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BarcoFoto;
 use App\Models\SocioFoto;
+use App\Models\Socio as SocioModel;
+use App\Models\Telefonos;
+use App\Models\NumerosLlave;
+use App\Models\TranseunteTripulantes;
+use App\Models\Nota;
+use Illuminate\Support\Facades\Auth;
 
 class SocioController extends Controller
 {
@@ -63,7 +69,7 @@ class SocioController extends Controller
      */
     public function edit($id)
     {
-        $socio = \App\Models\Socio::find($id);
+        $socio = SocioModel::find($id);
         
         if (!$socio) {
             abort(404, 'Socio no encontrado');
@@ -75,8 +81,8 @@ class SocioController extends Controller
         // Verificar permisos
         $puede_editar = auth()->user()->role <= 3;
         $puede_notas = auth()->user()->role <= 4;
-        
-        return view('socio.edit', compact('socio', 'puede_editar', 'puede_notas'));
+        $from = request('from') === 'todos' ? 'todos' : 'socios';
+        return view('socio.edit', compact('socio', 'puede_editar', 'puede_notas', 'from'));
     }
     public function alta($id)
     {
@@ -89,7 +95,7 @@ class SocioController extends Controller
      */
     public function registros($id)
     {
-        $socio = \App\Models\Socio::find($id);
+        $socio = SocioModel::find($id);
         if (!$socio) {
             abort(404, 'Socio no encontrado');
         }
@@ -103,6 +109,38 @@ class SocioController extends Controller
     }
 
     /**
+     * Vista HTML imprimible del socio (abre diálogo de impresión del navegador)
+     */
+    public function imprimir($id)
+    {
+        $socio = SocioModel::with(['telefonos', 'numeros_llave', 'tripulantes'])->find($id);
+        if (!$socio) {
+            abort(404, 'Socio no encontrado');
+        }
+        $club = \App\Models\Club::first();
+        return view('socio.print', compact('socio', 'club'));
+    }
+
+    /**
+     * Crear una nota rápida desde la vista clásica de edición
+     */
+    public function agregarNota(Request $request, $id)
+    {
+        $request->validate([
+            'descripcion_nota' => 'required|string',
+            'fecha_nota' => 'nullable|date',
+        ]);
+        $socio = SocioModel::findOrFail($id);
+        Nota::create([
+            'socio_id' => $socio->id,
+            'user_id' => Auth::id(),
+            'descripcion' => $request->input('descripcion_nota'),
+            'fecha' => $request->input('fecha_nota') ?: now()->toDateString(),
+        ]);
+        return back()->with('status', 'Nota añadida');
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -111,7 +149,7 @@ class SocioController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $socio = \App\Models\Socio::find($id);
+        $socio = SocioModel::find($id);
         if (!$socio) {
             abort(404, 'Socio no encontrado');
         }
@@ -173,7 +211,8 @@ class SocioController extends Controller
 
         $socio->save();
 
-        return redirect()->route('socios.edit', $socio->id)->with('status', 'Socio actualizado');
+        $redirect = $request->input('redirect_to') === 'todos' ? 'socios.indexadmin' : 'socios.index';
+        return redirect()->route($redirect)->with('status', 'Socio actualizado');
     }
 
     /**
@@ -181,7 +220,28 @@ class SocioController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $socio = SocioModel::find($id);
+        if ($socio) {
+            $socio->delete();
+            Telefonos::where('socio_id', $id)->delete();
+            NumerosLlave::where('socio_id', $id)->delete();
+            TranseunteTripulantes::where('socio_id', $id)->delete();
+        }
+        return redirect()->route('socios.index')->with('status', 'Socio eliminado');
+    }
+
+    /**
+     * Dar de baja al socio (alta_baja = 1)
+     */
+    public function baja(Request $request, $id)
+    {
+        $socio = SocioModel::findOrFail($id);
+        $socio->alta_baja = 1;
+        if ($request->filled('fecha_baja')) {
+            $socio->fecha_baja = $request->input('fecha_baja');
+        }
+        $socio->save();
+        return back()->with('status', 'Socio dado de baja');
     }
 
     /**
