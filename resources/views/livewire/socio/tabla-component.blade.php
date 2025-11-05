@@ -137,10 +137,17 @@
                                 <td class="acciones-cell">
                                     <div class="acciones-buttons">
                                         @if($socio->alta_baja == 0)
-                                            <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-action btn-edit">
-                                                <i class="fas fa-edit"></i>
-                                                <span>Editar</span>
-                                            </a>
+                                            @can('update', $socio)
+                                                <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-action btn-edit">
+                                                    <i class="fas fa-edit"></i>
+                                                    <span>Editar</span>
+                                                </a>
+                                            @else
+                                                <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-action" style="background:#6b7280;color:#fff">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span>Ver</span>
+                                                </a>
+                                            @endcan
                                         @else
                                             <a href="socios-alta/{{ $socio->id }}" class="btn-action btn-alta">
                                                 <i class="fas fa-user-plus"></i>

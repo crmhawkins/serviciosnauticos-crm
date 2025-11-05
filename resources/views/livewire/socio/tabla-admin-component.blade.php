@@ -179,7 +179,11 @@
                             </div>
                             <div class="card-actions">
                                 @if($socio->alta_baja == 0)
-                                    <a href="socios-edit/{{ $socio->id }}?from=todos" class="btn-card btn-edit"><i class="fas fa-edit"></i><span>Ver/Editar</span></a>
+                                    @can('update', $socio)
+                                        <a href="socios-edit/{{ $socio->id }}?from=todos" class="btn-card btn-edit"><i class="fas fa-edit"></i><span>Ver/Editar</span></a>
+                                    @else
+                                        <a href="socios-edit/{{ $socio->id }}?from=todos" class="btn-card" style="background:#6b7280;color:#fff"><i class="fas fa-eye"></i><span>Ver</span></a>
+                                    @endcan
                                 @else
                                     <a href="socios-alta/{{ $socio->id }}" class="btn-card btn-alta"><i class="fas fa-user-plus"></i><span>Dar de alta</span></a>
                                 @endif

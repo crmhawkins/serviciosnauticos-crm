@@ -39,6 +39,12 @@ class IndexComponent extends Component
             case 5:
                 return 'Acceso info';
                 break;
+            case 6:
+                return 'Policía Nacional';
+                break;
+            case 7:
+                return 'Guardia Civil';
+                break;
             default:
                 return '';
                 break;

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Socio;
 
 use App\Models\Socio;
+use App\Models\Club;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -12,6 +13,7 @@ use App\Models\RegistrosEntrada;
 use App\Models\RegistrosEntradaTranseunte;
 use App\Models\TranseunteTripulantes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Livewire\Traits\HandlesErrors;
 
 class CreateComponent extends Component
@@ -69,6 +71,29 @@ class CreateComponent extends Component
     public function submit()
     {
         try {
+            // Validar permisos antes de crear
+            $role = (int) Auth::user()->role;
+            if ($role !== 1) { // No es admin
+                if (in_array($role, [6, 7], true)) { // PN/GC
+                    $club = Club::find($this->club_id);
+                    if (!$club || (int) $club->created_by !== (int) Auth::id()) {
+                        $this->alert('error', 'No tienes permisos para crear socios en este club.', [
+                            'position' => 'center',
+                            'timer' => 3000,
+                            'toast' => false,
+                        ]);
+                        return;
+                    }
+                } else {
+                    $this->alert('error', 'No tienes permisos para crear socios.', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                    ]);
+                    return;
+                }
+            }
+
             // Validación de datos
             $validatedData = $this->validate(
                 [

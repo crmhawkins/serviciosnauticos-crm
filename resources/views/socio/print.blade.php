@@ -14,6 +14,10 @@
         th { background: #f3f4f6; text-align: left; }
         .no-print { margin-bottom: 12px; text-align: right; }
         .no-print a { display: inline-block; padding: 8px 12px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; }
+        .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .photo { border: 1px solid #111; padding: 8px; text-align: center; }
+        .photo h4 { margin: 0 0 8px; font-size: 14px; }
+        .photo img { max-width: 100%; max-height: 280px; object-fit: contain; }
         @media print {
             .no-print { display: none !important; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -86,6 +90,28 @@
                 </td>
             </tr>
         </table>
+
+        @php
+            $barco = $socio->ruta_foto ? asset('assets/images/' . $socio->ruta_foto) : null;
+            $socioFoto = $socio->ruta_foto2 ? asset('assets/images/' . $socio->ruta_foto2) : null;
+        @endphp
+
+        @if($barco || $socioFoto)
+            <div class="photos">
+                @if($barco)
+                    <div class="photo">
+                        <h4>Foto del Barco</h4>
+                        <img src="{{ $barco }}" alt="Foto del barco">
+                    </div>
+                @endif
+                @if($socioFoto)
+                    <div class="photo">
+                        <h4>Foto del Socio</h4>
+                        <img src="{{ $socioFoto }}" alt="Foto del socio">
+                    </div>
+                @endif
+            </div>
+        @endif
     </div>
 
     <script>

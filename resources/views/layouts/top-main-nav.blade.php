@@ -12,7 +12,7 @@
             'href' => url('/admin/socios'),
             'label' => 'Socios',
             'icon' => 'bi-people-fill',
-            'active' => request()->is('admin/socios*'),
+            'active' => request()->is('admin/socios') || request()->is('admin/socios/*'),
             'visible' => true,
         ],
         [
@@ -20,7 +20,7 @@
             'label' => 'Club',
             'icon' => 'bi-building',
             'active' => request()->is('admin/club*'),
-            'visible' => optional($user)->role == 1,
+            'visible' => in_array((int) optional($user)->role, [1,6,7], true),
         ],
         [
             'href' => url('/admin/usuarios'),
@@ -35,6 +35,13 @@
             'icon' => 'bi-people',
             'active' => request()->is('admin/socios-todos'),
             'visible' => optional($user)->role == 1,
+        ],
+        [
+            'href' => url('/admin/club-create'),
+            'label' => 'Crear club',
+            'icon' => 'bi-plus-circle',
+            'active' => request()->is('admin/club-create'),
+            'visible' => in_array((int) optional($user)->role, [1,6,7], true),
         ],
     ];
 @endphp
@@ -56,6 +63,15 @@
                 </li>
                 @endif
             @endforeach
+            <li class="top-main-nav__item" style="margin-left:auto">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="top-main-nav__link" style="border:none;background:transparent;display:flex;align-items:center;gap:.5rem;cursor:pointer">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Salir</span>
+                    </button>
+                </form>
+            </li>
         </ul>
     </div>
 </nav>

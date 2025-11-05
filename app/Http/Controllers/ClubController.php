@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Club;
+use Illuminate\Support\Facades\Auth;
 
 class ClubController extends Controller
 {
@@ -38,7 +40,15 @@ class ClubController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Club::class);
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'club_logo' => 'nullable|string',
+        ]);
+        $validated['created_by'] = Auth::id();
+        Club::create($validated);
+        return redirect()->route('club.index')->with('status', 'Club creado');
     }
 
     /**

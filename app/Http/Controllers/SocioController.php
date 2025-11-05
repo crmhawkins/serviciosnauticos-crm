@@ -35,6 +35,20 @@ class SocioController extends Controller
      */
     public function create()
     {
+        $clubId = session()->get('clubSeleccionado');
+        $user = Auth::user();
+        $role = (int) $user->role;
+        
+        if ($clubId && $role !== 1) { // No es admin
+            $club = \App\Models\Club::find($clubId);
+            if (in_array($role, [6, 7], true)) { // PN/GC
+                if (!$club || (int) $club->created_by !== (int) $user->id) {
+                    abort(403, 'No tienes permisos para crear socios en este club.');
+                }
+            } else {
+                abort(403, 'No tienes permisos para crear socios.');
+            }
+        }
         return view('socio.create');
 
     }
@@ -70,6 +84,7 @@ class SocioController extends Controller
     public function edit($id)
     {
         $socio = SocioModel::find($id);
+        // Autorizar vista/edición (vista permitida; edición se controla en update)
         
         if (!$socio) {
             abort(404, 'Socio no encontrado');
@@ -82,7 +97,8 @@ class SocioController extends Controller
         $puede_editar = auth()->user()->role <= 3;
         $puede_notas = auth()->user()->role <= 4;
         $from = request('from') === 'todos' ? 'todos' : 'socios';
-        return view('socio.edit', compact('socio', 'puede_editar', 'puede_notas', 'from'));
+        $canEdit = \Illuminate\Support\Facades\Gate::allows('update', $socio);
+        return view('socio.edit', compact('socio', 'puede_editar', 'puede_notas', 'from', 'canEdit'));
     }
     public function alta($id)
     {
@@ -153,6 +169,9 @@ class SocioController extends Controller
         if (!$socio) {
             abort(404, 'Socio no encontrado');
         }
+
+        // Autorización: permitir update sólo si policy lo permite (Admin o PN/GC dueño del club)
+        $this->authorize('update', $socio);
 
         // validar mínimamente imágenes (opcionalmente otros campos)
         $request->validate([

@@ -13,8 +13,14 @@ class Club extends Model
     protected $fillable = [
         'nombre',
         'club_logo',
-        'email'
+        'email',
+        'created_by'
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     /**
      * Mutaciones de fecha.

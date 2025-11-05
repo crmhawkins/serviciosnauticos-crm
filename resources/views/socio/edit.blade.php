@@ -55,13 +55,14 @@
         </div>
     </div>
 
-    @if ($puede_editar)
+    @if (true)
           <form method="POST" action="{{ route('socios.update', $socio->id) }}" enctype="multipart/form-data" id="socio-form">
             @method('PUT')
             @csrf
               <input type="hidden" name="redirect_to" value="{{ $from ?? (request('from')==='todos' ? 'todos' : 'socios') }}">
             
             <!-- Main Form Section -->
+            <fieldset @if(isset($canEdit) && !$canEdit) disabled @endif>
             <div class="form-section">
                 <div class="form-container">
                     <!-- Photos Section -->
@@ -505,6 +506,7 @@
                     </div>
                 </div>
             </div>
+            </fieldset>
 
             <!-- Sidebar Actions -->
             <div class="sidebar-section">
@@ -518,57 +520,69 @@
                             <i class="fas fa-history"></i>
                             <span>Ver registros de entrada y salida</span>
                         </a>
-                        <form id="form-baja" method="POST" action="{{ route('socios.baja', $socio->id) }}">
-                            @csrf
-                            <input type="hidden" name="fecha_baja" value="{{ now()->format('Y-m-d') }}">
-                            <button type="button" class="action-btn btn-danger" id="btn-baja">
+                        @if(isset($canEdit) && $canEdit)
+                            <form id="form-baja" method="POST" action="{{ route('socios.baja', $socio->id) }}">
+                                @csrf
+                                <input type="hidden" name="fecha_baja" value="{{ now()->format('Y-m-d') }}">
+                                <button type="button" class="action-btn btn-danger" id="btn-baja">
+                                    <i class="fas fa-user-times"></i>
+                                    <span>Dar de baja</span>
+                                </button>
+                            </form>
+                        @else
+                            <button type="button" class="action-btn btn-danger" disabled style="opacity:.6;cursor:not-allowed">
                                 <i class="fas fa-user-times"></i>
                                 <span>Dar de baja</span>
                             </button>
-                        </form>
+                        @endif
 
                         <a href="{{ route('socios.imprimir', $socio->id) }}" id="btn-imprimir-socio" class="action-btn btn-warning">
                             <i class="fas fa-print"></i>
                             <span>Impresión de Socio</span>
                         </a>
 
-                        <form id="form-eliminar" method="POST" action="{{ route('socios.destroy', $socio->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="action-btn btn-danger" id="btn-eliminar">
+                        @if(isset($canEdit) && $canEdit)
+                            <form id="form-eliminar" method="POST" action="{{ route('socios.destroy', $socio->id) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="action-btn btn-danger" id="btn-eliminar">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Eliminar datos de socio</span>
+                                </button>
+                            </form>
+                        @else
+                            <button type="button" class="action-btn btn-danger" disabled style="opacity:.6;cursor:not-allowed">
                                 <i class="fas fa-trash"></i>
                                 <span>Eliminar datos de socio</span>
                             </button>
-                        </form>
+                        @endif
                     </div>
                 </div>
             </div>
         </form>
-    @else
-        <!-- Read Only View -->
-        <div class="readonly-section">
-            <div class="readonly-container">
-                <p>No tienes permisos para editar este socio.</p>
-            </div>
-        </div>
     @endif
 
     <!-- Fixed Save Button -->
-    @if ($puede_editar)
-        <div class="fixed-save-button" style="padding:8px; background:transparent;">
-            <div style="display:flex; gap:8px;">
-                      <a href="{{ route(($from ?? (request('from')==='todos' ? 'todos' : 'socios')) === 'todos' ? 'socios.indexadmin' : 'socios.index') }}"
-                   style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:#2563eb; color:#fff; padding:10px 12px; border-radius:10px; font-weight:600; text-decoration:none; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver</span>
-                </a>
+    <div class="fixed-save-button" style="padding:8px; background:transparent;">
+        <div style="display:flex; gap:8px;">
+            <a href="{{ route(($from ?? (request('from')==='todos' ? 'todos' : 'socios')) === 'todos' ? 'socios.indexadmin' : 'socios.index') }}"
+               style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:#2563eb; color:#fff; padding:10px 12px; border-radius:10px; font-weight:600; text-decoration:none; box-shadow: 0 4px 12px rgba(37,99,235,0.35);">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver</span>
+            </a>
+            @if(isset($canEdit) && $canEdit)
                 <button type="submit" form="socio-form" class="btn-save-fixed" style="flex:1;">
                     <i class="fas fa-save"></i>
                     <span>Guardar Cambios</span>
                 </button>
-            </div>
+            @else
+                <button type="button" class="btn-save-fixed" style="flex:1; opacity:0.6; cursor:not-allowed;" disabled>
+                    <i class="fas fa-lock"></i>
+                    <span>Solo lectura</span>
+                </button>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
 
 <script>
