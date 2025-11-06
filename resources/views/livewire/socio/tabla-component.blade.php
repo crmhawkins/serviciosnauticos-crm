@@ -379,7 +379,8 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeDataTable() {
     $('#sociosTable').DataTable({
         lengthChange: false,
-        dom: 'Bfrtip',
+        // Usamos tabla (r), cuerpo (t), info (i) y paginación (p). Sin 'f' (search nativa) ni 'B' (botones nativos)
+        dom: 'rtip',
         pageLength: 35,
         language: {
             lengthMenu: 'Mostrando _MENU_ registros por página',
@@ -401,9 +402,9 @@ function initializeDataTable() {
             { orderable: false, targets: [0, 7] } // Photo and actions columns
         ],
         buttons: [
-            { extend: 'copy', text: 'Copiar', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } },
-            { extend: 'csv', text: 'CSV', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } },
-            { extend: 'pdf', text: 'PDF', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } }
+            { extend: 'copy', className: 'buttons-copy', text: 'Copiar', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } },
+            { extend: 'csv', className: 'buttons-csv', text: 'CSV', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } },
+            { extend: 'pdf', className: 'buttons-pdf', text: 'PDF', exportOptions: { columns: ':not(:last-child)', modifier: { search: 'applied', order: 'applied' } } }
         ]
     });
 }

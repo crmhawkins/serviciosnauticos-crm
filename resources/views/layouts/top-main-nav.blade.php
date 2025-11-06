@@ -49,7 +49,7 @@
 <nav class="top-main-nav">
     <div class="top-main-nav__inner">
         <a class="top-main-nav__brand" href="{{ route('home') }}">
-            <i class="bi bi-compass"></i>
+            <img src="{{ asset('assets/images/logo_empresa.png') }}" alt="Logo" style="height:28px;width:auto;display:inline-block;margin-right:8px;vertical-align:middle">
             <span>MARINERÍA CRM</span>
         </a>
         <ul class="top-main-nav__list">
