@@ -33,12 +33,10 @@ class EditComponent extends Component
     }
     public function update()
     {
-        if ($this->ruta_foto != $this->club_logo) {
-
+        if ($this->ruta_foto != $this->club_logo && $this->ruta_foto) {
             $name = 'logo_club' . $this->identificador . '.png';
-
-            $this->ruta_foto->storePubliclyAs('assets','images/' . $name);
-
+            // Guardar en storage/app/public/assets/images para servirlo vía /storage
+            $this->ruta_foto->storeAs('assets/images', $name, 'public');
             $this->club_logo = $name;
         }
 
