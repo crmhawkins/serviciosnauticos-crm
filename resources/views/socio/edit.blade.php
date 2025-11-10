@@ -472,7 +472,7 @@
                             @csrf
                             <div class="nota-inline">
                                 <input type="date" name="fecha_nota" class="modern-input">
-                                <input type="text" name="descripcion_nota" class="modern-input" placeholder="Escribe una nota..." required>
+                                <input type="text" name="descripcion_nota" class="modern-input" placeholder="Escribe una nota...">
                                 <button type="submit" class="btn-add-note">
                                     <i class="fas fa-plus"></i>
                                     <span>Añadir nota</span>
