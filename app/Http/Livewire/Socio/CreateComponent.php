@@ -34,6 +34,7 @@ class CreateComponent extends Component
     public $registros_transeunte = [];
     public $registros_entrada = [];
     public $registros_barco = [];
+    public $cobros_transeunte = [];
     public $email;
     public $pantalan_t_atraque;
     public $nombre_barco;
@@ -212,10 +213,25 @@ class CreateComponent extends Component
         }
 
         // Guardar tripulantes si es transeúnte
-        if($this->situacion_persona == 1){
+        if($this->situacion_persona == 1 || $this->situacion_persona == 2){
             foreach ($this->tripulantes as $tripulanteIndex => $tripulante) {
                 if (!empty(trim($tripulante['nombre'])) && !empty(trim($tripulante['dni']))) {
                     TranseunteTripulantes::create(['socio_id' => $socioSave->id, 'nombre' => $tripulante['nombre'], 'dni' => $tripulante['dni']]);
+                }
+            }
+        }
+
+        // Guardar cobros de transeúnte si es transeúnte o socio/transeúnte
+        if($this->situacion_persona == 1 || $this->situacion_persona == 2){
+            foreach ($this->cobros_transeunte as $cobro) {
+                if (!empty($cobro['fecha_entrada']) && !empty($cobro['fecha_salida']) && !empty($cobro['precio'])) {
+                    RegistrosEntradaTranseunte::create([
+                        'socio_id' => $socioSave->id,
+                        'fecha_entrada' => $cobro['fecha_entrada'],
+                        'fecha_salida' => $cobro['fecha_salida'],
+                        'precio' => $cobro['precio'],
+                        'total' => $cobro['total'] ?? 0,
+                    ]);
                 }
             }
         }
@@ -289,6 +305,51 @@ class CreateComponent extends Component
         } else {
             unset($this->numeros_llave[$id]);
             $this->numeros_llave = array_values($this->numeros_llave);
+        }
+    }
+
+    public function addCobroTranseunte()
+    {
+        $this->cobros_transeunte[] = [
+            'fecha_entrada' => '',
+            'fecha_salida' => '',
+            'precio' => '',
+            'total' => 0
+        ];
+    }
+
+    public function deleteCobroTranseunte($id)
+    {
+        if (isset($this->cobros_transeunte[$id])) {
+            unset($this->cobros_transeunte[$id]);
+            $this->cobros_transeunte = array_values($this->cobros_transeunte);
+        }
+    }
+
+    public function updated($propertyName)
+    {
+        // Calcular total automáticamente cuando cambian fechas o precio
+        if (str_starts_with($propertyName, 'cobros_transeunte.')) {
+            $parts = explode('.', $propertyName);
+            if (count($parts) === 3) {
+                $index = (int) $parts[1];
+                $field = $parts[2];
+                
+                if (in_array($field, ['fecha_entrada', 'fecha_salida', 'precio']) && isset($this->cobros_transeunte[$index])) {
+                    $entrada = $this->cobros_transeunte[$index]['fecha_entrada'] ?? null;
+                    $salida = $this->cobros_transeunte[$index]['fecha_salida'] ?? null;
+                    $precio = (float) ($this->cobros_transeunte[$index]['precio'] ?? 0);
+                    
+                    if ($entrada && $salida && $precio > 0) {
+                        $fechaEntrada = \Carbon\Carbon::parse($entrada);
+                        $fechaSalida = \Carbon\Carbon::parse($salida);
+                        $diferenciaDias = $fechaSalida->diffInDays($fechaEntrada);
+                        $this->cobros_transeunte[$index]['total'] = $diferenciaDias * $precio;
+                    } else {
+                        $this->cobros_transeunte[$index]['total'] = 0;
+                    }
+                }
+            }
         }
     }
     public function alertaGuardar()

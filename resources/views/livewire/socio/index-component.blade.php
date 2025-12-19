@@ -68,7 +68,8 @@
                             <i class="fas fa-file-excel"></i>
                             <span>Exportar Excel</span>
                         </a>
-                        <a href="{{ route('socios.export.pdf') }}" class="btn-export btn-export-pdf">
+                        {{-- El PDF debe respetar el orden y la vista seleccionados --}}
+                        <a href="{{ route('socios.export.pdf', ['orderBy' => $orderBy, 'orderDir' => $orderDir, 'vista' => $vista]) }}" class="btn-export btn-export-pdf">
                             <i class="fas fa-file-pdf"></i>
                             <span>Exportar PDF</span>
                         </a>

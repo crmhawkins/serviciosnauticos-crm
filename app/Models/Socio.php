@@ -86,4 +86,9 @@ class Socio extends Model
     {
         return $this->hasMany(BarcoFoto::class, 'socio_id')->orderBy('orden');
     }
+
+    public function favorito(): HasMany
+    {
+        return $this->hasMany(FavoritoSocio::class, 'socio_id');
+    }
 }

@@ -193,6 +193,20 @@
                 </div>
 
                 <div id="datatable-wrapper">
+                    <style>
+                        #datatable-buttons thead th {
+                            border-right: 1px solid #e5e7eb !important;
+                        }
+                        #datatable-buttons thead th:last-child {
+                            border-right: none !important;
+                        }
+                        #datatable-buttons tbody td {
+                            border-right: 1px solid #e5e7eb !important;
+                        }
+                        #datatable-buttons tbody td:last-child {
+                            border-right: none !important;
+                        }
+                    </style>
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:ignore>
                 

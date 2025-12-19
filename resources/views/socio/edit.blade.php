@@ -76,10 +76,19 @@
                             </div>
                             <div class="photo-content">
                                 @if ($socio->ruta_foto)
-                                    <div class="photo-preview">
+                                    <div class="photo-preview" style="position:relative;">
                                         <img src="{{ asset('assets/images/' . $socio->ruta_foto) }}" 
                                              alt="Foto del barco" 
                                              class="photo-image js-lightbox" id="preview-barco">
+                                        <form method="POST" action="{{ route('socios.foto_barco.principal.eliminar', $socio->id) }}" 
+                                              onsubmit="return confirm('¿Eliminar la foto principal del barco?');"
+                                              style="position:absolute; top:8px; right:8px;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2);">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     </div>
                                 @endif
                                 @if($socio->barco_fotos && $socio->barco_fotos->count())
@@ -131,10 +140,19 @@
                             </div>
                             <div class="photo-content">
                                 @if ($socio->ruta_foto2)
-                                    <div class="photo-preview">
+                                    <div class="photo-preview" style="position:relative;">
                                         <img src="{{ asset('assets/images/' . $socio->ruta_foto2) }}" 
                                              alt="Foto del socio" 
                                              class="photo-image js-lightbox" id="preview-socio">
+                                        <form method="POST" action="{{ route('socios.foto_socio.principal.eliminar', $socio->id) }}" 
+                                              onsubmit="return confirm('¿Eliminar la foto principal del socio?');"
+                                              style="position:absolute; top:8px; right:8px;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:12px; box-shadow:0 2px 4px rgba(0,0,0,0.2);">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     </div>
                                 @endif
                                 @if($socio->socio_fotos && $socio->socio_fotos->count())
@@ -186,12 +204,12 @@
                                 Estado del Barco
                             </h3>
                             <div class="status-buttons">
-                                <label class="status-btn {{ $socio->situacion_barco == 0 ? 'active' : '' }}">
+                                <label class="status-btn status-barco-atraque {{ $socio->situacion_barco == 0 ? 'active' : '' }}">
                                     <input type="radio" name="situacion_barco" value="0" {{ $socio->situacion_barco == 0 ? 'checked' : '' }} style="display: none;">
                                     <i class="fas fa-ship"></i>
                                     <span>En Atraque</span>
                                 </label>
-                                <label class="status-btn {{ $socio->situacion_barco == 1 ? 'active' : '' }}">
+                                <label class="status-btn status-barco-varada {{ $socio->situacion_barco == 1 ? 'active' : '' }}">
                                     <input type="radio" name="situacion_barco" value="1" {{ $socio->situacion_barco == 1 ? 'checked' : '' }} style="display: none;">
                                     <i class="fas fa-tools"></i>
                                     <span>En Varada/Fuera</span>
@@ -205,20 +223,20 @@
                                 Tipo de Persona
                             </h3>
                             <div class="status-buttons">
-                                <label class="status-btn {{ $socio->situacion_persona == 0 ? 'active' : '' }}">
+                                <label class="status-btn status-persona-socio {{ $socio->situacion_persona == 0 ? 'active' : '' }}">
                                     <input type="radio" name="situacion_persona" value="0" {{ $socio->situacion_persona == 0 ? 'checked' : '' }} style="display: none;">
                                     <i class="fas fa-user"></i>
                                     <span>Socio</span>
                                 </label>
-                                <label class="status-btn {{ $socio->situacion_persona == 1 ? 'active' : '' }}">
-                                    <input type="radio" name="situacion_persona" value="1" {{ $socio->situacion_persona == 1 ? 'checked' : '' }} style="display: none;">
-                                    <i class="fas fa-walking"></i>
-                                    <span>Transeúnte</span>
-                                </label>
-                                <label class="status-btn {{ $socio->situacion_persona == 2 ? 'active' : '' }}">
+                                <label class="status-btn status-persona-mixto {{ $socio->situacion_persona == 2 ? 'active' : '' }}">
                                     <input type="radio" name="situacion_persona" value="2" {{ $socio->situacion_persona == 2 ? 'checked' : '' }} style="display: none;">
                                     <i class="fas fa-users"></i>
                                     <span>Socio/Transeúnte</span>
+                                </label>
+                                <label class="status-btn status-persona-transeunte {{ $socio->situacion_persona == 1 ? 'active' : '' }}">
+                                    <input type="radio" name="situacion_persona" value="1" {{ $socio->situacion_persona == 1 ? 'checked' : '' }} style="display: none;">
+                                    <i class="fas fa-walking"></i>
+                                    <span>Transeúnte</span>
                                 </label>
                             </div>
                         </div>
@@ -462,13 +480,214 @@
                         </div>
                     </div>
 
+                    <!-- Cobros por Fechas (si tiene cobros o es transeúnte/socio-transeúnte) -->
+                    @if(($socio->registros_entradas_transeuntes && $socio->registros_entradas_transeuntes->count() > 0) || $socio->situacion_persona == 1 || $socio->situacion_persona == 2)
+                    <div class="form-section-card">
+                        <h3 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Cobros por Fechas
+                        </h3>
+                        {{-- Formulario para añadir nuevo cobro --}}
+                        @if($socio->situacion_persona == 1 || $socio->situacion_persona == 2)
+                        <form method="POST" action="{{ route('socios.cobros.store', $socio->id) }}" id="cobro-form" style="margin-bottom:16px;">
+                            @csrf
+                            <div class="nota-inline">
+                                <input type="date" name="fecha_entrada" class="modern-input" required>
+                                <input type="date" name="fecha_salida" class="modern-input" required>
+                                <input type="number" step="0.01" name="precio" class="modern-input" placeholder="Precio por día" required>
+                                <button type="submit" class="btn-add-note">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Añadir cobro</span>
+                                </button>
+                            </div>
+                        </form>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const cobroForm = document.getElementById('cobro-form');
+                            if (cobroForm) {
+                                cobroForm.addEventListener('submit', function (e) {
+                                    e.preventDefault();
+                                    const formData = new FormData(cobroForm);
+                                    fetch(cobroForm.action, {
+                                        method: 'POST',
+                                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                                        body: formData,
+                                        credentials: 'same-origin',
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            window.location.reload();
+                                        } else {
+                                            alert('Error al guardar el cobro');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                        alert('Error al guardar el cobro');
+                                    });
+                                });
+                            }
+                        });
+                        </script>
+                        @endif
+                        <div class="cobros-list" style="margin-top:16px;">
+                            @foreach ($socio->registros_entradas_transeuntes as $cobro)
+                                <div class="cobro-item" data-cobro-id="{{ $cobro->id }}" style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; padding-right:{{ auth()->check() && (int) auth()->user()->role === 1 ? '140px' : '12px' }};">
+                                    <div class="cobro-view" id="cobro-view-{{ $cobro->id }}">
+                                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:8px;">
+                                            <div>
+                                                <strong style="color:#6b7280; font-size:0.875rem;">Fecha Entrada:</strong>
+                                                <div style="color:#374151;">{{ $cobro->fecha_entrada ? \Carbon\Carbon::parse($cobro->fecha_entrada)->format('d/m/Y') : '—' }}</div>
+                                            </div>
+                                            <div>
+                                                <strong style="color:#6b7280; font-size:0.875rem;">Fecha Salida:</strong>
+                                                <div style="color:#374151;">{{ $cobro->fecha_salida ? \Carbon\Carbon::parse($cobro->fecha_salida)->format('d/m/Y') : '—' }}</div>
+                                            </div>
+                                            <div>
+                                                <strong style="color:#6b7280; font-size:0.875rem;">Precio/Día:</strong>
+                                                <div style="color:#374151;">{{ number_format($cobro->precio ?? 0, 2, ',', '.') }} €</div>
+                                            </div>
+                                            <div>
+                                                <strong style="color:#6b7280; font-size:0.875rem;">Total:</strong>
+                                                <div style="color:#22c55e; font-weight:600; font-size:1.125rem;">{{ number_format($cobro->total ?? 0, 2, ',', '.') }} €</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cobro-edit" id="cobro-edit-{{ $cobro->id }}" style="display:none;">
+                                        <form method="POST" action="{{ route('socios.cobros.update', [$socio->id, $cobro->id]) }}" class="cobro-edit-form">
+                                            @csrf
+                                            @method('PUT')
+                                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:12px;">
+                                                <div>
+                                                    <label style="color:#6b7280; font-size:0.875rem; display:block; margin-bottom:4px;">Fecha Entrada:</label>
+                                                    <input type="date" name="fecha_entrada" value="{{ $cobro->fecha_entrada }}" class="modern-input" required>
+                                                </div>
+                                                <div>
+                                                    <label style="color:#6b7280; font-size:0.875rem; display:block; margin-bottom:4px;">Fecha Salida:</label>
+                                                    <input type="date" name="fecha_salida" value="{{ $cobro->fecha_salida }}" class="modern-input" required>
+                                                </div>
+                                                <div>
+                                                    <label style="color:#6b7280; font-size:0.875rem; display:block; margin-bottom:4px;">Precio/Día:</label>
+                                                    <input type="number" step="0.01" name="precio" value="{{ $cobro->precio ?? 0 }}" class="modern-input" required>
+                                                </div>
+                                            </div>
+                                            <div style="display:flex; gap:8px;">
+                                                <button type="submit" class="btn btn-sm" style="background:#22c55e; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;">
+                                                    <i class="fas fa-save"></i> Guardar
+                                                </button>
+                                                <button type="button" onclick="cancelarEdicionCobro({{ $cobro->id }})" class="btn btn-sm" style="background:#6b7280; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;">
+                                                    <i class="fas fa-times"></i> Cancelar
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    @if(auth()->check() && (int) auth()->user()->role === 1)
+                                        <div style="position:absolute; top:12px; right:12px; display:flex; gap:6px;">
+                                            <button type="button" 
+                                                    onclick="mostrarEdicionCobro({{ $cobro->id }})"
+                                                    class="btn btn-sm btn-edit-cobro" 
+                                                    style="background:#2563eb; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer;">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </button>
+                                            <form method="POST" 
+                                                  action="{{ route('socios.cobros.destroy', [$socio->id, $cobro->id]) }}" 
+                                                  onsubmit="return confirm('¿Estás seguro de eliminar este cobro?');"
+                                                  style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="btn btn-sm" 
+                                                        style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer;">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                        <style>
+                        .cobros-list { display:flex; flex-direction:column; gap:12px; }
+                        .cobro-edit-form { background:#fff; padding:12px; border-radius:8px; border:1px solid #d1d5db; }
+                        </style>
+                        <script>
+                        function mostrarEdicionCobro(id) {
+                            document.getElementById('cobro-view-' + id).style.display = 'none';
+                            document.getElementById('cobro-edit-' + id).style.display = 'block';
+                            const btn = document.querySelector(`[onclick="mostrarEdicionCobro(${id})"]`);
+                            if (btn) btn.style.display = 'none';
+                            
+                            // Añadir listeners para calcular total automáticamente
+                            const form = document.querySelector(`#cobro-edit-${id} form`);
+                            if (form) {
+                                const fechaEntrada = form.querySelector('input[name="fecha_entrada"]');
+                                const fechaSalida = form.querySelector('input[name="fecha_salida"]');
+                                const precio = form.querySelector('input[name="precio"]');
+                                
+                                function calcularTotal() {
+                                    if (fechaEntrada.value && fechaSalida.value && precio.value) {
+                                        const entrada = new Date(fechaEntrada.value);
+                                        const salida = new Date(fechaSalida.value);
+                                        const diffTime = Math.abs(salida - entrada);
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                        const total = diffDays * parseFloat(precio.value);
+                                        // Mostrar total calculado (opcional, solo visual)
+                                        const totalDisplay = form.querySelector('.total-calculado');
+                                        if (totalDisplay) {
+                                            totalDisplay.textContent = 'Total: ' + total.toFixed(2) + ' €';
+                                        }
+                                    }
+                                }
+                                
+                                if (fechaEntrada) fechaEntrada.addEventListener('change', calcularTotal);
+                                if (fechaSalida) fechaSalida.addEventListener('change', calcularTotal);
+                                if (precio) precio.addEventListener('input', calcularTotal);
+                            }
+                        }
+                        function cancelarEdicionCobro(id) {
+                            document.getElementById('cobro-view-' + id).style.display = 'block';
+                            document.getElementById('cobro-edit-' + id).style.display = 'none';
+                            const btn = document.querySelector(`[onclick="mostrarEdicionCobro(${id})"]`);
+                            if (btn) btn.style.display = 'inline-block';
+                        }
+                        document.addEventListener('DOMContentLoaded', function () {
+                            document.querySelectorAll('.cobro-edit-form').forEach(form => {
+                                form.addEventListener('submit', function (e) {
+                                    e.preventDefault();
+                                    const formData = new FormData(this);
+                                    fetch(this.action, {
+                                        method: 'POST',
+                                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                                        body: formData,
+                                        credentials: 'same-origin',
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            window.location.reload();
+                                        } else {
+                                            alert('Error al actualizar el cobro');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                        alert('Error al actualizar el cobro');
+                                    });
+                                });
+                            });
+                        });
+                        </script>
+                    </div>
+                    @endif
+
                     <!-- Notes Section -->
                     <div class="form-section-card">
                         <h3 class="section-title">
                             <i class="fas fa-sticky-note"></i>
                             Notas
                         </h3>
-                        <form method="POST" action="{{ route('socios.notas.store', $socio->id) }}">
+                        {{-- IMPORTANTE: este formulario está dentro de otro form.
+                             Gestionamos el envío con JS para evitar que se mande al update --}}
+                        <form id="nota-form" method="POST" action="{{ route('socios.notas.store', $socio->id) }}">
                             @csrf
                             <div class="nota-inline">
                                 <input type="date" name="fecha_nota" class="modern-input">
@@ -492,7 +711,7 @@
                         </style>
                         <div class="notes-list">
                             @foreach ($socio->notas as $nota)
-                                <div class="note-item">
+                                <div class="note-item" style="position:relative; padding-right:60px;">
                                     <div class="note-header">
                                         <span class="note-date">{{ $nota->fecha ? \Carbon\Carbon::parse($nota->fecha)->format('d/m/Y') : '' }}</span>
                                         <span class="note-user">{{ $nota->user->name ?? 'Usuario' }}</span>
@@ -500,9 +719,33 @@
                                     <div class="note-content">
                                         {{ $nota->descripcion }}
                                     </div>
+                                    @if(auth()->check() && (int) auth()->user()->role === 1)
+                                        <form method="POST" 
+                                              action="{{ route('socios.notas.destroy', [$socio->id, $nota->id]) }}" 
+                                              onsubmit="return confirm('¿Estás seguro de eliminar esta nota? Esta acción no se puede deshacer.');"
+                                              style="position:absolute; top:8px; right:8px;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="btn-delete-note" 
+                                                    title="Eliminar nota"
+                                                    style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:all 0.2s;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
+                        <style>
+                        .notes-list { display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+                        .note-item { background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:12px; position:relative; }
+                        .note-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.875rem; }
+                        .note-date { color:#6b7280; font-weight:500; }
+                        .note-user { color:#9ca3af; font-size:0.8125rem; }
+                        .note-content { color:#374151; line-height:1.5; }
+                        .btn-delete-note:hover { background:#dc2626 !important; transform:scale(1.05); }
+                        </style>
                     </div>
                 </div>
             </div>
@@ -516,6 +759,18 @@
                         Acciones
                     </h3>
                     <div class="action-buttons">
+                        @if(in_array((int) Auth::user()->role, [1, 6], true))
+                            @php
+                                $esFavorito = \App\Models\FavoritoSocio::where('socio_id', $socio->id)->exists();
+                            @endphp
+                            <button type="button" 
+                                    class="action-btn {{ $esFavorito ? 'btn-warning' : 'btn-info' }}" 
+                                    id="btn-favorito"
+                                    onclick="toggleFavorito({{ $socio->id }}, {{ $esFavorito ? 'true' : 'false' }})">
+                                <i class="fas fa-star"></i>
+                                <span id="favorito-text">{{ $esFavorito ? 'Quitar de favoritos' : 'Añadir a favoritos' }}</span>
+                            </button>
+                        @endif
                         <a href="{{ route('socios.registros', $socio->id) }}" class="action-btn btn-success">
                             <i class="fas fa-history"></i>
                             <span>Ver registros de entrada y salida</span>
@@ -586,6 +841,43 @@
 </div>
 
 <script>
+// Envío AJAX para el formulario de notas (evita conflicto con form principal)
+document.addEventListener('DOMContentLoaded', function () {
+    const notaForm = document.getElementById('nota-form');
+    if (notaForm) {
+        notaForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(notaForm);
+
+            fetch(notaForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData,
+                credentials: 'same-origin',
+            })
+            .then(response => {
+                // Si Laravel devuelve redirección normal, igualmente recargamos
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error('Error al guardar la nota');
+            })
+            .then(() => {
+                // Limpiar campos y recargar para ver la nueva nota
+                notaForm.reset();
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error(error);
+                alert('No se pudo guardar la nota. Revisa que la descripción no esté vacía.');
+            });
+        });
+    }
+});
+
 // Imprimir sin abrir nueva pestaña: carga la vista en un iframe oculto y lanza print()
 document.addEventListener('DOMContentLoaded', function(){
     var btn = document.getElementById('btn-imprimir-socio');
@@ -792,6 +1084,61 @@ document.getElementById('ruta_foto2')?.addEventListener('change', function(e){
     };
     reader.readAsDataURL(file);
 });
+
+// Toggle favorito
+function toggleFavorito(socioId, esFavorito) {
+    const btn = document.getElementById('btn-favorito');
+    const texto = document.getElementById('favorito-text');
+    
+    if (esFavorito) {
+        // Eliminar favorito
+        fetch(`/admin/favoritos/socio/${socioId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                btn.className = 'action-btn btn-info';
+                texto.textContent = 'Añadir a favoritos';
+                btn.setAttribute('onclick', `toggleFavorito(${socioId}, false)`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al quitar de favoritos');
+        });
+    } else {
+        // Añadir favorito
+        fetch(`/admin/favoritos/${socioId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                btn.className = 'action-btn btn-warning';
+                texto.textContent = 'Quitar de favoritos';
+                btn.setAttribute('onclick', `toggleFavorito(${socioId}, true)`);
+            } else if (data.error) {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al añadir a favoritos');
+        });
+    }
+}
 </script>
 @endsection
 

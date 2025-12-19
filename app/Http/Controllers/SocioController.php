@@ -10,7 +10,9 @@ use App\Models\Telefonos;
 use App\Models\NumerosLlave;
 use App\Models\TranseunteTripulantes;
 use App\Models\Nota;
+use App\Models\RegistrosEntradaTranseunte;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserClub;
 
 class SocioController extends Controller
 {
@@ -41,11 +43,24 @@ class SocioController extends Controller
         
         if ($clubId && $role !== 1) { // No es admin
             $club = \App\Models\Club::find($clubId);
-            if (in_array($role, [6, 7], true)) { // PN/GC
+
+            // PN/GC: sólo pueden crear en clubs que han creado ellos mismos
+            if (in_array($role, [6, 7], true)) {
                 if (!$club || (int) $club->created_by !== (int) $user->id) {
                     abort(403, 'No tienes permisos para crear socios en este club.');
                 }
-            } else {
+            }
+            // Roles 2,3,4 (gestión de club: secretario, etc.) sólo en clubs asignados vía user_clubs
+            elseif (in_array($role, [2, 3, 4], true)) {
+                $tieneClub = UserClub::where('user_id', $user->id)
+                    ->where('club_id', $clubId)
+                    ->exists();
+                if (!$tieneClub) {
+                    abort(403, 'No tienes permisos para crear socios en este club.');
+                }
+            }
+            // Otros roles: sin permiso
+            else {
                 abort(403, 'No tienes permisos para crear socios.');
             }
         }
@@ -91,7 +106,7 @@ class SocioController extends Controller
         }
         
         // Cargar relaciones
-        $socio->load(['telefonos', 'numeros_llave', 'tripulantes', 'notas', 'socio_fotos', 'barco_fotos']);
+        $socio->load(['telefonos', 'numeros_llave', 'tripulantes', 'notas', 'socio_fotos', 'barco_fotos', 'registros_entradas_transeuntes']);
         
         // Verificar permisos
         $puede_editar = auth()->user()->role <= 3;
@@ -133,7 +148,17 @@ class SocioController extends Controller
         if (!$socio) {
             abort(404, 'Socio no encontrado');
         }
-        $club = \App\Models\Club::first();
+        // Intentar usar primero el club del propio socio; si no, caer al club seleccionado en sesión
+        $club = null;
+        if ($socio->club_id) {
+            $club = \App\Models\Club::find($socio->club_id);
+        }
+        if (!$club) {
+            $clubIdSession = session()->get('clubSeleccionado');
+            if ($clubIdSession) {
+                $club = \App\Models\Club::find($clubIdSession);
+            }
+        }
         return view('socio.print', compact('socio', 'club'));
     }
 
@@ -154,6 +179,24 @@ class SocioController extends Controller
             'fecha' => $request->input('fecha_nota') ?: now()->toDateString(),
         ]);
         return back()->with('status', 'Nota añadida');
+    }
+
+    /**
+     * Eliminar una nota (solo administradores)
+     */
+    public function eliminarNota($id, $notaId)
+    {
+        // Verificar que el usuario es administrador (rol 1)
+        if ((int) Auth::user()->role !== 1) {
+            abort(403, 'Solo los administradores pueden eliminar notas.');
+        }
+
+        $socio = SocioModel::findOrFail($id);
+        $nota = Nota::where('socio_id', $id)->findOrFail($notaId);
+        
+        $nota->delete();
+        
+        return redirect()->route('socios.edit', $id)->with('status', 'Nota eliminada correctamente');
     }
 
     /**
@@ -270,14 +313,37 @@ class SocioController extends Controller
     {
         $socio = \App\Models\Socio::findOrFail($id);
         $foto = BarcoFoto::where('socio_id', $id)->findOrFail($fotoId);
+        
+        // Si hay una foto principal actual, moverla a la galería antes de reemplazarla
+        if (!empty($socio->ruta_foto) && $socio->ruta_foto !== $foto->ruta) {
+            // Verificar si la foto principal no está ya en la galería
+            $existeEnGaleria = BarcoFoto::where('socio_id', $id)
+                ->where('ruta', $socio->ruta_foto)
+                ->exists();
+            
+            if (!$existeEnGaleria) {
+                // Crear entrada en galería para la foto principal actual
+                BarcoFoto::create([
+                    'socio_id'  => $socio->id,
+                    'ruta'      => $socio->ruta_foto,
+                    'destacada' => false,
+                    'orden'     => (int) (BarcoFoto::where('socio_id', $id)->max('orden') ?? 0) + 1,
+                ]);
+            }
+        }
+        
         // Resetear destacadas
         BarcoFoto::where('socio_id', $id)->update(['destacada' => false]);
         $foto->destacada = true;
         $foto->save();
+        
         // Actualizar principal
         $socio->ruta_foto = $foto->ruta;
         $socio->save();
-        return back()->with('status', 'Foto de barco destacada');
+        
+        // Recargar relaciones para que la vista muestre los cambios
+        $socio->load(['barco_fotos']);
+        return redirect()->route('socios.edit', $id)->with('status', 'Foto de barco destacada');
     }
 
     public function eliminarBarcoFoto($id, $fotoId)
@@ -288,18 +354,50 @@ class SocioController extends Controller
     }
 
     /**
+     * Eliminar la foto principal del barco
+     */
+    public function eliminarFotoPrincipalBarco($id)
+    {
+        $socio = \App\Models\Socio::findOrFail($id);
+        $socio->ruta_foto = null;
+        $socio->save();
+        return redirect()->route('socios.edit', $id)->with('status', 'Foto principal del barco eliminada');
+    }
+
+    /**
      * Marcar como destacada una foto de socio de la galería
      */
     public function destacarSocioFoto($id, $fotoId)
     {
         $socio = \App\Models\Socio::findOrFail($id);
         $foto = SocioFoto::where('socio_id', $id)->findOrFail($fotoId);
+        
+        // Si hay una foto principal actual, moverla a la galería antes de reemplazarla
+        if (!empty($socio->ruta_foto2) && $socio->ruta_foto2 !== $foto->ruta) {
+            // Verificar si la foto principal no está ya en la galería
+            $existeEnGaleria = SocioFoto::where('socio_id', $id)
+                ->where('ruta', $socio->ruta_foto2)
+                ->exists();
+            
+            if (!$existeEnGaleria) {
+                // Crear entrada en galería para la foto principal actual
+                SocioFoto::create([
+                    'socio_id'  => $socio->id,
+                    'ruta'      => $socio->ruta_foto2,
+                    'destacada' => false,
+                    'orden'     => (int) (SocioFoto::where('socio_id', $id)->max('orden') ?? 0) + 1,
+                ]);
+            }
+        }
+        
         SocioFoto::where('socio_id', $id)->update(['destacada' => false]);
         $foto->destacada = true;
         $foto->save();
         $socio->ruta_foto2 = $foto->ruta;
         $socio->save();
-        return back()->with('status', 'Foto de socio destacada');
+        // Recargar relaciones para que la vista muestre los cambios
+        $socio->load(['socio_fotos']);
+        return redirect()->route('socios.edit', $id)->with('status', 'Foto de socio destacada');
     }
 
     public function eliminarSocioFoto($id, $fotoId)
@@ -307,5 +405,95 @@ class SocioController extends Controller
         $foto = SocioFoto::where('socio_id', $id)->findOrFail($fotoId);
         $foto->delete();
         return back()->with('status', 'Foto de socio eliminada');
+    }
+
+    /**
+     * Eliminar la foto principal del socio
+     */
+    public function eliminarFotoPrincipalSocio($id)
+    {
+        $socio = \App\Models\Socio::findOrFail($id);
+        $socio->ruta_foto2 = null;
+        $socio->save();
+        return redirect()->route('socios.edit', $id)->with('status', 'Foto principal del socio eliminada');
+    }
+
+    /**
+     * Crear un nuevo cobro de transeúnte
+     */
+    public function crearCobroTranseunte(Request $request, $id)
+    {
+        $request->validate([
+            'fecha_entrada' => 'required|date',
+            'fecha_salida' => 'required|date|after:fecha_entrada',
+            'precio' => 'required|numeric|min:0',
+        ]);
+
+        $socio = SocioModel::findOrFail($id);
+        
+        $fechaEntrada = \Carbon\Carbon::parse($request->fecha_entrada);
+        $fechaSalida = \Carbon\Carbon::parse($request->fecha_salida);
+        $diferenciaDias = $fechaSalida->diffInDays($fechaEntrada);
+        $total = $diferenciaDias * $request->precio;
+
+        RegistrosEntradaTranseunte::create([
+            'socio_id' => $socio->id,
+            'fecha_entrada' => $request->fecha_entrada,
+            'fecha_salida' => $request->fecha_salida,
+            'precio' => $request->precio,
+            'total' => $total,
+        ]);
+
+        return redirect()->route('socios.edit', $id)->with('status', 'Cobro añadido correctamente');
+    }
+
+    /**
+     * Actualizar un cobro de transeúnte (solo administradores)
+     */
+    public function actualizarCobroTranseunte(Request $request, $id, $cobroId)
+    {
+        // Verificar que el usuario es administrador (rol 1)
+        if ((int) Auth::user()->role !== 1) {
+            abort(403, 'Solo los administradores pueden editar cobros.');
+        }
+
+        $request->validate([
+            'fecha_entrada' => 'required|date',
+            'fecha_salida' => 'required|date|after:fecha_entrada',
+            'precio' => 'required|numeric|min:0',
+        ]);
+
+        $socio = SocioModel::findOrFail($id);
+        $cobro = RegistrosEntradaTranseunte::where('socio_id', $id)->findOrFail($cobroId);
+        
+        $fechaEntrada = \Carbon\Carbon::parse($request->fecha_entrada);
+        $fechaSalida = \Carbon\Carbon::parse($request->fecha_salida);
+        $diferenciaDias = $fechaSalida->diffInDays($fechaEntrada);
+        $total = $diferenciaDias * $request->precio;
+
+        $cobro->update([
+            'fecha_entrada' => $request->fecha_entrada,
+            'fecha_salida' => $request->fecha_salida,
+            'precio' => $request->precio,
+            'total' => $total,
+        ]);
+
+        return redirect()->route('socios.edit', $id)->with('status', 'Cobro actualizado correctamente');
+    }
+
+    /**
+     * Eliminar un cobro de transeúnte (solo administradores)
+     */
+    public function eliminarCobroTranseunte($id, $cobroId)
+    {
+        // Verificar que el usuario es administrador (rol 1)
+        if ((int) Auth::user()->role !== 1) {
+            abort(403, 'Solo los administradores pueden eliminar cobros.');
+        }
+
+        $cobro = RegistrosEntradaTranseunte::where('socio_id', $id)->findOrFail($cobroId);
+        $cobro->delete();
+
+        return redirect()->route('socios.edit', $id)->with('status', 'Cobro eliminado correctamente');
     }
 }

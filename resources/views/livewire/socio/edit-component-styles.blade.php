@@ -397,14 +397,85 @@
 }
 
 .status-btn:hover {
-    border-color: var(--primary-blue);
-    background: rgba(37, 99, 235, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.status-btn.active {
-    border-color: var(--success-green);
-    background: rgba(34, 197, 94, 0.1);
-    color: var(--success-green-dark);
+/* Colores para Situación del Barco */
+.status-barco-atraque {
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+}
+.status-barco-atraque.active {
+    background: #22c55e !important;
+    color: white !important;
+    border-color: #22c55e !important;
+}
+.status-barco-atraque:hover:not(.active) {
+    border-color: #16a34a !important;
+    color: #16a34a !important;
+    background: rgba(34, 197, 94, 0.05) !important;
+}
+
+.status-barco-varada {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}
+.status-barco-varada.active {
+    background: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+.status-barco-varada:hover:not(.active) {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+}
+
+/* Colores para Tipo de Persona */
+.status-persona-socio {
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+}
+.status-persona-socio.active {
+    background: #22c55e !important;
+    color: white !important;
+    border-color: #22c55e !important;
+}
+.status-persona-socio:hover:not(.active) {
+    border-color: #16a34a !important;
+    color: #16a34a !important;
+    background: rgba(34, 197, 94, 0.05) !important;
+}
+
+.status-persona-transeunte {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}
+.status-persona-transeunte.active {
+    background: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+.status-persona-transeunte:hover:not(.active) {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.status-persona-mixto {
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+}
+.status-persona-mixto.active {
+    background: #f59e0b !important;
+    color: white !important;
+    border-color: #f59e0b !important;
+}
+.status-persona-mixto:hover:not(.active) {
+    border-color: #d97706 !important;
+    color: #d97706 !important;
+    background: rgba(245, 158, 11, 0.05) !important;
 }
 
 .status-btn i {

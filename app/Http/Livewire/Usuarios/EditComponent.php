@@ -42,7 +42,8 @@ class EditComponent extends Component
         $this->inactive = $usuarios->inactive;
         $clubes = UserClub::where('user_id', $this->identificador)->get();
         foreach ($clubes as $club) {
-            $this->user_clubs[$club->id] = 1;
+            // Usar club_id (ID del club) no id (ID del registro UserClub)
+            $this->user_clubs[$club->club_id] = 1;
         }
     }
 
@@ -88,14 +89,31 @@ class EditComponent extends Component
         // Encuentra el identificador
         $usuariosSave = $usuarios->update($validatedData);
 
-        foreach ($this->user_clubs as $clubIndex => $clubCheck) {
-            if ($clubCheck != null && $clubCheck != false) {
-                UserClub::create(['user_id' => $this->identificador, 'club_id' => $clubIndex, 'logo_club' => 'logo_club' . $clubIndex . '.png',]);
-            } else {
-                if (UserClub::where('user_id', $this->identificador)->where('club_id', $clubIndex)->count() > 0) {
-                    UserClub::where('user_id', $this->identificador)->where('club_id', $clubIndex)->first()->delete();
+        // Obtener todos los clubs actuales del usuario
+        $clubsActuales = UserClub::where('user_id', $this->identificador)->pluck('club_id')->toArray();
+        
+        // Clubs que deben estar asignados (marcados en el formulario)
+        $clubsMarcados = [];
+        foreach ($this->user_clubs as $clubId => $clubCheck) {
+            if ($clubCheck != null && $clubCheck != false && $clubCheck != 0) {
+                $clubsMarcados[] = $clubId;
+                // Crear solo si no existe ya
+                if (!UserClub::where('user_id', $this->identificador)->where('club_id', $clubId)->exists()) {
+                    UserClub::create([
+                        'user_id' => $this->identificador, 
+                        'club_id' => $clubId, 
+                        'logo_club' => 'logo_club' . $clubId . '.png'
+                    ]);
                 }
             }
+        }
+        
+        // Eliminar clubs que estaban asignados pero ya no están marcados
+        $clubsAEliminar = array_diff($clubsActuales, $clubsMarcados);
+        foreach ($clubsAEliminar as $clubId) {
+            UserClub::where('user_id', $this->identificador)
+                ->where('club_id', $clubId)
+                ->delete();
         }
 
 

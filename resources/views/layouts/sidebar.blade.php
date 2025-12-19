@@ -26,6 +26,20 @@
                 <li>
                     <a href="/admin/socios" class="waves-effect"><i class="fas fa-ship"></i><span> Socios </span></a>
                 </li>
+                @if (in_array((int) $user->role, [1, 6], true))
+                    @php
+                        $favoritosNoVistos = \App\Models\FavoritoSocio::whereNull('viewed_at')->count();
+                    @endphp
+                    <li>
+                        <a href="/admin/favoritos" class="waves-effect">
+                            <i class="fas fa-star"></i>
+                            <span> Favoritos </span>
+                            @if($favoritosNoVistos > 0)
+                                <span class="badge badge-danger badge-pill float-right favoritos-badge" id="favoritos-badge-sidebar">{{ $favoritosNoVistos }}</span>
+                            @endif
+                        </a>
+                    </li>
+                @endif
                 @if ($user->role == 1)
                     <li>
                         <a href="/admin/club" class="waves-effect"><i class="fas fa-users"></i><span> Club
@@ -57,6 +71,19 @@
                 <style>
                     .enlarged .side-menu h5 {
                         display: none;
+                    }
+                    .favoritos-badge {
+                        animation: pulse 2s infinite;
+                    }
+                    @keyframes pulse {
+                        0%, 100% {
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+                        50% {
+                            opacity: 0.7;
+                            transform: scale(1.1);
+                        }
                     }
                 </style>
 

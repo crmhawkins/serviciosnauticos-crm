@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CajaController;
 use App\Http\Controllers\SocioController;
+use App\Http\Controllers\FavoritoController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BudgetController;
@@ -93,12 +94,29 @@ Route::group(['middleware' => 'is.admin','prefix' => 'admin'], function () {
     Route::post('socios/{id}/baja', [SocioController::class, 'baja'])->name('socios.baja');
     Route::delete('socios/{id}', [SocioController::class, 'destroy'])->name('socios.destroy');
     Route::post('socios/{id}/notas', [SocioController::class, 'agregarNota'])->name('socios.notas.store');
+    Route::delete('socios/{id}/notas/{notaId}', [SocioController::class, 'eliminarNota'])->name('socios.notas.destroy');
+    
+    // Cobros de transeúntes
+    Route::post('socios/{id}/cobros', [SocioController::class, 'crearCobroTranseunte'])->name('socios.cobros.store');
+    Route::put('socios/{id}/cobros/{cobroId}', [SocioController::class, 'actualizarCobroTranseunte'])->name('socios.cobros.update');
+    Route::delete('socios/{id}/cobros/{cobroId}', [SocioController::class, 'eliminarCobroTranseunte'])->name('socios.cobros.destroy');
 
     // Galería fotos: destacar/eliminar (sin duplicar prefijo 'admin')
     Route::post('socios/{id}/foto-barco/{fotoId}/destacar', [SocioController::class, 'destacarBarcoFoto'])->name('socios.foto_barco.destacar');
     Route::delete('socios/{id}/foto-barco/{fotoId}', [SocioController::class, 'eliminarBarcoFoto'])->name('socios.foto_barco.eliminar');
+    Route::delete('socios/{id}/foto-barco-principal', [SocioController::class, 'eliminarFotoPrincipalBarco'])->name('socios.foto_barco.principal.eliminar');
     Route::post('socios/{id}/foto-socio/{fotoId}/destacar', [SocioController::class, 'destacarSocioFoto'])->name('socios.foto_socio.destacar');
     Route::delete('socios/{id}/foto-socio/{fotoId}', [SocioController::class, 'eliminarSocioFoto'])->name('socios.foto_socio.eliminar');
+    Route::delete('socios/{id}/foto-socio-principal', [SocioController::class, 'eliminarFotoPrincipalSocio'])->name('socios.foto_socio.principal.eliminar');
+
+    // Favoritos
+    Route::get('favoritos', [FavoritoController::class, 'index'])->name('favoritos.index');
+    Route::post('favoritos/{socioId}', [FavoritoController::class, 'store'])->name('favoritos.store');
+    Route::delete('favoritos/{id}', [FavoritoController::class, 'destroy'])->name('favoritos.destroy');
+    Route::delete('favoritos/socio/{socioId}', [FavoritoController::class, 'destroyBySocio'])->name('favoritos.destroy-by-socio');
+    Route::post('favoritos/{id}/marcar-visto', [FavoritoController::class, 'marcarVisto'])->name('favoritos.marcar-visto');
+    Route::get('favoritos/contador', [FavoritoController::class, 'contadorNoVistos'])->name('favoritos.contador');
+    Route::get('favoritos/hay-nuevos', [FavoritoController::class, 'hayNuevos'])->name('favoritos.hay-nuevos');
 
     Route::get('club', [ClubController::class, 'index'])->name('club.index');
     Route::get('club-create', [ClubController::class, 'create'])->name('club.create');

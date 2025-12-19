@@ -30,10 +30,42 @@
             <a href="{{ url()->previous() }}">Volver</a>
         </div>
         <div class="header">
-            <h1 class="title">{{ $club->nombre ?? 'Club' }} - Ficha del Socio</h1>
+            @php
+                $logoPath = isset($club) && $club && $club->club_logo
+                    ? public_path('assets/images/' . $club->club_logo)
+                    : null;
+            @endphp
+            <h1 class="title">
+                @if($logoPath && file_exists($logoPath))
+                    <img src="{{ $logoPath }}" alt="Logo {{ $club->nombre }}" style="height:40px; margin-right:8px; vertical-align:middle;">
+                @endif
+                {{ $club->nombre ?? 'Club' }} - Ficha del Socio
+            </h1>
         </div>
 
-        <table>
+        @php
+            $barco = $socio->ruta_foto ? asset('assets/images/' . $socio->ruta_foto) : null;
+            $socioFoto = $socio->ruta_foto2 ? asset('assets/images/' . $socio->ruta_foto2) : null;
+        @endphp
+
+        @if($barco || $socioFoto)
+            <div class="photos">
+                @if($barco)
+                    <div class="photo">
+                        <h4>Foto del Barco</h4>
+                        <img src="{{ $barco }}" alt="Foto del barco">
+                    </div>
+                @endif
+                @if($socioFoto)
+                    <div class="photo">
+                        <h4>Foto del Socio</h4>
+                        <img src="{{ $socioFoto }}" alt="Foto del socio">
+                    </div>
+                @endif
+            </div>
+        @endif
+
+        <table style="margin-top: 16px;">
             <tr>
                 <th colspan="12">Datos del Socio</th>
             </tr>
@@ -90,28 +122,6 @@
                 </td>
             </tr>
         </table>
-
-        @php
-            $barco = $socio->ruta_foto ? asset('assets/images/' . $socio->ruta_foto) : null;
-            $socioFoto = $socio->ruta_foto2 ? asset('assets/images/' . $socio->ruta_foto2) : null;
-        @endphp
-
-        @if($barco || $socioFoto)
-            <div class="photos">
-                @if($barco)
-                    <div class="photo">
-                        <h4>Foto del Barco</h4>
-                        <img src="{{ $barco }}" alt="Foto del barco">
-                    </div>
-                @endif
-                @if($socioFoto)
-                    <div class="photo">
-                        <h4>Foto del Socio</h4>
-                        <img src="{{ $socioFoto }}" alt="Foto del socio">
-                    </div>
-                @endif
-            </div>
-        @endif
     </div>
 
     <script>

@@ -22,9 +22,80 @@ class ExportController extends Controller
     public function sociosPdf(Request $request)
     {
         $clubId = session()->get('clubSeleccionado');
+        $orderBy = $request->get('orderBy', 'nombre_socio');
+        $orderDir = $request->get('orderDir', 'asc');
+        $vista   = (int) $request->get('vista', 1);
+
+        // Campos permitidos para ordenar
+        $allowedOrderBy = [
+            'pantalan_t_atraque',
+            'nombre_socio',
+            'numero_socio',
+            'nombre_barco',
+            'matricula',
+        ];
+        if (!in_array($orderBy, $allowedOrderBy, true)) {
+            $orderBy = 'nombre_socio';
+        }
+        $orderDir = $orderDir === 'desc' ? 'desc' : 'asc';
+
         $query = Socio::with('telefonos');
-        if ($clubId) { $query->where('club_id', $clubId); }
-        $socios = $query->get();
+        if ($clubId) {
+            $query->where('club_id', $clubId);
+        }
+
+        // Aplicar el mismo filtro de "vista" que en el listado
+        switch ($vista) {
+            case 1: // Todos en alta
+                $query->where('alta_baja', 0);
+                break;
+            case 2: // Socios en alta
+                $query->where('situacion_persona', 0)
+                      ->where('alta_baja', 0);
+                break;
+            case 3: // Socios en atraque
+                $query->where('situacion_persona', 0)
+                      ->where('alta_baja', 0)
+                      ->where('situacion_barco', 0);
+                break;
+            case 4: // Socios en varada
+                $query->where('situacion_persona', 0)
+                      ->where('alta_baja', 0)
+                      ->where('situacion_barco', 1);
+                break;
+            case 5: // Socios en baja
+                $query->where('alta_baja', 1)
+                      ->where('situacion_persona', 0);
+                break;
+            case 6: // Transeúntes en alta
+                $query->where('situacion_persona', 1)
+                      ->where('alta_baja', 0);
+                break;
+            case 7: // Transeúntes en atraque
+                $query->where('situacion_persona', 1)
+                      ->where('alta_baja', 0)
+                      ->where('situacion_barco', 0);
+                break;
+            case 8: // Transeúntes en varada
+                $query->where('situacion_persona', 1)
+                      ->where('alta_baja', 0)
+                      ->where('situacion_barco', 1);
+                break;
+            case 9: // Transeúntes en baja
+                $query->where('alta_baja', 1)
+                      ->where('situacion_persona', 1);
+                break;
+            case 10: // Socio/Transeúntes en alta
+                $query->where('situacion_persona', 2)
+                      ->where('alta_baja', 0);
+                break;
+            default:
+                // mismo comportamiento que "todos en alta"
+                $query->where('alta_baja', 0);
+                break;
+        }
+
+        $socios = $query->orderBy($orderBy, $orderDir)->get();
         $pdf = PDF::loadView('exports.socios', [ 'socios' => $socios ]);
         return $pdf->download('socios_' . now()->format('Ymd_His') . '.pdf');
     }

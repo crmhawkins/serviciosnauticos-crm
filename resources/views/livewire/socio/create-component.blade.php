@@ -43,13 +43,13 @@
                 </div>
                 <div class="status-buttons">
                     <button type="button" 
-                            class="status-btn {{ $situacion_barco == 0 ? 'active' : '' }}"
+                            class="status-btn status-barco-atraque {{ $situacion_barco == 0 ? 'active' : '' }}"
                             wire:click="cambiarSituacionBarco(0)">
                         <i class="fas fa-anchor"></i>
                         <span>Barco en Atraque</span>
                     </button>
                     <button type="button" 
-                            class="status-btn {{ $situacion_barco == 1 ? 'active' : '' }}"
+                            class="status-btn status-barco-varada {{ $situacion_barco == 1 ? 'active' : '' }}"
                             wire:click="cambiarSituacionBarco(1)">
                         <i class="fas fa-tools"></i>
                         <span>Barco en Varada</span>
@@ -73,22 +73,22 @@
                 </div>
                 <div class="status-buttons">
                     <button type="button" 
-                            class="status-btn {{ $situacion_persona == 0 ? 'active' : '' }}"
+                            class="status-btn status-persona-socio {{ $situacion_persona == 0 ? 'active' : '' }}"
                             wire:click="cambiarSituacionPersona(0)">
                         <i class="fas fa-user"></i>
                         <span>Socio</span>
                     </button>
                     <button type="button" 
-                            class="status-btn {{ $situacion_persona == 1 ? 'active' : '' }}"
-                            wire:click="cambiarSituacionPersona(1)">
-                        <i class="fas fa-user-clock"></i>
-                        <span>Transeúnte</span>
-                    </button>
-                    <button type="button" 
-                            class="status-btn {{ $situacion_persona == 2 ? 'active' : '' }}"
+                            class="status-btn status-persona-mixto {{ $situacion_persona == 2 ? 'active' : '' }}"
                             wire:click="cambiarSituacionPersona(2)">
                         <i class="fas fa-users"></i>
                         <span>Socio/Transeúnte</span>
+                    </button>
+                    <button type="button" 
+                            class="status-btn status-persona-transeunte {{ $situacion_persona == 1 ? 'active' : '' }}"
+                            wire:click="cambiarSituacionPersona(1)">
+                        <i class="fas fa-user-clock"></i>
+                        <span>Transeúnte</span>
                     </button>
                 </div>
                 @error('situacion_persona')
@@ -431,6 +431,83 @@
                 </div>
             </div>
 
+            <!-- Cobros por Fechas (Solo si es transeúnte o socio/transeúnte) -->
+            @if($situacion_persona == 1 || $situacion_persona == 2)
+            <div class="form-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Cobros por Fechas
+                    </h3>
+                    <button type="button" 
+                            class="btn-add"
+                            wire:click="addCobroTranseunte">
+                        <i class="fas fa-plus"></i>
+                        Añadir Cobro
+                    </button>
+                </div>
+                <div class="dynamic-list">
+                    @foreach ($cobros_transeunte as $cobroIndex => $cobro)
+                        <div class="dynamic-item">
+                            <div class="item-content" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; width:100%;">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-calendar-check"></i>
+                                        Fecha de Entrada
+                                    </label>
+                                    <input type="date" 
+                                           wire:model="cobros_transeunte.{{ $cobroIndex }}.fecha_entrada" 
+                                           class="form-input"
+                                           name="cobros_transeunte[{{ $cobroIndex }}][fecha_entrada]">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-calendar-times"></i>
+                                        Fecha de Salida
+                                    </label>
+                                    <input type="date" 
+                                           wire:model="cobros_transeunte.{{ $cobroIndex }}.fecha_salida" 
+                                           class="form-input"
+                                           name="cobros_transeunte[{{ $cobroIndex }}][fecha_salida]">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-euro-sign"></i>
+                                        Precio por Día
+                                    </label>
+                                    <input type="number" 
+                                           step="0.01"
+                                           wire:model="cobros_transeunte.{{ $cobroIndex }}.precio" 
+                                           class="form-input"
+                                           name="cobros_transeunte[{{ $cobroIndex }}][precio]"
+                                           placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-calculator"></i>
+                                        Total
+                                    </label>
+                                    <input type="number" 
+                                           step="0.01"
+                                           wire:model="cobros_transeunte.{{ $cobroIndex }}.total" 
+                                           class="form-input"
+                                           name="cobros_transeunte[{{ $cobroIndex }}][total]"
+                                           placeholder="0.00"
+                                           readonly
+                                           style="background:#f3f4f6;">
+                                </div>
+                            </div>
+                            <button type="button" 
+                                    class="btn-remove"
+                                    wire:click="deleteCobroTranseunte({{ $cobroIndex }})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- Tripulantes (Solo si es transeúnte) -->
             @if($situacion_persona == 1 || $situacion_persona == 2)
             <div class="form-section">
@@ -763,15 +840,80 @@
 }
 
 .status-btn:hover {
-    border-color: var(--primary-blue);
-    color: var(--primary-blue);
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.status-btn.active {
-    border-color: var(--primary-blue);
-    background: var(--primary-blue);
-    color: white;
+/* Colores para Situación del Barco */
+.status-barco-atraque {
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+}
+.status-barco-atraque.active {
+    background: #22c55e !important;
+    color: white !important;
+    border-color: #22c55e !important;
+}
+.status-barco-atraque:hover:not(.active) {
+    border-color: #16a34a !important;
+    color: #16a34a !important;
+}
+
+.status-barco-varada {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}
+.status-barco-varada.active {
+    background: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+.status-barco-varada:hover:not(.active) {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+}
+
+/* Colores para Tipo de Persona */
+.status-persona-socio {
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+}
+.status-persona-socio.active {
+    background: #22c55e !important;
+    color: white !important;
+    border-color: #22c55e !important;
+}
+.status-persona-socio:hover:not(.active) {
+    border-color: #16a34a !important;
+    color: #16a34a !important;
+}
+
+.status-persona-transeunte {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}
+.status-persona-transeunte.active {
+    background: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+.status-persona-transeunte:hover:not(.active) {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+}
+
+.status-persona-mixto {
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+}
+.status-persona-mixto.active {
+    background: #f59e0b !important;
+    color: white !important;
+    border-color: #f59e0b !important;
+}
+.status-persona-mixto:hover:not(.active) {
+    border-color: #d97706 !important;
+    color: #d97706 !important;
 }
 
 .status-btn i {
@@ -1064,7 +1206,8 @@
 /* Botón Fixed de Guardar */
 .fixed-save-button {
     position: fixed;
-    bottom: 0;
+    /* lo elevamos por encima del menú inferior de la app */
+    bottom: 64px;
     left: 0;
     right: 0;
     background: white;
@@ -1140,12 +1283,14 @@
 
 /* Ajustar el padding del body para el botón fixed */
 body {
-    padding-bottom: 80px;
+    /* dejamos hueco para botón + menú inferior */
+    padding-bottom: 140px;
 }
 
 @media (max-width: 768px) {
     .fixed-save-button {
         padding: var(--space-3);
+        bottom: 72px;
     }
     
     .btn-save-fixed {
@@ -1154,7 +1299,7 @@ body {
     }
     
     body {
-        padding-bottom: 70px;
+        padding-bottom: 150px;
     }
 }
 </style>
