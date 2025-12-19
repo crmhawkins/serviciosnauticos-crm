@@ -22,6 +22,12 @@ class EditComponent extends Component
     public function mount()
     {
         $club = Club::find($this->identificador);
+        
+        // Verificar permisos
+        if (!auth()->user()->can('update', $club)) {
+            abort(403, 'No tienes permisos para editar este club.');
+        }
+        
         $this->nombre = $club->nombre;
         $this->ruta_foto = $club->club_logo;
         $this->email = $club->email;
@@ -33,6 +39,18 @@ class EditComponent extends Component
     }
     public function update()
     {
+        $club = Club::find($this->identificador);
+        
+        // Verificar permisos antes de actualizar
+        if (!auth()->user()->can('update', $club)) {
+            $this->alert('error', 'No tienes permisos para editar este club.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+        
         if ($this->ruta_foto != $this->club_logo && $this->ruta_foto) {
             $name = 'logo_club' . $this->identificador . '.png';
             // Guardar en storage/app/public/assets/images para servirlo vía /storage

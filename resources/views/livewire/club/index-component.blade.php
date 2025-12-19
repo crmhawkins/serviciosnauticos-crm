@@ -73,7 +73,11 @@
                                     <td width="40%"><h4 class="m-0">{{ $club->nombre }}</h4></td>
                                     <td width="38%">{{ $club->email }}</td>
                                     <td width="10%">
-                                        <a href="club-edit/{{ $club->id }}" class="btn btn-primary">Ver/Editar</a>
+                                        @can('update', $club)
+                                            <a href="club-edit/{{ $club->id }}" class="btn btn-primary">Ver/Editar</a>
+                                        @else
+                                            <a href="club-edit/{{ $club->id }}" class="btn btn-secondary">Ver</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach
@@ -103,10 +107,17 @@
                                     </div>
                                 </div>
                                 <div class="card-actions">
-                                    <a href="club-edit/{{ $club->id }}" class="btn-card btn-edit">
-                                        <i class="fas fa-edit"></i>
-                                        <span>Ver/Editar</span>
-                                    </a>
+                                    @can('update', $club)
+                                        <a href="club-edit/{{ $club->id }}" class="btn-card btn-edit">
+                                            <i class="fas fa-edit"></i>
+                                            <span>Ver/Editar</span>
+                                        </a>
+                                    @else
+                                        <a href="club-edit/{{ $club->id }}" class="btn-card" style="background:#6b7280;color:#fff">
+                                            <i class="fas fa-eye"></i>
+                                            <span>Ver</span>
+                                        </a>
+                                    @endcan
                                 </div>
                             </div>
                         @endforeach

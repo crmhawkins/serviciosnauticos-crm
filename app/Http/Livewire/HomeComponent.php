@@ -13,8 +13,8 @@ class HomeComponent extends Component
     public $clubs;
     public function mount(){
         $role = (int) Auth::user()->role;
-        if (in_array($role, [1,6,7], true)) {
-            // Admin, PN y GC ven todos los clubs
+        if (in_array($role, [1,6,7,8], true)) {
+            // Admin, PN, GC y AP ven todos los clubs
             $this->clubs = Club::all();
         } else {
             // Resto: clubs asociados por pivot

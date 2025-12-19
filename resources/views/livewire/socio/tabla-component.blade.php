@@ -118,11 +118,60 @@
         border: 1px solid #fde68a;
     }
     .acciones-cell {
-        width: 80px;
+        min-width: 200px;
+        white-space: nowrap;
+    }
+    .acciones-buttons {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-accion {
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-accion.btn-editar {
+        background: #2563eb;
+        color: white;
+    }
+    .btn-accion.btn-editar:hover {
+        background: #1d4ed8;
+    }
+    .btn-accion.btn-llamar {
+        background: #4b5563;
+        color: white;
+    }
+    .btn-accion.btn-llamar:hover {
+        background: #374151;
+    }
+    .btn-accion.btn-whatsapp {
+        background: #25d366;
+        color: white;
+    }
+    .btn-accion.btn-whatsapp:hover {
+        background: #128c7e;
+    }
+    .btn-favorito {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0.5rem;
+        transition: all 0.2s;
     }
     .btn-favorito:hover {
         transform: scale(1.2);
-        transition: all 0.2s;
     }
     .favorito-activo {
         color: #f59e0b !important;
@@ -155,9 +204,7 @@
                         <th class="matricula-cell">Matrícula</th>
                         <th class="barco-cell">Nombre del Barco</th>
                         <th class="situacion-cell">Situación</th>
-                        @if(in_array((int) Auth::user()->role, [1, 6], true))
-                            <th class="acciones-cell">Acciones</th>
-                        @endif
+                        <th class="acciones-cell">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -208,17 +255,51 @@
                                     </span>
                                 </div>
                             </td>
-                            @if(in_array((int) Auth::user()->role, [1, 6], true))
-                                <td class="acciones-cell" style="text-align:center;" onclick="event.stopPropagation();">
-                                    <button type="button" 
-                                            class="btn-favorito {{ $esFavorito ? 'favorito-activo' : '' }}"
-                                            onclick="toggleFavoritoTabla({{ $socio->id }}, {{ $esFavorito ? 'true' : 'false' }}, this)"
-                                            style="background:transparent; border:none; cursor:pointer; font-size:1.2rem; color:{{ $esFavorito ? '#f59e0b' : '#9ca3af' }}; padding:0.5rem;"
-                                            title="{{ $esFavorito ? 'Quitar de favoritos' : 'Añadir a favoritos' }}">
-                                        <i class="fas fa-star"></i>
-                                    </button>
-                                </td>
-                            @endif
+                            <td class="acciones-cell" onclick="event.stopPropagation();">
+                                <div class="acciones-buttons">
+                                    @can('update', $socio)
+                                        <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-accion btn-editar" title="Ver/Editar">
+                                            <i class="fas fa-edit"></i>
+                                            <span>Editar</span>
+                                        </a>
+                                    @else
+                                        <a href="socios-edit/{{ $socio->id }}?from=socios" class="btn-accion" style="background:#6b7280;color:#fff" title="Ver">
+                                            <i class="fas fa-eye"></i>
+                                            <span>Ver</span>
+                                        </a>
+                                    @endcan
+                                    
+                                    @if($socio->telefonos->isNotEmpty())
+                                        @foreach($socio->telefonos->take(1) as $telefono)
+                                            @if(!empty($telefono->telefono))
+                                                <a href="tel:{{ str_replace(' ', '', $telefono->telefono) }}" 
+                                                   class="btn-accion btn-llamar" 
+                                                   title="Llamar a {{ $telefono->telefono }}">
+                                                    <i class="fas fa-phone"></i>
+                                                </a>
+                                                @if(Str::startsWith($telefono->telefono, ['6', '7']))
+                                                    <a href="https://wa.me/+34{{ str_replace(' ', '', $telefono->telefono) }}" 
+                                                       class="btn-accion btn-whatsapp" 
+                                                       target="_blank"
+                                                       title="WhatsApp a {{ $telefono->telefono }}">
+                                                        <i class="fab fa-whatsapp"></i>
+                                                    </a>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    
+                                    @if(in_array((int) Auth::user()->role, [1, 6], true))
+                                        <button type="button" 
+                                                class="btn-favorito {{ $esFavorito ? 'favorito-activo' : '' }}"
+                                                onclick="toggleFavoritoTabla({{ $socio->id }}, {{ $esFavorito ? 'true' : 'false' }}, this)"
+                                                style="color:{{ $esFavorito ? '#f59e0b' : '#9ca3af' }};"
+                                                title="{{ $esFavorito ? 'Quitar de favoritos' : 'Añadir a favoritos' }}">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

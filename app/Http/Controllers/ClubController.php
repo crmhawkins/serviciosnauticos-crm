@@ -70,6 +70,8 @@ class ClubController extends Controller
      */
     public function edit($id)
     {
+        $club = Club::findOrFail($id);
+        // La verificación de permisos se hace en el componente Livewire
         return view('club.edit', compact('id'));
 
     }

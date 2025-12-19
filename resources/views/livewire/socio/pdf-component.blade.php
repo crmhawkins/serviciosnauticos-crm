@@ -30,7 +30,15 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ $club->nombre }}</h1>
+        @if(isset($club) && $club && $club->club_logo)
+            @php
+                $logoPath = public_path('assets/images/' . $club->club_logo);
+            @endphp
+            @if(file_exists($logoPath))
+                <img src="{{ $logoPath }}" alt="Logo {{ $club->nombre }}" style="max-width: 100px; margin-bottom: 10px;">
+            @endif
+        @endif
+        <h1>{{ $club->nombre ?? 'Club' }}</h1>
     </div>
 
     <table>

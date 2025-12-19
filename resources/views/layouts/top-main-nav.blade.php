@@ -28,7 +28,7 @@
             'label' => 'Club',
             'icon' => 'bi-building',
             'active' => request()->is('admin/club*'),
-            'visible' => in_array((int) optional($user)->role, [1,6,7], true),
+            'visible' => in_array((int) optional($user)->role, [1,6,7,8], true),
         ],
         [
             'href' => url('/admin/usuarios'),
@@ -49,7 +49,7 @@
             'label' => 'Crear club',
             'icon' => 'bi-plus-circle',
             'active' => request()->is('admin/club-create'),
-            'visible' => in_array((int) optional($user)->role, [1,6,7], true),
+            'visible' => in_array((int) optional($user)->role, [1,6,7,8], true),
         ],
     ];
 @endphp

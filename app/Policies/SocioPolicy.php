@@ -24,8 +24,8 @@ class SocioPolicy
         // Admin siempre
         if ((int) $user->role === 1) { return true; }
 
-        // PN/GC: sólo si el club es suyo (created_by = user->id)
-        if (in_array((int) $user->role, [6,7], true)) {
+        // PN/GC/AP: sólo si el club es suyo (created_by = user->id)
+        if (in_array((int) $user->role, [6,7,8], true)) {
             $club = Club::find($socio->club_id);
             return $club && (int) $club->created_by === (int) $user->id;
         }
@@ -53,8 +53,8 @@ class SocioPolicy
             return false; // necesitamos saber en qué club se va a crear
         }
 
-        // PN/GC: sólo si el club es suyo (created_by = user->id)
-        if (in_array((int) $user->role, [6,7], true)) {
+        // PN/GC/AP: sólo si el club es suyo (created_by = user->id)
+        if (in_array((int) $user->role, [6,7,8], true)) {
             $club = Club::find($clubId);
             return $club && (int) $club->created_by === (int) $user->id;
         }

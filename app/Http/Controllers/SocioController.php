@@ -44,8 +44,8 @@ class SocioController extends Controller
         if ($clubId && $role !== 1) { // No es admin
             $club = \App\Models\Club::find($clubId);
 
-            // PN/GC: sólo pueden crear en clubs que han creado ellos mismos
-            if (in_array($role, [6, 7], true)) {
+            // PN/GC/AP: sólo pueden crear en clubs que han creado ellos mismos
+            if (in_array($role, [6, 7, 8], true)) {
                 if (!$club || (int) $club->created_by !== (int) $user->id) {
                     abort(403, 'No tienes permisos para crear socios en este club.');
                 }

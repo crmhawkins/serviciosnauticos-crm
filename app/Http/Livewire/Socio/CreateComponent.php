@@ -75,7 +75,7 @@ class CreateComponent extends Component
             // Validar permisos antes de crear
             $role = (int) Auth::user()->role;
             if ($role !== 1) { // No es admin
-                if (in_array($role, [6, 7], true)) { // PN/GC
+                if (in_array($role, [6, 7, 8], true)) { // PN/GC/AP
                     $club = Club::find($this->club_id);
                     if (!$club || (int) $club->created_by !== (int) Auth::id()) {
                         $this->alert('error', 'No tienes permisos para crear socios en este club.', [

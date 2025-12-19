@@ -1291,8 +1291,20 @@ class EditComponent extends Component
     }
     public function imprecionSocio()
     {
-
-        $club = Club::find($this->club_id);
+        // Intentar usar primero el club del propio socio; si no, caer al club_id del componente
+        $club = null;
+        if ($this->socio && $this->socio->club_id) {
+            $club = Club::find($this->socio->club_id);
+        }
+        if (!$club && $this->club_id) {
+            $club = Club::find($this->club_id);
+        }
+        if (!$club) {
+            $clubIdSession = session()->get('clubSeleccionado');
+            if ($clubIdSession) {
+                $club = Club::find($clubIdSession);
+            }
+        }
 
         $datos =  [
             'socio' => $this->socio, 'telefonos' => $this->telefonos, 'llaves' => $this->numeros_llave, 'tripulantes' => $this->tripulantes, 'registros_entrada_transeunte' => $this->registros_entrada_transeunte,

@@ -31,13 +31,13 @@
         </div>
         <div class="header">
             @php
-                $logoPath = isset($club) && $club && $club->club_logo
-                    ? public_path('assets/images/' . $club->club_logo)
+                $logoUrl = isset($club) && $club && $club->club_logo
+                    ? asset('assets/images/' . $club->club_logo)
                     : null;
             @endphp
             <h1 class="title">
-                @if($logoPath && file_exists($logoPath))
-                    <img src="{{ $logoPath }}" alt="Logo {{ $club->nombre }}" style="height:40px; margin-right:8px; vertical-align:middle;">
+                @if($logoUrl)
+                    <img src="{{ $logoUrl }}" alt="Logo {{ $club->nombre }}" style="height:40px; margin-right:8px; vertical-align:middle;" onerror="this.style.display='none';">
                 @endif
                 {{ $club->nombre ?? 'Club' }} - Ficha del Socio
             </h1>

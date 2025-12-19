@@ -12,6 +12,7 @@ class AddPnGcRolesSeeder extends Seeder
         $roles = [
             ['id' => 6, 'nombre' => 'Policía Nacional'],
             ['id' => 7, 'nombre' => 'Guardia Civil'],
+            ['id' => 8, 'nombre' => 'Autoridad Portuaria'],
         ];
 
         foreach ($roles as $rol) {
