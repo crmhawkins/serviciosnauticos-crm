@@ -176,21 +176,133 @@
     .favorito-activo {
         color: #f59e0b !important;
     }
+    .mobile-hide-text {
+        display: none;
+    }
+    @media (min-width: 769px) {
+        .mobile-hide-text {
+            display: inline;
+        }
+    }
     @media (max-width: 768px) {
         .socios-table-wrapper {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .modern-table {
-            min-width: 600px;
+            min-width: 100%;
+            font-size: 0.75rem;
         }
-        .modern-table thead th,
+        .modern-table thead th {
+            padding: 8px 6px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
         .modern-table tbody td {
-            padding: 12px;
-            font-size: 0.875rem;
+            padding: 8px 6px;
+            font-size: 0.75rem;
+        }
+        .photo-cell {
+            width: 50px;
+            min-width: 50px;
         }
         .photo-wrapper {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
+        }
+        .photo-placeholder {
+            font-size: 1rem;
+        }
+        .pantalan-cell {
+            min-width: 80px;
+            max-width: 90px;
+            font-size: 0.75rem;
+        }
+        .matricula-cell {
+            min-width: 70px;
+            max-width: 85px;
+            font-size: 0.75rem;
+        }
+        .barco-cell {
+            min-width: 100px;
+            max-width: 130px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .situacion-cell {
+            min-width: 90px;
+            max-width: 110px;
+        }
+        .badge-situacion {
+            padding: 4px 6px;
+            font-size: 0.65rem;
+            gap: 4px;
+        }
+        .badge-situacion i {
+            font-size: 0.7rem;
+        }
+        .acciones-cell {
+            min-width: 120px;
+            max-width: 140px;
+        }
+        .acciones-buttons {
+            gap: 0.25rem;
+            flex-wrap: nowrap;
+        }
+        .btn-accion {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            gap: 0.25rem;
+        }
+        .btn-accion span {
+            display: none; /* Ocultar texto en móvil, solo iconos */
+        }
+        .btn-favorito {
+            font-size: 1rem;
+            padding: 0.25rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .modern-table thead th {
+            padding: 6px 4px;
+            font-size: 0.65rem;
+        }
+        .modern-table tbody td {
+            padding: 6px 4px;
+            font-size: 0.7rem;
+        }
+        .photo-cell {
+            width: 45px;
+            min-width: 45px;
+        }
+        .photo-wrapper {
+            width: 35px;
+            height: 35px;
+        }
+        .pantalan-cell {
+            min-width: 70px;
+            max-width: 80px;
+        }
+        .matricula-cell {
+            min-width: 60px;
+            max-width: 75px;
+        }
+        .barco-cell {
+            min-width: 90px;
+            max-width: 120px;
+        }
+        .situacion-cell {
+            min-width: 80px;
+            max-width: 100px;
+        }
+        .badge-situacion {
+            padding: 3px 5px;
+            font-size: 0.6rem;
+        }
+        .acciones-cell {
+            min-width: 100px;
+            max-width: 120px;
         }
     }
     </style>
@@ -200,9 +312,9 @@
                 <thead>
                     <tr>
                         <th class="photo-cell">Foto</th>
-                        <th class="pantalan-cell">Pantalán y Atraque</th>
+                        <th class="pantalan-cell"><span class="mobile-hide-text">Pantalán y </span>Atraque</th>
                         <th class="matricula-cell">Matrícula</th>
-                        <th class="barco-cell">Nombre del Barco</th>
+                        <th class="barco-cell">Barco</th>
                         <th class="situacion-cell">Situación</th>
                         <th class="acciones-cell">Acciones</th>
                     </tr>
@@ -238,10 +350,10 @@
                             <td class="matricula-cell" onclick="window.location.href='socios-edit/{{ $socio->id }}?from=socios'">{{ $socio->matricula ?? '—' }}</td>
                             <td class="barco-cell" onclick="window.location.href='socios-edit/{{ $socio->id }}?from=socios'">{{ $socio->nombre_barco ?? '—' }}</td>
                             <td class="situacion-cell" onclick="window.location.href='socios-edit/{{ $socio->id }}?from=socios'">
-                                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                                <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
                                     <span class="badge-situacion badge-barco-{{ $socio->situacion_barco == 0 ? 'atraque' : 'varada' }}">
                                         <i class="fas {{ $socio->situacion_barco == 0 ? 'fa-anchor' : 'fa-tools' }}"></i>
-                                        {{ $socio->situacion_barco == 0 ? 'En Atraque' : 'En Varada' }}
+                                        <span class="mobile-hide-text">{{ $socio->situacion_barco == 0 ? 'En ' : '' }}</span>{{ $socio->situacion_barco == 0 ? 'Atraque' : 'Varada' }}
                                     </span>
                                     <span class="badge-situacion badge-persona-{{ $socio->situacion_persona == 0 ? 'socio' : ($socio->situacion_persona == 1 ? 'transeunte' : 'mixto') }}">
                                         <i class="fas {{ $socio->situacion_persona == 0 ? 'fa-user' : ($socio->situacion_persona == 1 ? 'fa-walking' : 'fa-users') }}"></i>
@@ -250,7 +362,7 @@
                                         @elseif($socio->situacion_persona == 1)
                                             Transeúnte
                                         @else
-                                            Socio/Transeúnte
+                                            <span class="mobile-hide-text">Socio/</span>Transeúnte
                                         @endif
                                     </span>
                                 </div>
@@ -330,6 +442,8 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeDataTable() {
     if (!$.fn.DataTable) return;
 
+    const isMobile = window.innerWidth <= 768;
+    
     $('#sociosTable').DataTable({
         lengthChange: false,
         pageLength: 35,
@@ -348,9 +462,17 @@ function initializeDataTable() {
             },
         },
         order: [[1, 'asc']], // ordenar por Pantalán/Atraque por defecto
-        responsive: true,
+        responsive: isMobile ? false : true, // Desactivar responsive en móvil para control manual
+        scrollX: isMobile ? true : false, // Permitir scroll horizontal en móvil
+        autoWidth: false, // No ajustar automáticamente el ancho
         columnDefs: [
-            { orderable: false, targets: [0, 4, 5] } // columna de foto, situación y acciones no ordenables
+            { orderable: false, targets: [0, 4, 5] }, // columna de foto, situación y acciones no ordenables
+            { width: isMobile ? '50px' : '80px', targets: 0 }, // Foto
+            { width: isMobile ? '90px' : 'auto', targets: 1 }, // Pantalán
+            { width: isMobile ? '85px' : 'auto', targets: 2 }, // Matrícula
+            { width: isMobile ? '130px' : 'auto', targets: 3 }, // Barco
+            { width: isMobile ? '110px' : '140px', targets: 4 }, // Situación
+            { width: isMobile ? '140px' : '200px', targets: 5 } // Acciones
         ]
     });
 }
@@ -369,7 +491,7 @@ document.addEventListener('livewire:load', function() {
 function toggleFavoritoTabla(socioId, esFavorito, btn) {
     if (esFavorito) {
         // Eliminar favorito
-        fetch(`/admin/favoritos/socio/${socioId}`, {
+        fetch(`/admin/favoritos/eliminar-socio/${socioId}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -392,7 +514,7 @@ function toggleFavoritoTabla(socioId, esFavorito, btn) {
         });
     } else {
         // Añadir favorito
-        fetch(`/admin/favoritos/${socioId}`, {
+        fetch(`/admin/favoritos/agregar/${socioId}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',

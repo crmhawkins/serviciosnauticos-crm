@@ -1092,7 +1092,7 @@ function toggleFavorito(socioId, esFavorito) {
     
     if (esFavorito) {
         // Eliminar favorito
-        fetch(`/admin/favoritos/socio/${socioId}`, {
+        fetch(`/admin/favoritos/eliminar-socio/${socioId}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1114,7 +1114,7 @@ function toggleFavorito(socioId, esFavorito) {
         });
     } else {
         // Añadir favorito
-        fetch(`/admin/favoritos/${socioId}`, {
+        fetch(`/admin/favoritos/agregar/${socioId}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',

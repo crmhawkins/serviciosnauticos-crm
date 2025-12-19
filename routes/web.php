@@ -109,14 +109,14 @@ Route::group(['middleware' => 'is.admin','prefix' => 'admin'], function () {
     Route::delete('socios/{id}/foto-socio/{fotoId}', [SocioController::class, 'eliminarSocioFoto'])->name('socios.foto_socio.eliminar');
     Route::delete('socios/{id}/foto-socio-principal', [SocioController::class, 'eliminarFotoPrincipalSocio'])->name('socios.foto_socio.principal.eliminar');
 
-    // Favoritos
+    // Favoritos (deben ir antes de rutas genéricas para evitar conflictos)
     Route::get('favoritos', [FavoritoController::class, 'index'])->name('favoritos.index');
-    Route::post('favoritos/{socioId}', [FavoritoController::class, 'store'])->name('favoritos.store');
-    Route::delete('favoritos/{id}', [FavoritoController::class, 'destroy'])->name('favoritos.destroy');
-    Route::delete('favoritos/socio/{socioId}', [FavoritoController::class, 'destroyBySocio'])->name('favoritos.destroy-by-socio');
-    Route::post('favoritos/{id}/marcar-visto', [FavoritoController::class, 'marcarVisto'])->name('favoritos.marcar-visto');
     Route::get('favoritos/contador', [FavoritoController::class, 'contadorNoVistos'])->name('favoritos.contador');
     Route::get('favoritos/hay-nuevos', [FavoritoController::class, 'hayNuevos'])->name('favoritos.hay-nuevos');
+    Route::delete('favoritos/eliminar-socio/{socioId}', [FavoritoController::class, 'destroyBySocio'])->name('favoritos.destroy-by-socio');
+    Route::post('favoritos/agregar/{socioId}', [FavoritoController::class, 'store'])->name('favoritos.store');
+    Route::post('favoritos/{id}/marcar-visto', [FavoritoController::class, 'marcarVisto'])->name('favoritos.marcar-visto');
+    Route::delete('favoritos/{id}', [FavoritoController::class, 'destroy'])->name('favoritos.destroy');
 
     Route::get('club', [ClubController::class, 'index'])->name('club.index');
     Route::get('club-create', [ClubController::class, 'create'])->name('club.create');
