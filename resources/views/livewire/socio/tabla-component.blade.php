@@ -505,7 +505,7 @@ function initializeDataTable() {
                     return true;
                 }
                 
-                // Obtener el valor de búsqueda directamente del input de búsqueda sin usar jQuery dentro del filtro
+                // Obtener el valor de búsqueda directamente del input de búsqueda
                 var searchInput = settings.nTable.parentElement.querySelector('.dataTables_filter input[type="search"]');
                 var searchValue = searchInput ? searchInput.value.toLowerCase().trim() : '';
                 
@@ -513,19 +513,27 @@ function initializeDataTable() {
                     return true; // Si no hay búsqueda, mostrar todas las filas
                 }
                 
-                // Obtener la fila directamente del DOM sin usar la API de DataTable para evitar recursión
-                var tbody = settings.nTable.querySelector('tbody');
-                if (!tbody) return true;
+                // Obtener el nodo de la fila original usando settings.aoData
+                var searchText = '';
+                var nombreSocio = '';
                 
-                var rows = Array.from(tbody.querySelectorAll('tr'));
-                if (dataIndex >= rows.length) return true;
+                try {
+                    // settings.aoData contiene los datos originales de cada fila
+                    // aoData[dataIndex].nTr es el nodo TR original de la fila
+                    if (settings.aoData && settings.aoData[dataIndex] && settings.aoData[dataIndex].nTr) {
+                        var rowNode = settings.aoData[dataIndex].nTr;
+                        searchText = rowNode.getAttribute('data-search-text') || '';
+                        nombreSocio = rowNode.getAttribute('data-nombre-socio') || '';
+                    }
+                } catch(e) {
+                    // Si hay algún error, permitir que la fila se muestre
+                    return true;
+                }
                 
-                var row = rows[dataIndex];
-                if (!row) return true;
-                
-                // Obtener el texto de búsqueda de los atributos data sin usar jQuery
-                var searchText = row.getAttribute('data-search-text') || '';
-                var nombreSocio = row.getAttribute('data-nombre-socio') || '';
+                // Si no encontramos los datos, permitir que la fila se muestre (fallback)
+                if (!searchText && !nombreSocio) {
+                    return true;
+                }
                 
                 // Normalizar textos
                 var normalizedSearch = normalizeText(searchValue);
