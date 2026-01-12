@@ -81,7 +81,7 @@
                                              alt="Foto del barco" 
                                              class="photo-image js-lightbox" id="preview-barco">
                                         <form method="POST" action="{{ route('socios.foto_barco.principal.eliminar', $socio->id) }}" 
-                                              onsubmit="return confirm('¿Eliminar la foto principal del barco?');"
+                                              onsubmit="event.stopPropagation(); return confirm('¿Eliminar la foto principal del barco?');"
                                               style="position:absolute; top:8px; right:8px;">
                                             @csrf
                                             @method('DELETE')
@@ -103,7 +103,7 @@
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm" style="background:#2563eb; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Destacar</button>
                                                     </form>
-                                                    <form method="POST" action="{{ route('socios.foto_barco.eliminar', [$socio->id, $foto->id]) }}" onsubmit="return confirm('¿Eliminar esta foto?');">
+                                                    <form method="POST" action="{{ route('socios.foto_barco.eliminar', [$socio->id, $foto->id]) }}" onsubmit="event.stopPropagation(); return confirm('¿Eliminar esta foto?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Eliminar</button>
@@ -145,7 +145,7 @@
                                              alt="Foto del socio" 
                                              class="photo-image js-lightbox" id="preview-socio">
                                         <form method="POST" action="{{ route('socios.foto_socio.principal.eliminar', $socio->id) }}" 
-                                              onsubmit="return confirm('¿Eliminar la foto principal del socio?');"
+                                              onsubmit="event.stopPropagation(); return confirm('¿Eliminar la foto principal del socio?');"
                                               style="position:absolute; top:8px; right:8px;">
                                             @csrf
                                             @method('DELETE')
@@ -167,7 +167,7 @@
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm" style="background:#2563eb; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Destacar</button>
                                                     </form>
-                                                    <form method="POST" action="{{ route('socios.foto_socio.eliminar', [$socio->id, $foto->id]) }}" onsubmit="return confirm('¿Eliminar esta foto?');">
+                                                    <form method="POST" action="{{ route('socios.foto_socio.eliminar', [$socio->id, $foto->id]) }}" onsubmit="event.stopPropagation(); return confirm('¿Eliminar esta foto?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px;">Eliminar</button>
@@ -489,7 +489,7 @@
                         </h3>
                         {{-- Formulario para añadir nuevo cobro --}}
                         @if($socio->situacion_persona == 1 || $socio->situacion_persona == 2)
-                        <form method="POST" action="{{ route('socios.cobros.store', $socio->id) }}" id="cobro-form" style="margin-bottom:16px;">
+                        <form method="POST" action="{{ route('socios.cobros.store', $socio->id) }}" id="cobro-form" style="margin-bottom:16px;" onsubmit="event.stopPropagation();">
                             @csrf
                             <div class="nota-inline">
                                 <input type="date" name="fecha_entrada" class="modern-input" required>
@@ -554,7 +554,7 @@
                                         </div>
                                     </div>
                                     <div class="cobro-edit" id="cobro-edit-{{ $cobro->id }}" style="display:none;">
-                                        <form method="POST" action="{{ route('socios.cobros.update', [$socio->id, $cobro->id]) }}" class="cobro-edit-form">
+                                        <form method="POST" action="{{ route('socios.cobros.update', [$socio->id, $cobro->id]) }}" class="cobro-edit-form" onsubmit="event.stopPropagation();">
                                             @csrf
                                             @method('PUT')
                                             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:12px;">
@@ -591,7 +591,7 @@
                                             </button>
                                             <form method="POST" 
                                                   action="{{ route('socios.cobros.destroy', [$socio->id, $cobro->id]) }}" 
-                                                  onsubmit="return confirm('¿Estás seguro de eliminar este cobro?');"
+                                                  onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de eliminar este cobro?');"
                                                   style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
@@ -654,10 +654,18 @@
                             document.querySelectorAll('.cobro-edit-form').forEach(form => {
                                 form.addEventListener('submit', function (e) {
                                     e.preventDefault();
+                                    e.stopPropagation(); // Evitar que el evento se propague al formulario padre
                                     const formData = new FormData(this);
+                                    // Asegurar que el método PUT esté incluido
+                                    if (!formData.has('_method')) {
+                                        formData.append('_method', 'PUT');
+                                    }
                                     fetch(this.action, {
                                         method: 'POST',
-                                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                                        headers: { 
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || formData.get('_token')
+                                        },
                                         body: formData,
                                         credentials: 'same-origin',
                                     })
@@ -722,7 +730,7 @@
                                     @if(auth()->check() && (int) auth()->user()->role === 1)
                                         <form method="POST" 
                                               action="{{ route('socios.notas.destroy', [$socio->id, $nota->id]) }}" 
-                                              onsubmit="return confirm('¿Estás seguro de eliminar esta nota? Esta acción no se puede deshacer.');"
+                                              onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de eliminar esta nota? Esta acción no se puede deshacer.');"
                                               style="position:absolute; top:8px; right:8px;">
                                             @csrf
                                             @method('DELETE')
@@ -841,12 +849,31 @@
 </div>
 
 <script>
+// Manejar todos los formularios DELETE anidados para evitar conflictos con el formulario principal
+document.addEventListener('DOMContentLoaded', function () {
+    // Encontrar todos los formularios DELETE dentro del formulario principal
+    const formPrincipal = document.getElementById('socio-form');
+    if (formPrincipal) {
+        const formulariosDelete = formPrincipal.querySelectorAll('form[method="POST"]');
+        formulariosDelete.forEach(form => {
+            const methodInput = form.querySelector('input[name="_method"]');
+            if (methodInput && methodInput.value === 'DELETE') {
+                form.addEventListener('submit', function (e) {
+                    e.stopPropagation(); // Evitar que el evento se propague al formulario padre
+                    // El formulario se enviará normalmente, pero no interferirá con el formulario padre
+                });
+            }
+        });
+    }
+});
+
 // Envío AJAX para el formulario de notas (evita conflicto con form principal)
 document.addEventListener('DOMContentLoaded', function () {
     const notaForm = document.getElementById('nota-form');
     if (notaForm) {
         notaForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            e.stopPropagation(); // Asegurar que no se propague al formulario padre
 
             const formData = new FormData(notaForm);
 
