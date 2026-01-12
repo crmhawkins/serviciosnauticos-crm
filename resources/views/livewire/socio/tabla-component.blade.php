@@ -311,6 +311,7 @@
             <table id="sociosTable" class="modern-table">
                 <thead>
                     <tr>
+                        <th style="display: none;">Nombre Socio</th>
                         <th class="photo-cell">Foto</th>
                         <th class="pantalan-cell"><span class="mobile-hide-text">Pantalán y </span>Atraque</th>
                         <th class="matricula-cell">Matrícula</th>
@@ -328,6 +329,7 @@
                             data-socio-id="{{ $socio->id }}"
                             data-nombre-socio="{{ strtolower($socio->nombre_socio ?? '') }}"
                             data-search-text="{{ strtolower(($socio->nombre_socio ?? '') . ' ' . ($socio->nombre_barco ?? '') . ' ' . ($socio->matricula ?? '') . ' ' . ($socio->pantalan_t_atraque ?? '')) }}">
+                            <td style="display: none;">{{ $socio->nombre_socio ?? '' }}</td>
                             <td class="photo-cell">
                                 @if($socio->ruta_foto)
                                     <div class="photo-wrapper">
@@ -479,22 +481,24 @@ function initializeDataTable() {
                 previous: '<'
             },
         },
-        order: [[1, 'asc']], // ordenar por Pantalán/Atraque por defecto
+        order: [[2, 'asc']], // ordenar por Pantalán/Atraque por defecto (ahora es columna 2 porque agregamos columna oculta)
         responsive: isMobile ? false : true, // Desactivar responsive en móvil para control manual
         scrollX: isMobile ? true : false, // Permitir scroll horizontal en móvil
         autoWidth: false, // No ajustar automáticamente el ancho
         columnDefs: [
-            { orderable: false, targets: [0, 4, 5] }, // columna de foto, situación y acciones no ordenables
-            { width: isMobile ? '50px' : '80px', targets: 0 }, // Foto
-            { width: isMobile ? '90px' : 'auto', targets: 1 }, // Pantalán
-            { width: isMobile ? '85px' : 'auto', targets: 2 }, // Matrícula
-            { width: isMobile ? '130px' : 'auto', targets: 3 }, // Barco
-            { width: isMobile ? '110px' : '140px', targets: 4 }, // Situación
-            { width: isMobile ? '140px' : '200px', targets: 5 } // Acciones
+            { visible: false, targets: 0 }, // Columna oculta con nombre del socio para búsqueda
+            { orderable: false, targets: [1, 5, 6] }, // columna de foto, situación y acciones no ordenables
+            { width: isMobile ? '50px' : '80px', targets: 1 }, // Foto
+            { width: isMobile ? '90px' : 'auto', targets: 2 }, // Pantalán
+            { width: isMobile ? '85px' : 'auto', targets: 3 }, // Matrícula
+            { width: isMobile ? '130px' : 'auto', targets: 4 }, // Barco
+            { width: isMobile ? '110px' : '140px', targets: 5 }, // Situación
+            { width: isMobile ? '140px' : '200px', targets: 6 } // Acciones
         ]
     });
     
     // Agregar filtro personalizado de búsqueda (solo una vez)
+    // Este filtro complementa la búsqueda nativa de DataTable que ahora busca en la columna oculta del nombre
     if (!window.sociosSearchFilterAdded) {
         window.sociosSearchFilterAdded = true;
         
@@ -513,6 +517,8 @@ function initializeDataTable() {
                     return true; // Si no hay búsqueda, mostrar todas las filas
                 }
                 
+                // La búsqueda nativa de DataTable ya busca en la columna oculta (columna 0) con el nombre del socio
+                // Este filtro personalizado es un complemento para buscar también en otros campos
                 // Obtener el nodo de la fila original usando settings.aoData
                 var searchText = '';
                 var nombreSocio = '';
@@ -525,13 +531,16 @@ function initializeDataTable() {
                         searchText = rowNode.getAttribute('data-search-text') || '';
                         nombreSocio = rowNode.getAttribute('data-nombre-socio') || '';
                     }
+                    
+                    // También intentar obtener el nombre de la primera columna (columna oculta)
+                    if (data && data[0]) {
+                        var nombreFromData = String(data[0]).toLowerCase().trim();
+                        if (nombreFromData && !nombreSocio) {
+                            nombreSocio = nombreFromData;
+                        }
+                    }
                 } catch(e) {
                     // Si hay algún error, permitir que la fila se muestre
-                    return true;
-                }
-                
-                // Si no encontramos los datos, permitir que la fila se muestre (fallback)
-                if (!searchText && !nombreSocio) {
                     return true;
                 }
                 
@@ -541,6 +550,7 @@ function initializeDataTable() {
                 var normalizedNombre = normalizeText(nombreSocio);
                 
                 // Buscar en el texto completo y especialmente en el nombre del socio
+                // Si la búsqueda nativa ya encontró la fila (por la columna oculta), este filtro también la mostrará
                 return normalizedSearchText.includes(normalizedSearch) || 
                        normalizedNombre.includes(normalizedSearch);
             }
