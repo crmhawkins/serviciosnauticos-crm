@@ -260,6 +260,8 @@ class SocioController extends Controller
         $socio->dni = $request->input('dni', $socio->dni);
         $socio->direccion = $request->input('direccion', $socio->direccion);
         $socio->email = $request->input('email', $socio->email);
+        $socio->situacion_barco = $request->input('situacion_barco', $socio->situacion_barco);
+        $socio->situacion_persona = $request->input('situacion_persona', $socio->situacion_persona);
         $socio->pantalan_t_atraque = $request->input('pantalan_t_atraque', $socio->pantalan_t_atraque);
         $socio->nombre_barco = $request->input('nombre_barco', $socio->nombre_barco);
         $socio->matricula = $request->input('matricula', $socio->matricula);
@@ -272,6 +274,58 @@ class SocioController extends Controller
         $socio->itb = $request->input('itb', $socio->itb);
 
         $socio->save();
+
+        // Actualizar teléfonos
+        if ($request->has('telefonos')) {
+            foreach ($request->input('telefonos', []) as $telefonoData) {
+                if (isset($telefonoData['id'])) {
+                    // Actualizar teléfono existente
+                    $telefono = Telefonos::find($telefonoData['id']);
+                    if ($telefono) {
+                        if (!empty(trim($telefonoData['telefono'] ?? ''))) {
+                            $telefonoLimpio = preg_replace('/\D+/', '', $telefonoData['telefono']);
+                            if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                                $telefono->update(['telefono' => $telefonoLimpio]);
+                            }
+                        } else {
+                            // Si está vacío, eliminar
+                            $telefono->delete();
+                        }
+                    }
+                } else {
+                    // Crear nuevo teléfono
+                    if (!empty(trim($telefonoData['telefono'] ?? ''))) {
+                        $telefonoLimpio = preg_replace('/\D+/', '', $telefonoData['telefono']);
+                        if (!empty($telefonoLimpio) && strlen($telefonoLimpio) >= 7) {
+                            Telefonos::create(['socio_id' => $socio->id, 'telefono' => $telefonoLimpio]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Actualizar números de llave
+        if ($request->has('numeros_llave')) {
+            foreach ($request->input('numeros_llave', []) as $llaveData) {
+                if (isset($llaveData['id'])) {
+                    // Actualizar número de llave existente
+                    $llave = NumerosLlave::find($llaveData['id']);
+                    if ($llave) {
+                        if (!empty(trim($llaveData['numero_llave'] ?? ''))) {
+                            $llave->update(['num_llave' => $llaveData['numero_llave']]);
+                        } else {
+                            // Si está vacío, eliminar
+                            $llave->delete();
+                        }
+                    }
+                } else {
+                    // Crear nuevo número de llave
+                    if (!empty(trim($llaveData['numero_llave'] ?? ''))) {
+                        NumerosLlave::create(['socio_id' => $socio->id, 'num_llave' => $llaveData['numero_llave']]);
+                    }
+                }
+            }
+        }
 
         $redirect = $request->input('redirect_to') === 'todos' ? 'socios.indexadmin' : 'socios.index';
         return redirect()->route($redirect)->with('status', 'Socio actualizado');

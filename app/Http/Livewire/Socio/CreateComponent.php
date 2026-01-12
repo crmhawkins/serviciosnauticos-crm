@@ -236,8 +236,16 @@ class CreateComponent extends Component
             }
         }
 
-        // Mostrar mensaje de éxito
-        $this->showSuccessModal('¡Socio creado correctamente!', 'El socio ha sido registrado exitosamente.');
+        // Mostrar mensaje de éxito y redirigir
+        $this->alert('success', '¡Socio creado correctamente!', [
+            'position' => 'center',
+            'timer' => 2000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'Aceptar',
+            'timerProgressBar' => true,
+        ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Los errores de validación se muestran inline automáticamente
