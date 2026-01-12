@@ -441,12 +441,28 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDataTable();
 });
 
+// Variable global para evitar agregar el filtro múltiples veces
+if (typeof window.sociosSearchFilterAdded === 'undefined') {
+    window.sociosSearchFilterAdded = false;
+}
+
+// Función para normalizar texto (quitar acentos, espacios, etc.)
+function normalizeText(str) {
+    if (!str) return '';
+    return str.toString().toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 function initializeDataTable() {
     if (!$.fn.DataTable) return;
 
     const isMobile = window.innerWidth <= 768;
     
-    $('#sociosTable').DataTable({
+    var table = $('#sociosTable').DataTable({
         lengthChange: false,
         pageLength: 35,
         language: {
@@ -478,56 +494,50 @@ function initializeDataTable() {
         ]
     });
     
-    // Extender la funcionalidad de búsqueda para incluir el nombre del socio
-    var table = $('#sociosTable').DataTable();
-    
-    // Función para normalizar texto (quitar acentos, espacios, etc.)
-    function normalizeText(str) {
-        if (!str) return '';
-        return str.toString().toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9\s]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
+    // Agregar filtro personalizado de búsqueda (solo una vez)
+    if (!window.sociosSearchFilterAdded) {
+        window.sociosSearchFilterAdded = true;
+        
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Solo aplicar a nuestra tabla
+                if (!settings.nTable || settings.nTable.id !== 'sociosTable') {
+                    return true;
+                }
+                
+                // Obtener el valor de búsqueda directamente del input de búsqueda sin usar jQuery dentro del filtro
+                var searchInput = settings.nTable.parentElement.querySelector('.dataTables_filter input[type="search"]');
+                var searchValue = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                
+                if (!searchValue) {
+                    return true; // Si no hay búsqueda, mostrar todas las filas
+                }
+                
+                // Obtener la fila directamente del DOM sin usar la API de DataTable para evitar recursión
+                var tbody = settings.nTable.querySelector('tbody');
+                if (!tbody) return true;
+                
+                var rows = Array.from(tbody.querySelectorAll('tr'));
+                if (dataIndex >= rows.length) return true;
+                
+                var row = rows[dataIndex];
+                if (!row) return true;
+                
+                // Obtener el texto de búsqueda de los atributos data sin usar jQuery
+                var searchText = row.getAttribute('data-search-text') || '';
+                var nombreSocio = row.getAttribute('data-nombre-socio') || '';
+                
+                // Normalizar textos
+                var normalizedSearch = normalizeText(searchValue);
+                var normalizedSearchText = normalizeText(searchText);
+                var normalizedNombre = normalizeText(nombreSocio);
+                
+                // Buscar en el texto completo y especialmente en el nombre del socio
+                return normalizedSearchText.includes(normalizedSearch) || 
+                       normalizedNombre.includes(normalizedSearch);
+            }
+        );
     }
-    
-    // Agregar filtro personalizado de búsqueda
-    $.fn.dataTable.ext.search.push(
-        function(settings, data, dataIndex) {
-            // Solo aplicar a nuestra tabla
-            if (settings.nTable.id !== 'sociosTable') {
-                return true;
-            }
-            
-            var searchValue = table.search().toLowerCase().trim();
-            if (!searchValue) {
-                return true; // Si no hay búsqueda, mostrar todas las filas
-            }
-            
-            // Obtener la fila completa
-            var row = table.row(dataIndex).node();
-            if (!row) return true;
-            
-            // Obtener el texto de búsqueda de los atributos data
-            var searchText = $(row).attr('data-search-text') || '';
-            var nombreSocio = $(row).attr('data-nombre-socio') || '';
-            
-            // Normalizar textos
-            var normalizedSearch = normalizeText(searchValue);
-            var normalizedSearchText = normalizeText(searchText);
-            var normalizedNombre = normalizeText(nombreSocio);
-            
-            // Buscar en el texto completo y especialmente en el nombre del socio
-            return normalizedSearchText.includes(normalizedSearch) || 
-                   normalizedNombre.includes(normalizedSearch);
-        }
-    );
-    
-    // Re-dibujar la tabla cuando cambie la búsqueda
-    table.on('search.dt', function() {
-        table.draw();
-    });
 }
 
 // Re-inicializar tras cada actualización de Livewire
