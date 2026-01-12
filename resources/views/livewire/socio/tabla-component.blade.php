@@ -325,7 +325,9 @@
                             $esFavorito = \App\Models\FavoritoSocio::where('socio_id', $socio->id)->exists();
                         @endphp
                         <tr class="socio-row" 
-                            data-socio-id="{{ $socio->id }}">
+                            data-socio-id="{{ $socio->id }}"
+                            data-nombre-socio="{{ strtolower($socio->nombre_socio ?? '') }}"
+                            data-search-text="{{ strtolower(($socio->nombre_socio ?? '') . ' ' . ($socio->nombre_barco ?? '') . ' ' . ($socio->matricula ?? '') . ' ' . ($socio->pantalan_t_atraque ?? '')) }}">
                             <td class="photo-cell">
                                 @if($socio->ruta_foto)
                                     <div class="photo-wrapper">
@@ -474,6 +476,57 @@ function initializeDataTable() {
             { width: isMobile ? '110px' : '140px', targets: 4 }, // Situación
             { width: isMobile ? '140px' : '200px', targets: 5 } // Acciones
         ]
+    });
+    
+    // Extender la funcionalidad de búsqueda para incluir el nombre del socio
+    var table = $('#sociosTable').DataTable();
+    
+    // Función para normalizar texto (quitar acentos, espacios, etc.)
+    function normalizeText(str) {
+        if (!str) return '';
+        return str.toString().toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+    
+    // Agregar filtro personalizado de búsqueda
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            // Solo aplicar a nuestra tabla
+            if (settings.nTable.id !== 'sociosTable') {
+                return true;
+            }
+            
+            var searchValue = table.search().toLowerCase().trim();
+            if (!searchValue) {
+                return true; // Si no hay búsqueda, mostrar todas las filas
+            }
+            
+            // Obtener la fila completa
+            var row = table.row(dataIndex).node();
+            if (!row) return true;
+            
+            // Obtener el texto de búsqueda de los atributos data
+            var searchText = $(row).attr('data-search-text') || '';
+            var nombreSocio = $(row).attr('data-nombre-socio') || '';
+            
+            // Normalizar textos
+            var normalizedSearch = normalizeText(searchValue);
+            var normalizedSearchText = normalizeText(searchText);
+            var normalizedNombre = normalizeText(nombreSocio);
+            
+            // Buscar en el texto completo y especialmente en el nombre del socio
+            return normalizedSearchText.includes(normalizedSearch) || 
+                   normalizedNombre.includes(normalizedSearch);
+        }
+    );
+    
+    // Re-dibujar la tabla cuando cambie la búsqueda
+    table.on('search.dt', function() {
+        table.draw();
     });
 }
 

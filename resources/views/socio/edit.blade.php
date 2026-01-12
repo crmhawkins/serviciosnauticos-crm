@@ -784,7 +784,7 @@
                             <span>Ver registros de entrada y salida</span>
                         </a>
                         @if(isset($canEdit) && $canEdit)
-                            <form id="form-baja" method="POST" action="{{ route('socios.baja', $socio->id) }}">
+                            <form id="form-baja" method="POST" action="{{ route('socios.baja', $socio->id) }}" onsubmit="event.stopPropagation(); event.stopImmediatePropagation();">
                                 @csrf
                                 <input type="hidden" name="fecha_baja" value="{{ now()->format('Y-m-d') }}">
                                 <button type="button" class="action-btn btn-danger" id="btn-baja">
@@ -805,7 +805,7 @@
                         </a>
 
                         @if(isset($canEdit) && $canEdit)
-                            <form id="form-eliminar" method="POST" action="{{ route('socios.destroy', $socio->id) }}">
+                            <form id="form-eliminar" method="POST" action="{{ route('socios.destroy', $socio->id) }}" onsubmit="event.stopPropagation(); event.stopImmediatePropagation();">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button" class="action-btn btn-danger" id="btn-eliminar">
@@ -851,20 +851,45 @@
 <script>
 // Manejar todos los formularios DELETE anidados para evitar conflictos con el formulario principal
 document.addEventListener('DOMContentLoaded', function () {
-    // Encontrar todos los formularios DELETE dentro del formulario principal
     const formPrincipal = document.getElementById('socio-form');
-    if (formPrincipal) {
-        const formulariosDelete = formPrincipal.querySelectorAll('form[method="POST"]');
-        formulariosDelete.forEach(form => {
-            const methodInput = form.querySelector('input[name="_method"]');
-            if (methodInput && methodInput.value === 'DELETE') {
-                form.addEventListener('submit', function (e) {
-                    e.stopPropagation(); // Evitar que el evento se propague al formulario padre
-                    // El formulario se enviará normalmente, pero no interferirá con el formulario padre
-                });
+    if (!formPrincipal) return;
+    
+    // Asegurar que el formulario principal siempre envíe PUT (prioridad alta)
+    formPrincipal.addEventListener('submit', function (e) {
+        // Verificar y forzar que el método sea PUT
+        let methodInput = formPrincipal.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            formPrincipal.appendChild(methodInput);
+        }
+        methodInput.value = 'PUT';
+        
+        // Asegurar que no haya ningún otro input _method con valor DELETE
+        const allMethodInputs = formPrincipal.querySelectorAll('input[name="_method"]');
+        allMethodInputs.forEach(input => {
+            if (input.value === 'DELETE') {
+                input.value = 'PUT';
             }
         });
-    }
+    }, true); // Usar capture phase para ejecutar antes que otros listeners
+    
+    // Encontrar todos los formularios DELETE dentro del formulario principal
+    const formulariosDelete = formPrincipal.querySelectorAll('form[method="POST"]');
+    formulariosDelete.forEach(form => {
+        // Saltar el formulario principal
+        if (form.id === 'socio-form') return;
+        
+        const methodInput = form.querySelector('input[name="_method"]');
+        if (methodInput && methodInput.value === 'DELETE') {
+            form.addEventListener('submit', function (e) {
+                e.stopPropagation(); // Evitar que el evento se propague al formulario padre
+                e.stopImmediatePropagation(); // Detener cualquier otro listener
+                // El formulario se enviará normalmente, pero no interferirá con el formulario padre
+            }, true);
+        }
+    });
 });
 
 // Envío AJAX para el formulario de notas (evita conflicto con form principal)
