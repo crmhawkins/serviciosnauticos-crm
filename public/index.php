@@ -6,6 +6,14 @@ use Illuminate\Http\Request;
 define('LARAVEL_START', microtime(true));
 
 /*
+| PHP 8.4 deprecates implicit nullable parameters; Laravel 9.x predates those fixes.
+| Without this, E_DEPRECATED can flood output (breaking responses) or surface as errors.
+*/
+if (PHP_VERSION_ID >= 80400) {
+    error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+}
+
+/*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
 |--------------------------------------------------------------------------
