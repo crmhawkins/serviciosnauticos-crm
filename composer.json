@@ -60,6 +60,9 @@
             "@php artisan key:generate --ansi"
         ]
     },
+    "conflict": {
+        "doctrine/dbal": ">=4.0.0"
+    },
     "extra": {
         "laravel": {
             "dont-discover": []
