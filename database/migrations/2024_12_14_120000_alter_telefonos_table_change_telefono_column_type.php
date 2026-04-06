@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('telefonos', function (Blueprint $table) {
-            $table->string('telefono', 20)->nullable()->change();
-        });
+        if (! $this->isMysqlFamily()) {
+            return;
+        }
+
+        DB::statement('ALTER TABLE telefonos MODIFY telefono VARCHAR(20) NULL');
     }
 
     /**
@@ -25,9 +27,15 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('telefonos', function (Blueprint $table) {
-            $table->integer('telefono')->nullable()->change();
-        });
+        if (! $this->isMysqlFamily()) {
+            return;
+        }
+
+        DB::statement('ALTER TABLE telefonos MODIFY telefono INT NULL');
+    }
+
+    private function isMysqlFamily(): bool
+    {
+        return in_array(Schema::getConnection()->getDriverName(), ['mysql', 'mariadb'], true);
     }
 };
-
