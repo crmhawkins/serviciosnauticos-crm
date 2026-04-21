@@ -1,0 +1,48 @@
+.git
+.github
+.gitattributes
+.gitignore
+.editorconfig
+.node-version
+
+# Local envs & caches
+.env
+.env.*
+!.env.example
+
+# Node / Vite
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Composer (rebuilt inside image)
+vendor
+
+# Laravel runtime
+storage/app/public/*
+!storage/app/public/.gitkeep
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Dev / docs
+tests
+tmp
+ANALISIS_*.md
+ESTILO_*.md
+IMPLEMENTACION_*.md
+phpunit.xml
+
+# IDE
+.idea
+.vscode
+*.swp
+Thumbs.db
+.DS_Store
