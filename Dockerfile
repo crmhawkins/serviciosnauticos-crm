@@ -2,6 +2,10 @@
 
 # -----------------------------------------------------------------------------
 # Stage 1: Composer dependencies (PHP)
+# The composer.lock pins packages that require PHP >= 8.4 and ext-gd.
+# We --ignore-platform-reqs here because this stage only downloads tarballs
+# and builds the autoloader; actual PHP code runs in the runtime stage, which
+# has PHP 8.4 and all required extensions.
 # -----------------------------------------------------------------------------
 FROM composer:2.7 AS vendor
 
@@ -15,7 +19,8 @@ RUN composer install \
     --no-progress \
     --no-scripts \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --ignore-platform-reqs
 
 # -----------------------------------------------------------------------------
 # Stage 2: Frontend assets (Node / Vite)
@@ -34,7 +39,7 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 # Stage 3: Runtime (PHP-FPM + nginx + supervisor)
 # -----------------------------------------------------------------------------
-FROM php:8.2-fpm-alpine AS runtime
+FROM php:8.4-fpm-alpine AS runtime
 
 ENV APP_ENV=production \
     APP_DEBUG=false \
