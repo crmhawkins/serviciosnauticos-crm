@@ -1316,37 +1316,4 @@ class EditComponent extends Component
             'Socio_nº_'.$this->identificador.'.pdf'
         );
     }
-
-    // === Galería: destacar / eliminar ===
-    public function destacarFoto($tipo, $id)
-    {
-        if ($tipo === 'barco') {
-            BarcoFoto::where('socio_id', $this->identificador)->update(['destacada' => false]);
-            if ($foto = BarcoFoto::find($id)) {
-                $foto->update(['destacada' => true]);
-                Socio::find($this->identificador)->update(['ruta_foto' => $foto->ruta]);
-                $this->ruta_foto = $foto->ruta;
-            }
-            $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
-        } else {
-            SocioFoto::where('socio_id', $this->identificador)->update(['destacada' => false]);
-            if ($foto = SocioFoto::find($id)) {
-                $foto->update(['destacada' => true]);
-                Socio::find($this->identificador)->update(['ruta_foto2' => $foto->ruta]);
-                $this->ruta_foto2 = $foto->ruta;
-            }
-            $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
-        }
-    }
-
-    public function eliminarFoto($tipo, $id)
-    {
-        if ($tipo === 'barco') {
-            if ($foto = BarcoFoto::find($id)) { $foto->delete(); }
-            $this->galeria_barco = BarcoFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
-        } else {
-            if ($foto = SocioFoto::find($id)) { $foto->delete(); }
-            $this->galeria_socio = SocioFoto::where('socio_id', $this->identificador)->orderBy('orden')->get()->toArray();
-        }
-    }
 }
