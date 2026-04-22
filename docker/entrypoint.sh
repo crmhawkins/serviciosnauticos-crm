@@ -16,6 +16,20 @@ mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache public/build 2>/dev/null || true
 chmod -R 775 storage bootstrap/cache
 
+# Seed persistent volumes with the bundled static content. `cp -n` leaves any
+# existing file (uploaded photos, new contracts) untouched — only missing files
+# from the image are written. Safe to run on every boot.
+if [ -d /opt/bundled-assets-images ]; then
+    mkdir -p public/assets/images
+    cp -rn /opt/bundled-assets-images/. public/assets/images/ 2>/dev/null || true
+    chown -R www-data:www-data public/assets/images 2>/dev/null || true
+fi
+if [ -d /opt/bundled-contratos ]; then
+    mkdir -p public/contratos
+    cp -rn /opt/bundled-contratos/. public/contratos/ 2>/dev/null || true
+    chown -R www-data:www-data public/contratos 2>/dev/null || true
+fi
+
 # Storage symlink (for Storage::disk('public'))
 php artisan storage:link --force || true
 

@@ -111,6 +111,12 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     && chmod -R 775 storage bootstrap/cache \
     && rm -rf tests tmp docker .github ANALISIS_*.md ESTILO_*.md IMPLEMENTACION_*.md
 
+# Snapshot of bundled static images (logos, theme assets) — used by the
+# entrypoint to seed the persistent volume mounted at public/assets/images.
+RUN cp -r /var/www/html/public/assets/images /opt/bundled-assets-images \
+    && cp -r /var/www/html/public/contratos  /opt/bundled-contratos     \
+    && chown -R www-data:www-data /opt/bundled-assets-images /opt/bundled-contratos
+
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
